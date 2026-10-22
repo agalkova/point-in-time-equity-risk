@@ -1,0 +1,20 @@
+[project]
+specification_version = "0.7.0-ndx-cross-universe-replication"
+parent_model = "v0.1 frozen logistic drawdown-risk model"
+random_seed = 42
+
+[universe]
+index_code = "NDX"
+snapshot_start = "2019-06-30"
+evaluation_start = "2020-01-01"
+evaluation_end = "2026-09-30"
+snapshot_frequency = "month_end"
+
+[data]
+bars_path = "data/raw/alpaca/ndx_bars_2019-06-01_2026-09-30_all.csv.gz"
+membership_path = "data/interim/ndx/ndx_daily_membership.csv.gz"
+snapshot_path = "data/interim/ndx/ndx_membership_snapshots.csv.gz"
+
+[inference]
+block_bootstrap_days = 40
+bootstrap_iterations = 2000
