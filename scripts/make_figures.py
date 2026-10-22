@@ -3,9 +3,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import matplotlib.pyplot as plt
+import matplotlib
 import pandas as pd
 
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 TABLES = PROJECT_ROOT / "reports" / "tables"
@@ -33,7 +35,7 @@ def decile_figure() -> None:
 
 def annual_figure() -> None:
     frame = pd.read_csv(TABLES / "modern_model_annual.csv")
-    figure, axis = plt.subplots(figsize=(8.5, 4.8))
+    _, axis = plt.subplots(figsize=(8.5, 4.8))
     axis.plot(
         frame["year"], frame["mean_daily_rank_ic"], marker="o", color=COLORS["navy"],
         label="Mean daily rank IC",
@@ -91,12 +93,84 @@ def portfolio_figure() -> None:
     finish(FIGURES / "monthly_portfolio_wealth.png")
 
 
+def advanced_model_figure() -> None:
+    summary = json.loads((TABLES / "v02_walk_forward_summary.json").read_text())
+    scores = summary["pooled_scores"]
+    order = ["logistic", "hist_gradient_boosting", "ensemble", "fixed_composite"]
+    labels = ["Logistic", "Gradient boosting", "50/50 ensemble", "Fixed composite"]
+    metrics = [
+        ("average_precision", "Average precision"),
+        ("roc_auc", "ROC AUC"),
+        ("mean_daily_rank_ic", "Mean daily rank IC"),
+    ]
+    figure, axes = plt.subplots(1, 3, figsize=(12, 4.6))
+    for axis, (column, title) in zip(axes, metrics, strict=True):
+        axis.barh(labels, [scores[name][column] for name in order], color=COLORS["blue"])
+        axis.set_title(title)
+        axis.grid(axis="x", alpha=0.2)
+    figure.suptitle("Exploratory walk-forward comparison: complexity offers a modest gain")
+    finish(FIGURES / "v02_model_comparison.png")
+
+
+def walk_forward_figure() -> None:
+    frame = pd.read_csv(TABLES / "v02_walk_forward_folds.csv")
+    labels = {
+        "logistic": "Logistic",
+        "hist_gradient_boosting": "Gradient boosting",
+        "ensemble": "Ensemble",
+        "fixed_composite": "Fixed composite",
+    }
+    plt.figure(figsize=(9.2, 5.0))
+    for name, group in frame.groupby("model"):
+        plt.plot(group["test_year"], group["average_precision"], marker="o", label=labels[name])
+    plt.ylabel("Average precision")
+    plt.title("Year-by-year walk-forward performance varies by market regime")
+    plt.legend(frameon=False, ncol=2)
+    plt.grid(alpha=0.2)
+    finish(FIGURES / "v02_walk_forward_average_precision.png")
+
+
+def importance_figure() -> None:
+    frame = pd.read_csv(TABLES / "v02_boosting_permutation_importance.csv").head(12)
+    frame = frame.sort_values("mean_average_precision_decrease")
+    labels = frame["feature"].str.removeprefix("rank_").str.replace("_", " ")
+    plt.figure(figsize=(9.2, 5.6))
+    plt.barh(labels, frame["mean_average_precision_decrease"], color=COLORS["teal"])
+    plt.xlabel("Decrease in average precision when shuffled")
+    plt.title("Nonlinear model: leading out-of-sample feature importance")
+    plt.grid(axis="x", alpha=0.2)
+    finish(FIGURES / "v02_feature_importance.png")
+
+
+def exposure_matched_figure() -> None:
+    files = {
+        "Risk-filtered momentum": "v02_exposure_matched_risk_filtered_daily.csv",
+        "Ordinary momentum, same cash exposure": (
+            "v02_exposure_matched_cash_matched_momentum_daily.csv"
+        ),
+    }
+    plt.figure(figsize=(9.2, 5.0))
+    for label, filename in files.items():
+        frame = pd.read_csv(TABLES / filename, parse_dates=["date"])
+        wealth = (1.0 + frame["net_return"]).cumprod()
+        plt.plot(frame["date"], wealth, label=label)
+    plt.ylabel("Growth of $1 after modeled costs")
+    plt.title("Cash-matched diagnostic: filtering did not improve the portfolio")
+    plt.legend(frameon=False)
+    plt.grid(alpha=0.2)
+    finish(FIGURES / "v02_exposure_matched_wealth.png")
+
+
 def main() -> None:
     FIGURES.mkdir(parents=True, exist_ok=True)
     decile_figure()
     annual_figure()
     baseline_figure()
     portfolio_figure()
+    advanced_model_figure()
+    walk_forward_figure()
+    importance_figure()
+    exposure_matched_figure()
     print(f"Saved figures to {FIGURES}")
 
 

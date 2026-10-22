@@ -27,16 +27,36 @@ Completed:
 - Completed weekly and monthly cost-aware portfolio tests. The return optimizer selected no risk penalty; the monthly exclusion overlay reduced risk but also return and exposure.
 - Added 18 passing tests, CI, publication figures, a results report, and resume bullets.
 
+## 2026-10-22
+
+Completed:
+
+- Froze an explicitly exploratory v0.2 specification while preserving v0.1 as the
+  confirmatory result.
+- Expanded the research panel to 31 price, volume, liquidity, tail-risk, path, and
+  market-state features.
+- Added seven expanding calendar-year folds with a 40-trading-day purge and 91,299
+  out-of-fold modern predictions.
+- Compared regularized logistic regression, histogram gradient boosting, a fixed 50/50
+  ensemble, and a transparent four-factor composite.
+- Added calibration error, yearly stability, permutation importance, non-overlapping
+  event evaluation, warning precision/recall, and first-breach lead time.
+- Added a cash-matched portfolio diagnostic using walk-forward risk scores. The filter did
+  not improve return, Sharpe, or maximum drawdown versus ordinary momentum at the same
+  realized daily exposure.
+- Expanded the automated suite to 23 tests and added four publication figures.
+
 Current interpretation:
 
-- The signal replicated as a cross-sectional risk ranker.
-- The multivariate model improves AP and ROC AUC, but a fixed composite is competitive on ranking metrics.
-- The signal is not a standalone alpha strategy; its plausible use is as a defensive overlay.
-- The project is ready for GitHub review after a final secrets and reproducibility audit.
+- The advanced workflow strengthens the evidence for a cross-sectional drawdown-risk rank.
+- The nonlinear model does not dominate; the ensemble is modestly stronger on probabilistic
+  metrics, while the transparent composite remains competitive.
+- The exposure-matched result rejects the stronger portfolio claim. This is not a hidden
+  alpha strategy, and the repository should say so plainly.
 
 Next actions:
 
-1. Run the final secrets, repository-size, and clean-clone audit.
-2. Optionally add licensed point-in-time sector data; do not infer historical sectors from current labels.
+1. Optionally add licensed point-in-time sector data; do not infer historical sectors from current labels.
+2. Reserve future data as the next genuinely untouched confirmation period.
 3. Create the GitHub remote only when authorized by the project owner.
 

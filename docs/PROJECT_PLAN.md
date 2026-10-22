@@ -64,5 +64,18 @@ Exit condition: the portfolio claim matches the evidence; a negative result rema
 - [x] Include a small redistribution-safe synthetic example dataset.
 - [x] Add continuous integration and reproducibility instructions.
 - [x] Finalize the README research story and resume bullets.
-- [ ] Review repository size, secrets, licenses, and data rights.
+- [x] Review repository size, secrets, licenses, and data rights.
+
+## Phase 7: advanced exploratory research
+
+- [x] Freeze a separately labeled v0.2 exploratory specification.
+- [x] Add downside, tail, liquidity, path, and market-state features.
+- [x] Run purged expanding yearly walk-forward validation.
+- [x] Compare linear, nonlinear, ensemble, and transparent composite scores.
+- [x] Add calibration, permutation importance, independent-event, and lead-time diagnostics.
+- [x] Test the portfolio conclusion after matching daily cash exposure.
+- [x] Document the negative portfolio result without converting risk prediction into an alpha claim.
+
+Exit condition: the advanced layer is reproducible, clearly separated from the frozen v0.1
+claim, and supports only conclusions justified by the evidence.
 

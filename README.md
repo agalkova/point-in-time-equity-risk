@@ -33,6 +33,18 @@ alpha generation.
 Full interpretation, baselines, annual results, portfolio results, and limitations are in
 [docs/RESULTS.md](docs/RESULTS.md).
 
+## Advanced research layer
+
+An exploratory v0.2 layer adds 31 features, seven purged yearly walk-forward tests,
+logistic and gradient-boosted models, a fixed ensemble, calibration diagnostics,
+non-overlapping event evaluation, feature importance, and a cash-matched portfolio test.
+The ensemble modestly improves probabilistic ranking, but a transparent four-factor score
+remains competitive. More importantly, the risk filter does **not** beat ordinary momentum
+after matching cash exposure. This strengthens the research process without overstating a
+trading result.
+
+See [docs/ADVANCED_RESULTS.md](docs/ADVANCED_RESULTS.md) for the full comparison.
+
 ## Research design
 
 ```mermaid
@@ -139,6 +151,8 @@ After the documented data downloads, reproduce the modern research outputs:
 python scripts/download_historical_aliases.py
 python scripts/run_modern_replication.py
 python scripts/run_portfolio_experiment.py
+python scripts/run_advanced_walk_forward.py
+python scripts/run_exposure_matched_portfolio.py
 python scripts/make_figures.py
 ```
 

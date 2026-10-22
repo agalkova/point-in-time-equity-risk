@@ -29,3 +29,21 @@ def drawdown_event(price: pd.DataFrame, horizon: int, threshold: float) -> pd.Da
 def drawdown_severity(price: pd.DataFrame, horizon: int) -> pd.DataFrame:
     return future_min_return(price, horizon).mul(-1.0).clip(lower=0.0)
 
+
+def future_first_breach_days(
+    price: pd.DataFrame,
+    horizon: int,
+    threshold: float,
+) -> pd.DataFrame:
+    """Trading days from signal date to the first threshold breach; NaN if none."""
+    if horizon <= 0:
+        raise ValueError("Horizon must be positive")
+    if threshold >= 0:
+        raise ValueError("Drawdown threshold must be negative")
+    result = pd.DataFrame(float("nan"), index=price.index, columns=price.columns)
+    for offset in range(1, horizon + 1):
+        breached = price.shift(-offset).div(price).sub(1.0).le(threshold)
+        result = result.mask(result.isna() & breached, float(offset))
+    full_horizon = price.shift(-horizon).notna()
+    return result.where(full_horizon)
+

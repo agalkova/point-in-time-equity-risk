@@ -6,6 +6,7 @@ import pandas as pd
 from risk_managed_momentum.features.targets import (
     drawdown_event,
     drawdown_severity,
+    future_first_breach_days,
     future_min_return,
 )
 
@@ -33,6 +34,11 @@ class TargetTests(unittest.TestCase):
         severity = drawdown_severity(price, horizon=2)
         self.assertTrue(bool(event.iloc[0, 0]))
         self.assertTrue(np.isclose(severity.iloc[0, 0], 0.20))
+
+    def test_first_breach_reports_forward_offset(self) -> None:
+        result = future_first_breach_days(sample_prices(), horizon=3, threshold=-0.15)
+        self.assertEqual(result.iloc[0, 0], 2.0)
+        self.assertTrue(result.iloc[-3:, 0].isna().all())
 
 
 if __name__ == "__main__":

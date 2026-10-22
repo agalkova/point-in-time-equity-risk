@@ -1,0 +1,29 @@
+[project]
+name = "risk-managed-momentum"
+specification_version = "0.2.0-exploratory"
+parent_specification = "0.1.0"
+random_seed = 42
+
+[validation]
+first_test_year = 2020
+last_test_year = 2026
+purge_trading_days = 40
+minimum_training_observations = 10000
+
+[models.logistic]
+c = 0.01
+
+[models.hist_gradient_boosting]
+learning_rate = 0.05
+max_iter = 150
+max_leaf_nodes = 15
+min_samples_leaf = 100
+l2_regularization = 1.0
+
+[ensemble]
+logistic_weight = 0.5
+hist_gradient_boosting_weight = 0.5
+
+[events]
+non_overlap_days = 40
+warning_percentile = 0.80

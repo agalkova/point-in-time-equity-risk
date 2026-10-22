@@ -11,6 +11,9 @@ Use one or two of these, adjusted to the space available:
 - Designed a transaction-cost-aware momentum portfolio experiment with weekly/monthly
   rebalancing, 2% position caps, validation-only hyperparameter selection, and explicit
   negative-result reporting against SPY and factor baselines.
+- Built a 31-feature, purged walk-forward model comparison across seven calendar-year
+  folds, adding calibration, non-overlapping event/lead-time analysis, permutation
+  importance, and a cash-matched portfolio diagnostic backed by 23 automated tests.
 
 Interview summary:
 
