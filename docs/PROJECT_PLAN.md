@@ -11,8 +11,8 @@ Produce a public, reproducible portfolio project that demonstrates quantitative 
 - [x] Establish a separate project folder.
 - [x] Freeze the initial research specification.
 - [x] Add project configuration, decision log, and progress log.
-- [ ] Reproduce the feasibility result from the modular package.
-- [ ] Add automated timing and data-contract tests.
+- [x] Reproduce the feasibility result from the modular package.
+- [x] Add automated timing and data-contract tests.
 
 Exit condition: the modular pipeline reproduces the recorded legacy metrics within documented tolerances.
 

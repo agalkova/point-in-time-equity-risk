@@ -59,6 +59,12 @@ Run the legacy source audit:
 python scripts/audit_legacy_data.py
 ```
 
+Reproduce the frozen legacy feasibility result:
+
+```bash
+python scripts/run_legacy_feasibility.py
+```
+
 Prepare an Alpaca download after setting credentials outside the repository:
 
 ```bash

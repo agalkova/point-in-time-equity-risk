@@ -11,6 +11,8 @@ Completed:
 - Rejected an immediate alpha claim after a naïve daily exclusion portfolio failed.
 - Created this separate project with a frozen specification and decision log.
 - Added the first Alpaca historical SIP client and data-audit foundation.
+- Reproduced the recorded feasibility metrics exactly from the modular package.
+- Added 12 passing tests covering target timing, sample isolation, legacy data contracts, response normalization, and refusal of IEX data.
 
 Current interpretation:
 
@@ -20,9 +22,9 @@ Current interpretation:
 
 Next actions:
 
-1. Run automated tests and the legacy data audit from this project.
-2. Create a 20-security pilot symbol file.
-3. Obtain Alpaca API credentials locally.
-4. Download raw and adjusted SIP bars for 2016–2019.
-5. Produce the overlap and ticker-history audit before accessing the modern holdout.
+1. Obtain Alpaca API credentials locally.
+2. Download raw and adjusted SIP bars for the 20-security pilot over 2016–2019.
+3. Produce the overlap and ticker-history audit.
+4. Confirm price adjustment and consolidated-volume compatibility.
+5. Expand the download only after the pilot passes.
 
