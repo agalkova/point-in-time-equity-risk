@@ -54,9 +54,26 @@ Current interpretation:
 - The exposure-matched result rejects the stronger portfolio claim. This is not a hidden
   alpha strategy, and the repository should say so plainly.
 
+Alpha research extension:
+
+- Froze v0.3 before execution with a beta-adjusted 21-day return target, 22 fixed features,
+  monthly signals, six yearly walk-forward folds, and 10 basis-point one-way costs.
+- Added 33,598 out-of-fold security-month predictions across 68 month-end cross-sections.
+- Rejected the primary ensemble alpha claim: 12.31% annual return, 0.68 Sharpe, and -1.12%
+  estimated annual six-factor alpha versus 14.78% and 0.89 for SPY.
+- Identified a post-spec ridge candidate with 21.34% annual return, 1.19 Sharpe, -18.83%
+  maximum drawdown, and 5.48% estimated annual factor alpha; its 1.46 alpha t-statistic is
+  insufficient for a confirmed claim.
+- Confirmed that the ridge estimate remains economically positive across 25, 50, and 100
+  positions and 5–20 basis-point transaction-cost assumptions, but no sensitivity reaches
+  a 2.0 alpha t-statistic.
+- Froze the ridge top-50 candidate for future month-end observation without retroactively
+  promoting it to the primary specification.
+- Expanded the automated suite to 26 passing tests.
+
 Next actions:
 
-1. Optionally add licensed point-in-time sector data; do not infer historical sectors from current labels.
-2. Reserve future data as the next genuinely untouched confirmation period.
+1. Begin the v0.4 prospective record at the first month-end after the freeze date.
+2. Optionally add licensed point-in-time sector data; do not infer historical sectors from current labels.
 3. Create the GitHub remote only when authorized by the project owner.
 

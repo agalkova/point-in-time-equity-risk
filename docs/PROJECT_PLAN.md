@@ -79,3 +79,18 @@ Exit condition: the portfolio claim matches the evidence; a negative result rema
 Exit condition: the advanced layer is reproducible, clearly separated from the frozen v0.1
 claim, and supports only conclusions justified by the evidence.
 
+## Phase 8: expected-return and alpha research
+
+- [x] Freeze a distinct beta-adjusted future-return target and full-universe protocol.
+- [x] Add residual-momentum, reversal, liquidity, and market-state predictors.
+- [x] Produce six expanding yearly walk-forward prediction sets.
+- [x] Compare linear, nonlinear, ensemble, and transparent momentum scores.
+- [x] Add long-only, long-short, equal-weight, and SPY portfolio comparisons.
+- [x] Download free official factor data and estimate six-factor alpha with HAC errors.
+- [x] Stress-test the ridge candidate across position counts and transaction costs.
+- [x] Freeze a prospective candidate without promoting the post-spec result to proven alpha.
+- [ ] Begin recording month-end prospective signals after the freeze date.
+
+Exit condition: a complete alpha-research attempt is published honestly, and any stronger
+claim depends on observations that were not available when the candidate was frozen.
+

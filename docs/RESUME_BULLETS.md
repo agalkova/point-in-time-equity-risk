@@ -14,6 +14,10 @@ Use one or two of these, adjusted to the space available:
 - Built a 31-feature, purged walk-forward model comparison across seven calendar-year
   folds, adding calibration, non-overlapping event/lead-time analysis, permutation
   importance, and a cash-matched portfolio diagnostic backed by 23 automated tests.
+- Built a separate 22-feature expected-return research layer with 33K walk-forward
+  security-month predictions, cost-aware long-only/long-short simulation, six-factor HAC
+  attribution, and an explicitly frozen prospective candidate after rejecting the primary
+  ensemble's alpha claim.
 
 Interview summary:
 

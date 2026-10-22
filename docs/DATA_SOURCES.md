@@ -67,3 +67,15 @@ dated, reviewable mappings in `data/reference/modern_symbol_aliases.toml`.
 This free source is adequate for a portfolio project, but it is not equivalent to a licensed
 institutional security master. Historical sector neutrality is therefore not claimed.
 
+## Fama–French research factors
+
+The alpha study downloads daily U.S. five-factor and momentum archives from Kenneth French's
+official Dartmouth data library. The local normalized table stores decimal daily returns for
+market excess return, size, value, profitability, investment, momentum, and the risk-free
+rate. Raw downloads and their manifest remain excluded from Git; source URLs and reproducible
+parsing code are committed.
+
+The retrieved joined series covers 1963-07-01 through 2026-08-31. Factor attribution uses a
+six-factor time-series regression with Newey–West heteroskedasticity/autocorrelation-consistent
+standard errors.
+

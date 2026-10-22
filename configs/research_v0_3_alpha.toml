@@ -1,0 +1,42 @@
+[project]
+name = "risk-managed-momentum"
+specification_version = "0.3.0-exploratory-alpha"
+parent_specification = "0.2.0-exploratory"
+random_seed = 42
+
+[universe]
+minimum_price = 5.0
+minimum_dollar_volume_20 = 5000000.0
+
+[target]
+horizon_trading_days = 21
+beta_lookback_days = 126
+
+[validation]
+first_test_year = 2021
+last_test_year = 2026
+purge_month_end_signals = 1
+minimum_training_observations = 3000
+
+[models.ridge]
+alpha = 100.0
+
+[models.hist_gradient_boosting]
+learning_rate = 0.04
+max_iter = 150
+max_leaf_nodes = 15
+min_samples_leaf = 100
+l2_regularization = 1.0
+
+[ensemble]
+ridge_weight = 0.5
+hist_gradient_boosting_weight = 0.5
+
+[portfolio]
+top_n = 50
+one_way_cost_bps = 10.0
+risk_penalty = 0.25
+
+[inference]
+bootstrap_iterations = 2000
+block_length_months = 6

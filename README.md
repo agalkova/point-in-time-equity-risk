@@ -45,6 +45,18 @@ trading result.
 
 See [docs/ADVANCED_RESULTS.md](docs/ADVANCED_RESULTS.md) for the full comparison.
 
+## Exploratory alpha study
+
+Version 0.3 separately predicts beta-adjusted future returns across the full point-in-time
+universe. The primary ensemble failed to produce alpha. A simpler ridge model subsequently
+showed a promising top-50 portfolio—21.34% annual return after modeled costs, 1.19 Sharpe,
+and 5.48% estimated annual six-factor alpha—but its alpha t-statistic was only 1.46 and the
+portfolio mapping was inspected after the primary result. It is therefore frozen as a
+**prospective candidate**, not reported as proven alpha.
+
+See [docs/ALPHA_RESULTS.md](docs/ALPHA_RESULTS.md) and the prospective rules in
+[docs/PROSPECTIVE_SPEC_V0_4.md](docs/PROSPECTIVE_SPEC_V0_4.md).
+
 ## Research design
 
 ```mermaid
@@ -153,6 +165,10 @@ python scripts/run_modern_replication.py
 python scripts/run_portfolio_experiment.py
 python scripts/run_advanced_walk_forward.py
 python scripts/run_exposure_matched_portfolio.py
+python scripts/download_fama_french_factors.py
+python scripts/run_alpha_research.py
+python scripts/run_alpha_sensitivity.py
+python scripts/generate_prospective_alpha_candidate.py
 python scripts/make_figures.py
 ```
 

@@ -161,6 +161,70 @@ def exposure_matched_figure() -> None:
     finish(FIGURES / "v02_exposure_matched_wealth.png")
 
 
+def alpha_wealth_figure() -> None:
+    files = {
+        "Ridge top 50 (post-spec candidate)": "v03_ridge_long_only_post_spec_daily.csv",
+        "Risk-adjusted ensemble": "v03_risk_adjusted_long_only_daily.csv",
+        "Equal-weight universe": "v03_equal_weight_universe_daily.csv",
+        "SPY": "v03_spy_buy_hold_daily.csv",
+    }
+    plt.figure(figsize=(9.5, 5.2))
+    for label, filename in files.items():
+        frame = pd.read_csv(TABLES / filename, parse_dates=["date"])
+        wealth = (1.0 + frame["net_return"]).cumprod()
+        plt.plot(frame["date"], wealth, label=label)
+    plt.ylabel("Growth of $1 after modeled costs")
+    plt.title("Exploratory alpha study: the linear-model candidate is promising, not proven")
+    plt.legend(frameon=False)
+    plt.grid(alpha=0.2)
+    finish(FIGURES / "v03_alpha_candidate_wealth.png")
+
+
+def alpha_walk_forward_figure() -> None:
+    frame = pd.read_csv(TABLES / "v03_alpha_walk_forward_folds.csv")
+    names = {
+        "ridge": "Ridge",
+        "hist_gradient_boosting": "Gradient boosting",
+        "ensemble": "Ensemble",
+        "fixed_momentum": "Fixed momentum",
+        "risk_adjusted": "Risk-adjusted ensemble",
+    }
+    plt.figure(figsize=(9.5, 5.2))
+    for name, group in frame.groupby("model"):
+        plt.plot(
+            group["test_year"],
+            group["mean_monthly_rank_ic"],
+            marker="o",
+            label=names[name],
+        )
+    plt.axhline(0.0, color="black", linewidth=0.8)
+    plt.ylabel("Mean monthly cross-sectional rank IC")
+    plt.title("Expected-return ranking is unstable across years")
+    plt.legend(frameon=False, ncol=2)
+    plt.grid(alpha=0.2)
+    finish(FIGURES / "v03_alpha_walk_forward_ic.png")
+
+
+def alpha_sensitivity_figure() -> None:
+    frame = pd.read_csv(TABLES / "v03_ridge_portfolio_sensitivity.csv")
+    frame = frame[frame["mode"].eq("long_only")]
+    plt.figure(figsize=(8.8, 5.0))
+    for positions, group in frame.groupby("positions_per_side"):
+        plt.plot(
+            group["one_way_cost_bps"],
+            group["annualized_alpha"] * 100.0,
+            marker="o",
+            label=f"Top {positions}",
+        )
+    plt.axhline(0.0, color="black", linewidth=0.8)
+    plt.xlabel("One-way transaction cost (basis points)")
+    plt.ylabel("Estimated annual six-factor alpha (%)")
+    plt.title("Post-spec sensitivity: positive estimate, limited statistical confidence")
+    plt.legend(frameon=False)
+    plt.grid(alpha=0.2)
+    finish(FIGURES / "v03_ridge_alpha_sensitivity.png")
+
+
 def main() -> None:
     FIGURES.mkdir(parents=True, exist_ok=True)
     decile_figure()
@@ -171,6 +235,9 @@ def main() -> None:
     walk_forward_figure()
     importance_figure()
     exposure_matched_figure()
+    alpha_wealth_figure()
+    alpha_walk_forward_figure()
+    alpha_sensitivity_figure()
     print(f"Saved figures to {FIGURES}")
 
 
