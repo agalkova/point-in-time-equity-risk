@@ -79,3 +79,17 @@ The retrieved joined series covers 1963-07-01 through 2026-08-31. Factor attribu
 six-factor time-series regression with Newey–West heteroskedasticity/autocorrelation-consistent
 standard errors.
 
+## SEC Companyfacts pilot
+
+The v0.5 pilot uses the official unauthenticated SEC Companyfacts JSON endpoint. Raw issuer
+responses and the normalized annual table remain excluded from Git; the downloader and schema
+logic are committed. Requests use a locally supplied `SEC_USER_AGENT`, a short delay, and one
+request per issuer.
+
+Only filing-date-stamped annual 10-K/10-K/A facts are accepted. Historical signals are joined
+on the public filing date to prevent fiscal-period-end lookahead. Common US-GAAP tag aliases
+are resolved in a fixed order and the chosen tag is retained in the normalized data for audit.
+
+The SEC may reject automated traffic from some networks. A 403 response should not be bypassed
+with scraping or an unofficial mirror; rerun the documented downloader from an allowed network.
+

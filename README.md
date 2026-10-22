@@ -172,6 +172,22 @@ python scripts/generate_prospective_alpha_candidate.py
 python scripts/make_figures.py
 ```
 
+### SEC fundamentals proof of concept
+
+Version 0.5 tests whether filing-date-safe annual fundamentals add ranking information to the
+existing price model. Set a descriptive SEC request identity locally; it is never saved:
+
+```bash
+export SEC_USER_AGENT="Your Name your-email@example.com"
+python scripts/download_sec_fundamentals.py
+python scripts/run_fundamental_pilot.py
+```
+
+The pilot intentionally uses only about 22 issuers and begins from today's constituent list,
+so its portfolio results are diagnostic rather than investable evidence. Its frozen design and
+expansion criteria are in
+[docs/RESEARCH_SPEC_V0_5_FUNDAMENTALS.md](docs/RESEARCH_SPEC_V0_5_FUNDAMENTALS.md).
+
 ## Research controls
 
 The primary eligibility rule, outcome, time splits, metrics, and modern holdout policy are defined in [docs/RESEARCH_SPEC.md](docs/RESEARCH_SPEC.md). Any change must be recorded in [docs/DECISIONS.md](docs/DECISIONS.md) before the modern holdout is evaluated.

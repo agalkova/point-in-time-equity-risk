@@ -1,0 +1,27 @@
+[project]
+name = "risk-managed-momentum"
+specification_version = "0.5.0-sec-fundamentals-pilot"
+parent_specification = "0.3.0-exploratory-alpha"
+random_seed = 42
+
+[pilot]
+maximum_sp500_addition_date = "2018-12-31"
+issuers_per_sector = 2
+minimum_fundamental_features = 4
+
+[validation]
+first_test_year = 2021
+last_test_year = 2026
+purge_month_end_signals = 1
+minimum_training_observations = 250
+
+[model]
+ridge_alpha = 30.0
+
+[portfolio]
+top_n = 5
+one_way_cost_bps = 10.0
+
+[inference]
+bootstrap_iterations = 2000
+block_length_months = 6

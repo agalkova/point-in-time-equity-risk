@@ -1,5 +1,18 @@
 # Progress log
 
+## 2026-10-22 — SEC fundamentals proof of concept
+
+- Froze the v0.5 pilot before observing any fundamental-model result.
+- Implemented official SEC Companyfacts ingestion and annual US-GAAP normalization.
+- Added filing-date-aware as-of joins and automated lookahead tests.
+- Added eight quality, profitability, growth, accrual, and leverage features.
+- Added matched price-only, fundamentals-only, and combined expanding walk-forward tests.
+- Added cost-aware pilot portfolios and six-factor attribution.
+- All 28 repository tests pass; checks for the new files pass.
+- The SEC returned HTTP 403 from this execution environment for both Companyfacts and the
+  official bulk archive. No issuer data was downloaded and no empirical result was claimed.
+- Resume instructions and pass criteria are recorded in `docs/FUNDAMENTALS_PILOT_STATUS.md`.
+
 ## 2026-10-21
 
 Completed:
