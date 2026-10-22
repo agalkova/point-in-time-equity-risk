@@ -28,6 +28,12 @@
   turnover/cost records, and tests preventing silent replacement of prior evidence.
 - Confirmed the latest 2026-09-30 signal remains pre-freeze shadow output; the prospective ledger
   correctly contains no eligible observation yet.
+- Froze v0.7 for an unchanged-model Nasdaq-100 cross-universe replication, including explicit
+  month-end membership and S&P-overlap limitations.
+- Added resumable point-in-time NDX membership ingestion, separate Alpaca SIP ingestion, identity
+  checks, overlap diagnostics, non-S&P subset reporting, and locked pass criteria.
+- Cached the first six membership snapshots before the provider's daily free-IP quota was reached;
+  no NDX model result has been observed.
 - Resume instructions and pass criteria are recorded in `docs/FUNDAMENTALS_PILOT_STATUS.md`.
 
 ## 2026-10-21
