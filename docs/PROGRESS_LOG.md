@@ -12,7 +12,8 @@ Completed:
 - Created this separate project with a frozen specification and decision log.
 - Added the first Alpaca historical SIP client and data-audit foundation.
 - Reproduced the recorded feasibility metrics exactly from the modular package.
-- Added 12 passing tests covering target timing, sample isolation, legacy data contracts, response normalization, and refusal of IEX data.
+- Added 13 passing tests covering target timing, sample isolation, legacy data contracts, response normalization, reconciliation, and refusal of IEX data.
+- Added raw-versus-adjusted overlap reconciliation for price levels, returns, consolidated volume, coverage dates, and ticker mappings.
 
 Current interpretation:
 

@@ -1,0 +1,100 @@
+[[security]]
+provider_ticker = "AAPL"
+legacy_ticker = "AAPL"
+case_type = "active"
+
+[[security]]
+provider_ticker = "MSFT"
+legacy_ticker = "MSFT"
+case_type = "active"
+
+[[security]]
+provider_ticker = "JPM"
+legacy_ticker = "JPM"
+case_type = "active"
+
+[[security]]
+provider_ticker = "XOM"
+legacy_ticker = "XOM"
+case_type = "active"
+
+[[security]]
+provider_ticker = "NVDA"
+legacy_ticker = "NVDA"
+case_type = "active"
+
+[[security]]
+provider_ticker = "WMT"
+legacy_ticker = "WMT"
+case_type = "active"
+
+[[security]]
+provider_ticker = "AMZN"
+legacy_ticker = "AMZN"
+case_type = "active"
+
+[[security]]
+provider_ticker = "CAT"
+legacy_ticker = "CAT"
+case_type = "active"
+
+[[security]]
+provider_ticker = "GOOGL"
+legacy_ticker = "GOOGL"
+case_type = "active"
+
+[[security]]
+provider_ticker = "META"
+legacy_ticker = "FB"
+case_type = "rename"
+
+[[security]]
+provider_ticker = "XLNX"
+legacy_ticker = "XLNX"
+case_type = "inactive_or_acquired"
+
+[[security]]
+provider_ticker = "CELG"
+legacy_ticker = "CELG"
+case_type = "inactive_or_acquired"
+
+[[security]]
+provider_ticker = "MON"
+legacy_ticker = "MON"
+case_type = "inactive_or_acquired"
+
+[[security]]
+provider_ticker = "ESRX"
+legacy_ticker = "ESRX"
+case_type = "inactive_or_acquired"
+
+[[security]]
+provider_ticker = "RHT"
+legacy_ticker = "RHT"
+case_type = "inactive_or_acquired"
+
+[[security]]
+provider_ticker = "AET"
+legacy_ticker = "AET"
+case_type = "inactive_or_acquired"
+
+[[security]]
+provider_ticker = "CBS"
+legacy_ticker = "CBS"
+case_type = "inactive_or_acquired"
+
+[[security]]
+provider_ticker = "VIAB"
+legacy_ticker = "VIAB"
+case_type = "inactive_or_acquired"
+
+[[security]]
+provider_ticker = "WYN"
+legacy_ticker = "WYN"
+case_type = "structural_change"
+
+[[security]]
+provider_ticker = "LLL"
+legacy_ticker = "LLL"
+case_type = "inactive_or_acquired"
+

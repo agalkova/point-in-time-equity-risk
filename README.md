@@ -76,6 +76,16 @@ python scripts/download_alpaca.py --symbols-file data/reference/pilot_symbols.tx
 
 The downloader explicitly requests the `sip` feed. It refuses to continue if the response cannot be identified as the requested historical source.
 
+After downloading both `raw` and `all` adjustment variants for the reconciliation period:
+
+```bash
+python scripts/reconcile_overlap.py \
+  --raw-bars data/raw/alpaca/bars_2016-01-01_2019-06-12_raw.csv.gz \
+  --adjusted-bars data/raw/alpaca/bars_2016-01-01_2019-06-12_all.csv.gz
+```
+
+The audit compares price levels, daily returns, consolidated volume, coverage dates, and symbol mappings for each pilot security.
+
 ## Research controls
 
 The primary eligibility rule, outcome, time splits, metrics, and modern holdout policy are defined in [docs/RESEARCH_SPEC.md](docs/RESEARCH_SPEC.md). Any change must be recorded in [docs/DECISIONS.md](docs/DECISIONS.md) before the modern holdout is evaluated.
