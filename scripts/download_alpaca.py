@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 import pandas as pd
+from dotenv import load_dotenv
 
 from risk_managed_momentum.data.alpaca import AlpacaHistoricalClient
 
@@ -33,6 +34,7 @@ def read_symbols(path: Path) -> list[str]:
 
 def main() -> None:
     args = parse_args()
+    load_dotenv(PROJECT_ROOT / ".env")
     client = AlpacaHistoricalClient.from_environment()
     frame, manifest = client.download_daily_bars(
         read_symbols(args.symbols_file),

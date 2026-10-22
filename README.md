@@ -65,11 +65,16 @@ Reproduce the frozen legacy feasibility result:
 python scripts/run_legacy_feasibility.py
 ```
 
-Prepare an Alpaca download after setting credentials outside the repository:
+Create a private `.env` file in the project root (it is excluded from Git):
+
+```text
+APCA_API_KEY_ID=...
+APCA_API_SECRET_KEY=...
+```
+
+Then run a download:
 
 ```bash
-export APCA_API_KEY_ID="..."
-export APCA_API_SECRET_KEY="..."
 python scripts/download_alpaca.py --symbols-file data/reference/pilot_symbols.txt \
   --start 2016-01-01 --end 2019-06-12
 ```
@@ -85,6 +90,12 @@ python scripts/reconcile_overlap.py \
 ```
 
 The audit compares price levels, daily returns, consolidated volume, coverage dates, and symbol mappings for each pilot security.
+
+The completed pilot retrieved 16,810 overlapping observations across all 20 requested
+securities, including renamed and delisted names. Results support raw close as the closest
+match to the legacy price level, while adjusted returns are retained as a candidate for
+economically meaningful return features. See `docs/DATA_SOURCES.md` for the reconciliation
+summary and limitations.
 
 ## Research controls
 
