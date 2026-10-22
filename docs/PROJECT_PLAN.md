@@ -19,21 +19,21 @@ Exit condition: the modular pipeline reproduces the recorded legacy metrics with
 ## Phase 2: market-data pipeline
 
 - [x] Implement an authenticated Alpaca historical-bars client.
-- [ ] Create a 20-security pilot universe covering ordinary, renamed, acquired, and delisted cases.
-- [ ] Download raw and adjusted SIP daily bars for the pilot.
-- [ ] Store request manifests and immutable raw responses.
-- [ ] Reconcile 2016–2019 prices and volumes against the legacy source.
-- [ ] Produce missing-symbol and corporate-action reports.
+- [x] Create a 20-security pilot universe covering ordinary, renamed, acquired, and delisted cases.
+- [x] Download raw and adjusted SIP daily bars for the pilot.
+- [x] Store request manifests and immutable raw responses.
+- [x] Reconcile 2016–2019 prices and volumes against the legacy source.
+- [x] Produce missing-symbol and corporate-action reports.
 
 Exit condition: price and volume definitions are understood, ticker mappings are documented, and the overlap audit passes.
 
 ## Phase 3: point-in-time research dataset
 
-- [ ] Build a stable security identifier and ticker-history table.
-- [ ] Add point-in-time S&P 500 membership.
+- [x] Build a dated ticker-history alias table with explicit reuse handling.
+- [x] Add point-in-time S&P 500 membership.
 - [ ] Add sector classifications available on each signal date.
-- [ ] Build leakage-safe features with explicit availability dates.
-- [ ] Add data-quality checks for duplicates, gaps, stale prices, and post-delisting rows.
+- [x] Build leakage-safe price/volume features with explicit signal-date timing.
+- [x] Add data-quality checks for duplicates, membership coverage, ticker reuse, and missing symbols.
 
 Exit condition: every model row is reproducible from timestamped source records without future information.
 

@@ -1,0 +1,41 @@
+# Dated aliases connect the point-in-time membership symbol to the Alpaca series.
+# Entries marked download_asof require a separate historical-symbol request to avoid
+# ticker reuse or incomplete rename mapping in the current-symbol response.
+
+[[alias]]
+membership_ticker = "STI"
+provider_ticker = "STI"
+start = "2019-06-01"
+end = "2019-12-06"
+download_asof = "2019-06-01"
+note = "SunTrust series; current STI is an unrelated reused ticker."
+
+[[alias]]
+membership_ticker = "WLTW"
+provider_ticker = "WTW"
+start = "2019-06-01"
+end = "2022-01-09"
+note = "Willis Towers Watson ticker change."
+
+[[alias]]
+membership_ticker = "SKYD"
+provider_ticker = "SWKS"
+start = "2019-06-01"
+end = "2025-08-06"
+note = "Skyworks ticker change; membership source uses the current symbol historically."
+
+[[alias]]
+membership_ticker = "BBWI"
+provider_ticker = "LB"
+start = "2019-06-01"
+end = "2021-08-02"
+download_asof = "2021-01-04"
+note = "L Brands renamed Bath & Body Works."
+
+[[alias]]
+membership_ticker = "VTRS"
+provider_ticker = "MYL"
+start = "2019-06-01"
+end = "2020-11-15"
+download_asof = "2020-01-02"
+note = "Mylan combined with Upjohn to form Viatris."

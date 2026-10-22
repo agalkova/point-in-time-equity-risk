@@ -30,10 +30,19 @@ def build_research_dataset(
     price: pd.DataFrame,
     volume: pd.DataFrame,
     config: dict[str, Any],
+    membership: pd.DataFrame | None = None,
 ) -> ResearchDataset:
     """Build the frozen v0.1 cross-sectional research table."""
     price = price.sort_index().astype(float)
     volume = volume.reindex(index=price.index, columns=price.columns).astype(float)
+    if membership is None:
+        membership = price.notna()
+    else:
+        membership = (
+            membership.reindex(index=price.index, columns=price.columns, fill_value=False)
+            .fillna(False)
+            .astype(bool)
+        )
     returns = price.pct_change(fill_method=None)
 
     ret5 = price.div(price.shift(5)).sub(1.0)
@@ -45,14 +54,15 @@ def build_research_dataset(
     drawdown20 = price.div(price.rolling(20, min_periods=15).max()).sub(1.0)
     drawdown60 = price.div(price.rolling(60, min_periods=50).max()).sub(1.0)
 
-    market_daily = returns.mean(axis=1, skipna=True)
+    market_daily = returns.where(membership).mean(axis=1, skipna=True)
     market_index = (1.0 + market_daily.fillna(0.0)).cumprod()
     market_ret20 = market_index.div(market_index.shift(20)).sub(1.0)
     market_ret60 = market_index.div(market_index.shift(60)).sub(1.0)
     market_vol20 = market_daily.rolling(20, min_periods=15).std() * np.sqrt(252.0)
     market_var60 = market_daily.rolling(60, min_periods=40).var()
-    market_breadth20 = ret20.gt(0.0).sum(axis=1).div(ret20.notna().sum(axis=1))
-    cross_sectional_dispersion20 = ret20.std(axis=1, skipna=True)
+    member_ret20 = ret20.where(membership)
+    market_breadth20 = member_ret20.gt(0.0).sum(axis=1).div(member_ret20.notna().sum(axis=1))
+    cross_sectional_dispersion20 = member_ret20.std(axis=1, skipna=True)
 
     beta60 = returns.rolling(60, min_periods=40).cov(market_daily).div(market_var60, axis=0)
     corr60 = returns.rolling(60, min_periods=40).corr(market_daily)
@@ -84,7 +94,9 @@ def build_research_dataset(
             price.mul(volume).rolling(20, min_periods=15).mean()
         ),
     }
-    ranked_features = {f"rank_{name}": _rank(value) for name, value in stock_features.items()}
+    ranked_features = {
+        f"rank_{name}": _rank(value.where(membership)) for name, value in stock_features.items()
+    }
     regime_features = {
         "market_return_20": market_ret20,
         "market_return_60": market_ret60,
@@ -95,8 +107,10 @@ def build_research_dataset(
     feature_columns = list(ranked_features) + list(regime_features)
 
     eligibility_config = config["eligibility"]
-    eligibility = ret60.ge(float(eligibility_config["minimum_runup"])) & drawdown60.ge(
-        float(eligibility_config["maximum_distance_below_peak"])
+    eligibility = (
+        ret60.ge(float(eligibility_config["minimum_runup"]))
+        & drawdown60.ge(float(eligibility_config["maximum_distance_below_peak"]))
+        & membership
     )
     target_config = config["target"]
     horizon = int(target_config["horizon_days"])

@@ -37,6 +37,12 @@ end = "2019-06-12"
 start = "2020-01-01"
 end = "2026-09-30"
 
+[modern_source]
+bars_path = "data/raw/alpaca/bars_2019-06-01_2026-09-30_all.csv.gz"
+historical_alias_bars_path = "data/raw/alpaca/bars_historical_aliases_all.csv.gz"
+membership_path = "data/interim/membership/sp500_daily_membership.csv.gz"
+aliases_path = "data/reference/modern_symbol_aliases.toml"
+
 [inference]
 block_bootstrap_days = 40
 bootstrap_iterations = 2000
@@ -50,7 +56,7 @@ maximum_position_weight = 0.02
 base_url = "https://data.alpaca.markets"
 feed = "sip"
 timeframe = "1Day"
-adjustment = "raw"
+adjustment = "all"
 request_limit = 10000
 symbols_per_request = 100
 

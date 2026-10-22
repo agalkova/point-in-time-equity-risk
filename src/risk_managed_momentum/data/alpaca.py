@@ -233,3 +233,59 @@ class AlpacaHistoricalClient:
         )
         return frame, manifest
 
+    def download_daily_bars_batched(
+        self,
+        symbols: Iterable[str],
+        *,
+        start: str | date,
+        end: str | date,
+        feed: str = "sip",
+        adjustment: str = "raw",
+        limit: int = 10_000,
+        asof: str | date | None = None,
+        batch_size: int = 100,
+    ) -> tuple[pd.DataFrame, DownloadManifest]:
+        requested = normalize_symbols(symbols)
+        if batch_size < 1:
+            raise ValueError("Batch size must be positive")
+
+        frames: list[pd.DataFrame] = []
+        manifests: list[DownloadManifest] = []
+        for offset in range(0, len(requested), batch_size):
+            frame, manifest = self.download_daily_bars(
+                requested[offset : offset + batch_size],
+                start=start,
+                end=end,
+                feed=feed,
+                adjustment=adjustment,
+                limit=limit,
+                asof=asof,
+            )
+            frames.append(frame)
+            manifests.append(manifest)
+
+        combined = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
+        if not combined.empty:
+            combined = combined.sort_values(["ticker", "timestamp"]).reset_index(drop=True)
+            duplicate_count = int(combined.duplicated(["ticker", "timestamp"]).sum())
+            if duplicate_count:
+                raise AlpacaDataError(f"Received {duplicate_count} duplicate batched rows")
+        returned = sorted(combined["ticker"].unique()) if not combined.empty else []
+        first = manifests[0]
+        manifest = DownloadManifest(
+            source=first.source,
+            endpoint=first.endpoint,
+            feed=feed,
+            timeframe=first.timeframe,
+            adjustment=adjustment,
+            start=first.start,
+            end=first.end,
+            requested_symbols=requested,
+            returned_symbols=returned,
+            missing_symbols=sorted(set(requested) - set(returned)),
+            rows=int(len(combined)),
+            pages=sum(item.pages for item in manifests),
+            retrieved_at_utc=datetime.now(timezone.utc).isoformat(),
+        )
+        return combined, manifest
+

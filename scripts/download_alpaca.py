@@ -20,6 +20,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--end", required=True)
     parser.add_argument("--adjustment", choices=["raw", "split", "dividend", "spin-off", "all"], default="raw")
     parser.add_argument("--asof")
+    parser.add_argument("--batch-size", type=int, default=100)
     return parser.parse_args()
 
 
@@ -36,13 +37,14 @@ def main() -> None:
     args = parse_args()
     load_dotenv(PROJECT_ROOT / ".env")
     client = AlpacaHistoricalClient.from_environment()
-    frame, manifest = client.download_daily_bars(
+    frame, manifest = client.download_daily_bars_batched(
         read_symbols(args.symbols_file),
         start=args.start,
         end=args.end,
         adjustment=args.adjustment,
         feed="sip",
         asof=args.asof,
+        batch_size=args.batch_size,
     )
 
     stem = f"bars_{args.start}_{args.end}_{args.adjustment}"
