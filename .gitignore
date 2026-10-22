@@ -1,0 +1,25 @@
+.DS_Store
+.env
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+*.egg-info/
+
+# Vendor and derived datasets
+data/raw/**
+data/interim/**
+data/processed/**
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+
+# Generated research output
+reports/tables/**
+reports/figures/**
+!reports/tables/.gitkeep
+!reports/figures/.gitkeep
+

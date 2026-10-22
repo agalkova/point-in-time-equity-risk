@@ -1,0 +1,56 @@
+[project]
+name = "risk-managed-momentum"
+specification_version = "0.1.0"
+random_seed = 42
+
+[legacy_source]
+price_path = "/Users/ageefox/Detecting Bubbles Project/DF_SP500_new1"
+volume_path = "/Users/ageefox/Detecting Bubbles Project/DF_SP500_Volume"
+
+[eligibility]
+runup_lookback_days = 60
+minimum_runup = 0.20
+peak_lookback_days = 60
+maximum_distance_below_peak = -0.10
+
+[target]
+horizon_days = 40
+drawdown_threshold = -0.15
+
+[splits.train]
+start = "2012-12-01"
+end = "2015-10-30"
+
+[splits.validation]
+start = "2016-03-01"
+end = "2016-10-31"
+
+[splits.legacy_test]
+start = "2017-03-01"
+end = "2019-03-15"
+
+[splits.source_reconciliation]
+start = "2016-01-01"
+end = "2019-06-12"
+
+[splits.modern_holdout]
+start = "2020-01-01"
+end = "2026-09-30"
+
+[inference]
+block_bootstrap_days = 40
+bootstrap_iterations = 2000
+
+[portfolio]
+rebalance_frequency = "weekly"
+one_way_cost_bps = 10.0
+maximum_position_weight = 0.02
+
+[alpaca]
+base_url = "https://data.alpaca.markets"
+feed = "sip"
+timeframe = "1Day"
+adjustment = "raw"
+request_limit = 10000
+symbols_per_request = 100
+

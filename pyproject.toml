@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "risk-managed-momentum"
+version = "0.1.0"
+description = "Leakage-controlled equity drawdown-risk research and data pipeline"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy>=1.26,<3",
+  "pandas>=2.2,<4",
+  "requests>=2.31,<3",
+  "scikit-learn>=1.4,<2",
+  "scipy>=1.12,<2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "ruff>=0.6,<1",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
