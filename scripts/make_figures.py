@@ -225,6 +225,44 @@ def alpha_sensitivity_figure() -> None:
     finish(FIGURES / "v03_ridge_alpha_sensitivity.png")
 
 
+def fundamental_pilot_figure() -> None:
+    folds = pd.read_csv(TABLES / "v05_fundamental_walk_forward_folds.csv")
+    names = {
+        "price_only": "Price only",
+        "fundamentals_only": "Fundamentals only",
+        "combined": "Combined",
+    }
+    figure, axes = plt.subplots(1, 2, figsize=(12, 4.8))
+    for name, group in folds.groupby("model"):
+        axes[0].plot(
+            group["test_year"],
+            group["mean_monthly_rank_ic"],
+            marker="o",
+            label=names[name],
+        )
+    axes[0].axhline(0.0, color="black", linewidth=0.8)
+    axes[0].set_ylabel("Mean monthly rank IC")
+    axes[0].set_title("Small predictive lift is not stable")
+    axes[0].legend(frameon=False)
+    axes[0].grid(alpha=0.2)
+
+    for name, label in names.items():
+        frame = pd.read_csv(
+            TABLES / f"v05_fundamental_{name}_daily.csv", parse_dates=["date"]
+        )
+        axes[1].plot(
+            frame["date"],
+            (1.0 + frame["net_return"]).cumprod(),
+            label=label,
+        )
+    axes[1].set_ylabel("Growth of $1 after modeled costs")
+    axes[1].set_title("Combined pilot did not improve the portfolio")
+    axes[1].legend(frameon=False)
+    axes[1].grid(alpha=0.2)
+    figure.suptitle("v0.5 point-in-time fundamentals pilot")
+    finish(FIGURES / "v05_fundamental_pilot.png")
+
+
 def main() -> None:
     FIGURES.mkdir(parents=True, exist_ok=True)
     decile_figure()
@@ -238,6 +276,7 @@ def main() -> None:
     alpha_wealth_figure()
     alpha_walk_forward_figure()
     alpha_sensitivity_figure()
+    fundamental_pilot_figure()
     print(f"Saved figures to {FIGURES}")
 
 

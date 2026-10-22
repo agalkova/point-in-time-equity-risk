@@ -183,10 +183,21 @@ python scripts/download_sec_fundamentals.py
 python scripts/run_fundamental_pilot.py
 ```
 
+If the SEC returns HTTP 403, use the documented no-key point-in-time fallback:
+
+```bash
+python scripts/download_ptdata_fundamentals.py
+python scripts/run_fundamental_pilot.py
+```
+
 The pilot intentionally uses only about 22 issuers and begins from today's constituent list,
 so its portfolio results are diagnostic rather than investable evidence. Its frozen design and
 expansion criteria are in
 [docs/RESEARCH_SPEC_V0_5_FUNDAMENTALS.md](docs/RESEARCH_SPEC_V0_5_FUNDAMENTALS.md).
+
+The completed pilot found a small, statistically inconclusive rank-IC improvement and materially
+worse concentrated portfolio performance. The feature set was rejected rather than tuned after
+inspection. See [docs/FUNDAMENTAL_RESULTS.md](docs/FUNDAMENTAL_RESULTS.md).
 
 ## Research controls
 

@@ -11,6 +11,14 @@
 - All 28 repository tests pass; checks for the new files pass.
 - The SEC returned HTTP 403 from this execution environment for both Companyfacts and the
   official bulk archive. No issuer data was downloaded and no empirical result was claimed.
+- The project owner reproduced the SEC 403 from a normal Terminal. Before observing results,
+  added a no-key PtData fallback that preserves SEC source accessions and knowledge timestamps,
+  plus explicit third-party-provider limitations.
+- Completed 176 fallback queries and normalized 170 annual issuer-year records for 22 companies.
+- Ran 1,219 out-of-fold observations over 56 month-ends. Combined rank IC improved from 0.0025
+  to 0.0168, but the paired lift interval was [-0.0318, 0.0694] and the portfolio deteriorated.
+- Rejected this fundamental feature set without post-result tuning and documented the outcome in
+  `docs/FUNDAMENTAL_RESULTS.md`.
 - Resume instructions and pass criteria are recorded in `docs/FUNDAMENTALS_PILOT_STATUS.md`.
 
 ## 2026-10-21

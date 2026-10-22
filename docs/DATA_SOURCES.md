@@ -91,5 +91,9 @@ on the public filing date to prevent fiscal-period-end lookahead. Common US-GAAP
 are resolved in a fixed order and the chosen tag is retained in the normalized data for audit.
 
 The SEC may reject automated traffic from some networks. A 403 response should not be bypassed
-with scraping or an unofficial mirror; rerun the documented downloader from an allowed network.
+with scraping. After the same 403 occurred on the project owner's network, the frozen pilot was
+amended—before observing a model result—to permit PtData's open point-in-time API as a fallback.
+That service reports SEC Companyfacts as its upstream source and returns source accessions and
+knowledge timestamps. The project retains every raw response and labels the provider dependency;
+it does not describe the fallback as a direct SEC download.
 

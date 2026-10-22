@@ -4,14 +4,16 @@ import numpy as np
 import pandas as pd
 
 FUNDAMENTAL_FEATURES = [
-    "fundamental_roa",
-    "fundamental_gross_profitability",
-    "fundamental_operating_profitability",
-    "fundamental_cash_return_on_assets",
-    "fundamental_accruals",
-    "fundamental_leverage",
+    "fundamental_gross_margin",
+    "fundamental_operating_margin",
+    "fundamental_net_margin",
+    "fundamental_cash_conversion",
+    "fundamental_accrual_ratio",
     "fundamental_revenue_growth",
-    "fundamental_asset_growth",
+    "fundamental_gross_profit_growth",
+    "fundamental_operating_income_growth",
+    "fundamental_cash_flow_growth",
+    "fundamental_share_dilution",
 ]
 
 
@@ -19,60 +21,69 @@ def _safe_ratio(numerator: pd.Series, denominator: pd.Series) -> pd.Series:
     return numerator.div(denominator.where(denominator.abs() > 1e-12))
 
 
+def _symmetric_growth(current: pd.Series, previous: pd.Series) -> pd.Series:
+    scale = current.abs().add(previous.abs()).div(2.0)
+    return current.sub(previous).div(scale.where(scale > 1e-12))
+
+
 def build_filing_features(annual_facts: pd.DataFrame) -> pd.DataFrame:
     """Create annual fundamental signals attached to their public filing dates."""
-    required = {"ticker", "end", "filed", "assets"}
+    required = {"ticker", "filed", "fiscal_year", "revenue"}
     missing = required.difference(annual_facts.columns)
     if missing:
         raise ValueError(f"Annual facts missing required columns: {sorted(missing)}")
     frame = annual_facts.copy()
-    frame["end"] = pd.to_datetime(frame["end"]).dt.normalize()
-    frame["filed"] = pd.to_datetime(frame["filed"]).dt.normalize()
-    frame = frame.sort_values(["ticker", "end", "filed"])
+    if "end" not in frame:
+        frame["end"] = pd.NaT
+    frame["end"] = pd.to_datetime(frame["end"], utc=True).dt.tz_convert(None).dt.normalize()
+    frame["filed"] = (
+        pd.to_datetime(frame["filed"], utc=True).dt.tz_convert(None).dt.normalize()
+    )
+    frame = frame.sort_values(["ticker", "fiscal_year", "filed"])
     # Use the latest statement for each fiscal period when calculating growth. The final
     # as-of expansion below still prevents any later filing from entering an earlier date.
-    latest_period = frame.drop_duplicates(["ticker", "end"], keep="last").copy()
+    latest_period = frame.drop_duplicates(["ticker", "fiscal_year"], keep="last").copy()
     grouped = latest_period.groupby("ticker", group_keys=False)
-    prior_assets = grouped["assets"].shift(1)
-    prior_revenue = grouped["revenue"].shift(1) if "revenue" in frame else np.nan
+    prior_revenue = grouped["revenue"].shift(1)
+    prior_gross_profit = grouped["gross_profit"].shift(1)
+    prior_operating_income = grouped["operating_income"].shift(1)
+    prior_cash_flow = grouped["operating_cash_flow"].shift(1)
+    prior_shares = grouped["weighted_avg_shares_diluted"].shift(1)
 
-    latest_period["fundamental_roa"] = _safe_ratio(
-        latest_period.get("net_income", pd.Series(index=latest_period.index, dtype=float)),
-        latest_period["assets"],
+    latest_period["fundamental_gross_margin"] = _safe_ratio(
+        latest_period["gross_profit"], latest_period["revenue"]
     )
-    latest_period["fundamental_gross_profitability"] = _safe_ratio(
-        latest_period.get("gross_profit", pd.Series(index=latest_period.index, dtype=float)),
-        latest_period["assets"],
+    latest_period["fundamental_operating_margin"] = _safe_ratio(
+        latest_period["operating_income"], latest_period["revenue"]
     )
-    latest_period["fundamental_operating_profitability"] = _safe_ratio(
-        latest_period.get("operating_income", pd.Series(index=latest_period.index, dtype=float)),
-        latest_period["assets"],
+    latest_period["fundamental_net_margin"] = _safe_ratio(
+        latest_period["net_income"], latest_period["revenue"]
     )
-    latest_period["fundamental_cash_return_on_assets"] = _safe_ratio(
-        latest_period.get(
-            "operating_cash_flow", pd.Series(index=latest_period.index, dtype=float)
-        ),
-        latest_period["assets"],
+    latest_period["fundamental_cash_conversion"] = _safe_ratio(
+        latest_period["operating_cash_flow"], latest_period["net_income"].abs()
     )
-    latest_period["fundamental_accruals"] = _safe_ratio(
-        latest_period.get("net_income", pd.Series(index=latest_period.index, dtype=float))
-        - latest_period.get(
-            "operating_cash_flow", pd.Series(index=latest_period.index, dtype=float)
-        ),
-        latest_period["assets"],
-    )
-    latest_period["fundamental_leverage"] = _safe_ratio(
-        latest_period.get("liabilities", pd.Series(index=latest_period.index, dtype=float)),
-        latest_period["assets"],
+    latest_period["fundamental_accrual_ratio"] = _safe_ratio(
+        latest_period["net_income"].sub(latest_period["operating_cash_flow"]),
+        latest_period["revenue"].abs(),
     )
     latest_period["fundamental_revenue_growth"] = _safe_ratio(
-        latest_period.get("revenue", pd.Series(index=latest_period.index, dtype=float)),
-        prior_revenue,
+        latest_period["revenue"], prior_revenue
     ).sub(1.0)
-    latest_period["fundamental_asset_growth"] = _safe_ratio(
-        latest_period["assets"], prior_assets
+    latest_period["fundamental_gross_profit_growth"] = _symmetric_growth(
+        latest_period["gross_profit"], prior_gross_profit
+    )
+    latest_period["fundamental_operating_income_growth"] = _symmetric_growth(
+        latest_period["operating_income"], prior_operating_income
+    )
+    latest_period["fundamental_cash_flow_growth"] = _symmetric_growth(
+        latest_period["operating_cash_flow"], prior_cash_flow
+    )
+    latest_period["fundamental_share_dilution"] = _safe_ratio(
+        latest_period["weighted_avg_shares_diluted"], prior_shares
     ).sub(1.0)
-    return latest_period[["ticker", "end", "filed", *FUNDAMENTAL_FEATURES]].copy()
+    return latest_period[
+        ["ticker", "fiscal_year", "end", "filed", *FUNDAMENTAL_FEATURES]
+    ].copy()
 
 
 def point_in_time_fundamentals(
@@ -81,9 +92,11 @@ def point_in_time_fundamentals(
 ) -> pd.DataFrame:
     """As-of join each stock/date to the latest financial statement filed by then."""
     left = signal_frame[["date", "ticker"]].copy()
-    left["date"] = pd.to_datetime(left["date"]).dt.normalize()
+    left["date"] = pd.to_datetime(left["date"], utc=True).dt.tz_convert(None).dt.normalize()
     right = filing_features.copy()
-    right["filed"] = pd.to_datetime(right["filed"]).dt.normalize()
+    right["filed"] = (
+        pd.to_datetime(right["filed"], utc=True).dt.tz_convert(None).dt.normalize()
+    )
     pieces = []
     for ticker, signals in left.groupby("ticker", sort=False):
         facts = right[right["ticker"].eq(ticker)].drop(columns="ticker")
@@ -114,11 +127,7 @@ def add_cross_sectional_fundamental_ranks(frame: pd.DataFrame) -> tuple[pd.DataF
     output = frame.copy()
     rank_columns = []
     # Accruals, leverage, and asset growth are conventionally preferable when lower.
-    lower_is_better = {
-        "fundamental_accruals",
-        "fundamental_leverage",
-        "fundamental_asset_growth",
-    }
+    lower_is_better = {"fundamental_accrual_ratio", "fundamental_share_dilution"}
     for feature in FUNDAMENTAL_FEATURES:
         rank_name = f"rank_{feature}"
         rank = output.groupby("date")[feature].rank(method="average", pct=True)

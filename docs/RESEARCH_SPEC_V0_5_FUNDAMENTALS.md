@@ -18,29 +18,35 @@ universe.
 
 ## Source and timing rule
 
-The source is the SEC Companyfacts API. Only annual USD observations from forms 10-K and
-10-K/A are retained. A value becomes available on its `filed` date, never at its fiscal period
-end. At each month-end signal, the pipeline performs a backward as-of join to the latest filing
-known on that date. Automated tests fail if a post-signal filing enters a feature row.
+The preferred source is the SEC Companyfacts API. The SEC edge returned HTTP 403 from both the
+execution environment and the project owner's network before any observation was retrieved.
+Before observing model results, v0.5.1 therefore added a fallback to PtData's no-key point-in-time
+endpoint. PtData reports SEC EDGAR XBRL Companyfacts as its upstream source and returns a source
+accession plus `knowledge_from` timestamp for every metric. Raw responses are retained for audit.
 
-Annual comparative facts repeated in later filings are excluded by requiring the financial
-period end to be no more than 150 days before the filing date. Flow facts must span 250–450
-days. XBRL tag aliases are ordered and deterministic.
+This third-party normalization dependency is a material limitation and is identified in every
+manifest and result. It is preferable to pretending that a conservatively lagged, currently
+restated statement is true point-in-time data.
+
+A value becomes available on its returned knowledge date, never at its fiscal-year label. At
+each month-end signal, the pipeline performs a backward as-of join to the latest statement known
+on that date. Automated tests fail if a post-signal statement enters a feature row.
+
+The fallback retrieves annual fiscal years 2018–2025. When component metrics carry different
+knowledge dates, the entire feature row is delayed until the latest component date, a conservative
+rule ensuring that every value was public.
 
 ## Signals
 
-- Return on assets
-- Gross profit divided by assets
-- Operating income divided by assets
-- Operating cash flow divided by assets
-- Accruals: net income minus operating cash flow, divided by assets
-- Liabilities divided by assets
+- Gross, operating, and net margins
+- Operating cash flow divided by absolute net income
+- Accrual ratio: net income minus operating cash flow, divided by revenue
 - Annual revenue growth
-- Annual asset growth
+- Symmetric annual growth in gross profit, operating income, and operating cash flow
+- Diluted-share growth
 
-Each signal is converted to a same-date cross-sectional percentile rank. Lower accruals,
-leverage, and asset growth receive better ranks. A row needs at least four available raw
-fundamental features.
+Each signal is converted to a same-date cross-sectional percentile rank. Lower accruals and share
+dilution receive better ranks. A row needs at least four available raw fundamental features.
 
 ## Models and comparison
 

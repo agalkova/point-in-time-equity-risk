@@ -131,6 +131,15 @@ def main() -> None:
     oof = pd.concat(outputs, ignore_index=True).sort_values(["date", "ticker"])
 
     pooled = {name: score_summary(oof, f"score_{name}", config) for name in feature_sets}
+    price_ic = monthly_rank_ic(oof, "score_price_only")
+    combined_ic = monthly_rank_ic(oof, "score_combined")
+    paired_ic_delta = combined_ic.sub(price_ic).dropna()
+    delta_lower, delta_upper = moving_block_interval(
+        paired_ic_delta,
+        block_length=int(config["inference"]["block_length_months"]),
+        iterations=int(config["inference"]["bootstrap_iterations"]),
+        random_seed=int(config["project"]["random_seed"]),
+    )
     factor_path = PROJECT_ROOT / "data/raw/fama_french/daily_six_factors.csv.gz"
     factors = load_french_factors(str(factor_path)) if factor_path.exists() else None
     portfolios = {}
@@ -164,6 +173,14 @@ def main() -> None:
         "test_years": sorted(oof["date"].dt.year.unique().astype(int).tolist()),
         "fundamental_feature_coverage": coverage,
         "pooled_predictive_results": pooled,
+        "combined_minus_price_rank_ic": {
+            "mean_monthly_delta": float(paired_ic_delta.mean()),
+            "block_interval": [delta_lower, delta_upper],
+            "positive_years": int(
+                paired_ic_delta.groupby(paired_ic_delta.index.year).mean().gt(0.0).sum()
+            ),
+            "years": int(paired_ic_delta.index.year.nunique()),
+        },
         "portfolio_results": portfolios,
     }
     TABLES.mkdir(parents=True, exist_ok=True)
