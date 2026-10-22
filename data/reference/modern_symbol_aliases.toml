@@ -19,10 +19,27 @@ note = "Willis Towers Watson ticker change."
 
 [[alias]]
 membership_ticker = "SKYD"
-provider_ticker = "SWKS"
+provider_ticker = "CBS"
 start = "2019-06-01"
+end = "2019-12-03"
+download_asof = "2019-06-03"
+note = "First leg of the CBS/Viacom/Paramount/Skydance security chain."
+
+[[alias]]
+membership_ticker = "SKYD"
+provider_ticker = "VIAC"
+start = "2019-12-04"
+end = "2022-02-15"
+download_asof = "2020-01-02"
+note = "Second leg of the CBS/Viacom/Paramount/Skydance security chain."
+
+[[alias]]
+membership_ticker = "SKYD"
+provider_ticker = "PARA"
+start = "2022-02-16"
 end = "2025-08-06"
-note = "Skyworks ticker change; membership source uses the current symbol historically."
+download_asof = "2023-01-03"
+note = "Third leg of the CBS/Viacom/Paramount/Skydance security chain."
 
 [[alias]]
 membership_ticker = "BBWI"
