@@ -74,6 +74,7 @@ def build_research_dataset(
     volume_z20 = log_volume.sub(log_volume_mean20).div(log_volume_std20)
     volume_mean20 = volume.rolling(20, min_periods=15).mean()
     volume_mean60 = volume.rolling(60, min_periods=40).mean()
+    dollar_volume_mean20 = price.mul(volume).rolling(20, min_periods=15).mean()
 
     stock_features = {
         "ret_5": ret5,
@@ -90,9 +91,7 @@ def build_research_dataset(
         "volume_trend_20_60": volume_mean20.div(volume_mean60).sub(1.0),
         "beta_60": beta60,
         "idiosyncratic_volatility_60": idio_vol60,
-        "log_dollar_volume_20": np.log(
-            price.mul(volume).rolling(20, min_periods=15).mean()
-        ),
+        "log_dollar_volume_20": np.log(dollar_volume_mean20.where(dollar_volume_mean20 > 0.0)),
     }
     ranked_features = {
         f"rank_{name}": _rank(value.where(membership)) for name, value in stock_features.items()

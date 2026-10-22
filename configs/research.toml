@@ -4,8 +4,8 @@ specification_version = "0.1.0"
 random_seed = 42
 
 [legacy_source]
-price_path = "/Users/ageefox/Detecting Bubbles Project/DF_SP500_new1"
-volume_path = "/Users/ageefox/Detecting Bubbles Project/DF_SP500_Volume"
+price_path = "data/external/legacy/DF_SP500_new1"
+volume_path = "data/external/legacy/DF_SP500_Volume"
 
 [eligibility]
 runup_lookback_days = 60
@@ -42,6 +42,7 @@ bars_path = "data/raw/alpaca/bars_2019-06-01_2026-09-30_all.csv.gz"
 historical_alias_bars_path = "data/raw/alpaca/bars_historical_aliases_all.csv.gz"
 membership_path = "data/interim/membership/sp500_daily_membership.csv.gz"
 aliases_path = "data/reference/modern_symbol_aliases.toml"
+benchmark_path = "data/raw/alpaca/benchmark_spy_2019-06-01_2026-09-30_all.csv.gz"
 
 [inference]
 block_bootstrap_days = 40

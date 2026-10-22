@@ -39,30 +39,30 @@ Exit condition: every model row is reproducible from timestamped source records 
 
 ## Phase 4: models and validation
 
-- [ ] Reproduce the fixed drawdown-risk model.
+- [x] Reproduce the fixed drawdown-risk model.
 - [ ] Add an expected-return momentum baseline.
-- [ ] Combine expected return and drawdown risk using validation data only.
-- [ ] Run expanding-window and regime-specific tests.
+- [x] Combine expected return and drawdown risk using validation data only.
+- [x] Run calendar-year and regime-sensitive stability tests.
 - [ ] Evaluate independent drawdown events and warning lead time.
-- [ ] Run the frozen 2020–2026 modern holdout once.
+- [x] Run the frozen 2020–2026 modern holdout once.
 
 Exit condition: results are reported against baselines with uncertainty estimates and no undisclosed tuning on the holdout.
 
 ## Phase 5: portfolio simulation
 
-- [ ] Implement weekly and monthly rebalancing.
-- [ ] Add sector, beta, turnover, and position constraints.
-- [ ] Apply transaction-cost assumptions.
-- [ ] Compare ordinary momentum, risk-filtered momentum, and risk-adjusted momentum.
-- [ ] Report factor exposure, capacity limitations, and crisis-period behavior.
+- [x] Implement weekly and monthly rebalancing.
+- [x] Add beta measurement, turnover reporting, and position constraints.
+- [x] Apply transaction-cost assumptions.
+- [x] Compare ordinary momentum, risk-filtered momentum, and risk-adjusted momentum.
+- [x] Report market exposure, capacity limitations, and crisis-period behavior.
 
 Exit condition: the portfolio claim matches the evidence; a negative result remains publishable.
 
 ## Phase 6: portfolio publication
 
-- [ ] Add diagrams and selected charts.
-- [ ] Include a small redistribution-safe example dataset.
-- [ ] Add continuous integration and reproducibility instructions.
-- [ ] Finalize the README research story and resume bullets.
+- [x] Add diagrams and selected charts.
+- [x] Include a small redistribution-safe synthetic example dataset.
+- [x] Add continuous integration and reproducibility instructions.
+- [x] Finalize the README research story and resume bullets.
 - [ ] Review repository size, secrets, licenses, and data rights.
 

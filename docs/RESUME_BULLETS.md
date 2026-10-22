@@ -1,0 +1,21 @@
+# Resume bullets
+
+Use one or two of these, adjusted to the space available:
+
+- Built a point-in-time S&P 500 research pipeline over 1.1M Alpaca SIP daily bars, including
+  historical membership reconstruction, corporate-action/ticker lineage, data contracts,
+  and leakage tests across 640 securities.
+- Developed and out-of-time tested a cross-sectional equity drawdown-risk model on 91K
+  modern observations; achieved 0.671 ROC AUC, 1.73× average-precision lift, and a 18.8
+  percentage-point event-rate spread between highest- and lowest-risk deciles.
+- Designed a transaction-cost-aware momentum portfolio experiment with weekly/monthly
+  rebalancing, 2% position caps, validation-only hyperparameter selection, and explicit
+  negative-result reporting against SPY and factor baselines.
+
+Interview summary:
+
+> I inherited a notebook that used hindsight-defined bubble labels. I reframed it as a
+> forward drawdown-risk problem, rebuilt the data pipeline around point-in-time membership,
+> froze the experiment before opening the modern holdout, and found a real risk-ranking
+> signal—but not a standalone alpha strategy. The most valuable part is the research design
+> and data engineering, including catching ticker reuse before it contaminated the test.

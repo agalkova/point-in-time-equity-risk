@@ -21,6 +21,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--adjustment", choices=["raw", "split", "dividend", "spin-off", "all"], default="raw")
     parser.add_argument("--asof")
     parser.add_argument("--batch-size", type=int, default=100)
+    parser.add_argument("--output-stem")
     return parser.parse_args()
 
 
@@ -47,7 +48,9 @@ def main() -> None:
         batch_size=args.batch_size,
     )
 
-    stem = f"bars_{args.start}_{args.end}_{args.adjustment}"
+    stem = args.output_stem or f"bars_{args.start}_{args.end}_{args.adjustment}"
+    if Path(stem).name != stem:
+        raise ValueError("Output stem must be a filename stem, not a path")
     output_dir = PROJECT_ROOT / "data" / "raw" / "alpaca"
     output_dir.mkdir(parents=True, exist_ok=True)
     data_path = output_dir / f"{stem}.csv.gz"

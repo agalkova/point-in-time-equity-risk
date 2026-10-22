@@ -9,6 +9,7 @@ description = "Leakage-controlled equity drawdown-risk research and data pipelin
 requires-python = ">=3.11"
 dependencies = [
   "lxml>=5,<7",
+  "matplotlib>=3.9,<4",
   "numpy>=1.26,<3",
   "pandas>=2.2,<4",
   "python-dotenv>=1.0,<2",

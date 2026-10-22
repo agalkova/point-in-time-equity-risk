@@ -51,3 +51,19 @@ The pilot supports using Alpaca SIP for the expanded pipeline. It does not estab
 the legacy universe was point-in-time or free of survivorship bias; modern universe design
 remains a separate research decision.
 
+## Point-in-time membership
+
+The modern universe is reconstructed from the public current-constituent and historical
+component-change tables:
+
+- https://en.wikipedia.org/wiki/List_of_S%26P_500_companies
+- https://en.wikipedia.org/wiki/Historical_components_of_the_S%26P_500
+
+The code starts from the current snapshot and reverses every effective change back through
+the research period. It records the retrieval time and source URLs in a local manifest.
+Corporate successor chains that are absent from the membership-change table are encoded as
+dated, reviewable mappings in `data/reference/modern_symbol_aliases.toml`.
+
+This free source is adequate for a portfolio project, but it is not equivalent to a licensed
+institutional security master. Historical sector neutrality is therefore not claimed.
+
