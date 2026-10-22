@@ -57,6 +57,18 @@ portfolio mapping was inspected after the primary result. It is therefore frozen
 See [docs/ALPHA_RESULTS.md](docs/ALPHA_RESULTS.md) and the prospective rules in
 [docs/PROSPECTIVE_SPEC_V0_4.md](docs/PROSPECTIVE_SPEC_V0_4.md).
 
+### Portfolio engineering and prospective record
+
+A frozen constrained-optimization experiment did not improve the ridge candidate: annual return
+fell from 21.34% to 13.97%, Sharpe fell from 1.19 to 0.81, and maximum drawdown worsened. The
+optimizer was rejected without post-result tuning. See
+[docs/PORTFOLIO_ENGINEERING_RESULTS.md](docs/PORTFOLIO_ENGINEERING_RESULTS.md).
+
+The original equal-weight ridge top-50 rule therefore remains the sole prospective candidate.
+Immutable signal snapshots, content hashes, turnover, cost, and training cutoffs are managed by
+`generate_prospective_alpha_candidate.py`; operating rules are in
+[docs/PROSPECTIVE_OPERATIONS.md](docs/PROSPECTIVE_OPERATIONS.md).
+
 ## Research design
 
 ```mermaid
@@ -168,6 +180,7 @@ python scripts/run_exposure_matched_portfolio.py
 python scripts/download_fama_french_factors.py
 python scripts/run_alpha_research.py
 python scripts/run_alpha_sensitivity.py
+python scripts/run_optimized_alpha_portfolio.py
 python scripts/generate_prospective_alpha_candidate.py
 python scripts/make_figures.py
 ```

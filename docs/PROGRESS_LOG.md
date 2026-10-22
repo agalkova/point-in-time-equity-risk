@@ -19,6 +19,15 @@
   to 0.0168, but the paired lift interval was [-0.0318, 0.0694] and the portfolio deteriorated.
 - Rejected this fundamental feature set without post-result tuning and documented the outcome in
   `docs/FUNDAMENTAL_RESULTS.md`.
+- Froze and ran a constrained portfolio optimizer around the unchanged ridge scores. It failed all
+  four pass conditions: return fell to 13.97%, Sharpe to 0.81, drawdown worsened to -21.49%, and
+  estimated factor alpha fell to -0.23%.
+- Preserved equal-weight ridge top-50 as the sole prospective candidate rather than tuning the
+  failed optimizer.
+- Added immutable prospective signal snapshots, SHA-256 content hashes, a unique-date ledger,
+  turnover/cost records, and tests preventing silent replacement of prior evidence.
+- Confirmed the latest 2026-09-30 signal remains pre-freeze shadow output; the prospective ledger
+  correctly contains no eligible observation yet.
 - Resume instructions and pass criteria are recorded in `docs/FUNDAMENTALS_PILOT_STATUS.md`.
 
 ## 2026-10-21

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import tomllib
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -10,6 +11,11 @@ from risk_managed_momentum.config import load_config
 from risk_managed_momentum.data.panel import build_point_in_time_panel
 from risk_managed_momentum.features.alpha import build_alpha_dataset
 from risk_managed_momentum.models.alpha import alpha_model_factories
+from risk_managed_momentum.prospective import (
+    append_ledger_entry,
+    write_immutable_frame,
+    write_immutable_json,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 FREEZE_DATE = pd.Timestamp("2026-10-22")
@@ -60,7 +66,8 @@ def main() -> None:
         method="average", pct=True
     )
     top_n = int(alpha_config["portfolio"]["top_n"])
-    selected = signal.nlargest(top_n, "alpha_rank").copy()
+    ranked = signal.sort_values(["alpha_rank", "ticker"], ascending=[False, True]).copy()
+    selected = ranked.head(top_n).copy()
     selected["target_weight"] = 1.0 / top_n
     selected = selected[
         [
@@ -92,6 +99,66 @@ def main() -> None:
     (output_dir / "v04_latest_candidate_manifest.json").write_text(
         json.dumps(manifest, indent=2) + "\n"
     )
+
+    if signal_date > FREEZE_DATE:
+        evidence_dir = PROJECT_ROOT / "reports" / "prospective" / "signals" / str(
+            signal_date.date()
+        )
+        ranked_output = ranked[
+            [
+                "date",
+                "ticker",
+                "predicted_residual_return",
+                "alpha_rank",
+                "risk_composite",
+            ]
+        ]
+        ranked_digest = write_immutable_frame(
+            evidence_dir / "ranked_universe.csv", ranked_output
+        )
+        holdings_digest = write_immutable_frame(evidence_dir / "holdings.csv", selected)
+        prior_files = sorted(
+            (PROJECT_ROOT / "reports" / "prospective" / "signals").glob(
+                "*/holdings.csv"
+            )
+        )
+        prior_files = [path for path in prior_files if path.parent != evidence_dir]
+        if prior_files:
+            prior = pd.read_csv(prior_files[-1]).set_index("ticker")["target_weight"]
+            current = selected.set_index("ticker")["target_weight"]
+            turnover = float(
+                current.sub(prior, fill_value=0.0).abs().sum()
+            )
+        else:
+            turnover = 1.0
+        modeled_cost = turnover * float(alpha_config["portfolio"]["one_way_cost_bps"]) / 10_000.0
+        evidence_manifest = {
+            **manifest,
+            "generated_at_utc": datetime.now(UTC).isoformat(),
+            "ranked_universe_sha256": ranked_digest,
+            "holdings_sha256": holdings_digest,
+            "one_way_turnover": turnover,
+            "modeled_transaction_cost": modeled_cost,
+            "realized_status": "pending",
+        }
+        manifest_digest = write_immutable_json(
+            evidence_dir / "manifest.json", evidence_manifest
+        )
+        append_ledger_entry(
+            PROJECT_ROOT / "reports" / "prospective" / "ledger.csv",
+            {
+                "signal_date": str(signal_date.date()),
+                "training_last_signal_date": str(train["date"].max().date()),
+                "market_data_last_date": str(price.index.max().date()),
+                "holdings": len(selected),
+                "one_way_turnover": turnover,
+                "modeled_transaction_cost": modeled_cost,
+                "ranked_universe_sha256": ranked_digest,
+                "holdings_sha256": holdings_digest,
+                "manifest_sha256": manifest_digest,
+                "realized_status": "pending",
+            },
+        )
     print(json.dumps(manifest, indent=2))
 
 

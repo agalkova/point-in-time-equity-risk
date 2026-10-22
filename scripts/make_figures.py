@@ -263,6 +263,26 @@ def fundamental_pilot_figure() -> None:
     finish(FIGURES / "v05_fundamental_pilot.png")
 
 
+def optimized_portfolio_figure() -> None:
+    files = {
+        "Ridge top 50": "v03_ridge_long_only_post_spec_daily.csv",
+        "Constrained optimizer": "v06_optimized_ridge_daily.csv",
+    }
+    plt.figure(figsize=(9.4, 5.0))
+    for label, filename in files.items():
+        frame = pd.read_csv(TABLES / filename, parse_dates=["date"])
+        plt.plot(
+            frame["date"],
+            (1.0 + frame["net_return"]).cumprod(),
+            label=label,
+        )
+    plt.ylabel("Growth of $1 after modeled costs")
+    plt.title("Portfolio engineering did not improve the ridge candidate")
+    plt.legend(frameon=False)
+    plt.grid(alpha=0.2)
+    finish(FIGURES / "v06_portfolio_engineering.png")
+
+
 def main() -> None:
     FIGURES.mkdir(parents=True, exist_ok=True)
     decile_figure()
@@ -277,6 +297,7 @@ def main() -> None:
     alpha_walk_forward_figure()
     alpha_sensitivity_figure()
     fundamental_pilot_figure()
+    optimized_portfolio_figure()
     print(f"Saved figures to {FIGURES}")
 
 
