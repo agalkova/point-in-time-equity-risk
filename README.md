@@ -51,6 +51,12 @@ framing, full horizon results, drivers, limitations, and reproduction instructio
 
 ![Exuberance episode hazard model](docs/figures/v09_exuberance_hazard.png)
 
+A frozen follow-up tested walk-forward intercept recalibration and a high-risk episode exclusion
+portfolio. Recalibration overshot changing regimes and worsened Brier score in all three
+universes. The overlay reduced volatility and maximum drawdown everywhere, but also reduced
+return and Sharpe everywhere. Both extensions were rejected under their precommitted rules.
+See [docs/CALIBRATED_OVERLAY_RESULTS.md](docs/CALIBRATED_OVERLAY_RESULTS.md).
+
 ### Independent mid-cap replication
 
 The strongest transfer test applies the unchanged model to a point-in-time S&P 400 MidCap panel
@@ -232,6 +238,7 @@ python scripts/run_alpha_sensitivity.py
 python scripts/run_optimized_alpha_portfolio.py
 python scripts/generate_prospective_alpha_candidate.py
 python scripts/run_exuberance_hazard.py
+python scripts/run_calibrated_overlay.py
 python scripts/make_figures.py
 ```
 

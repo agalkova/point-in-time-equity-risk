@@ -62,7 +62,15 @@ def make_figure(
     for universe, frame in portfolio_series.items():
         baseline = (1.0 + frame["baseline_net_return"]).cumprod()
         overlay = (1.0 + frame["overlay_net_return"]).cumprod()
-        axes[1].plot(baseline.index, baseline, color=colors[universe], alpha=0.45, linewidth=1.5)
+        axes[1].plot(
+            baseline.index,
+            baseline,
+            color=colors[universe],
+            alpha=0.5,
+            linestyle="--",
+            linewidth=1.5,
+            label=f"{universe} baseline",
+        )
         axes[1].plot(
             overlay.index,
             overlay,
@@ -72,7 +80,7 @@ def make_figure(
         )
     axes[1].set_title("Net wealth of episode cohorts")
     axes[1].set_ylabel("Growth of $1")
-    axes[1].legend(frameon=False)
+    axes[1].legend(frameon=False, ncol=2, fontsize=8)
     figure.suptitle("Walk-forward calibration and frozen risk overlay", fontsize=14, fontweight="bold")
     figure.tight_layout()
     FIGURES.mkdir(parents=True, exist_ok=True)

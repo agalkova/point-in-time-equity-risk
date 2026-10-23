@@ -20,6 +20,9 @@ Use one or two of these, adjusted to the space available:
 - Reframed hindsight-labeled bubble detection as a two-stage exuberance-to-drawdown hazard
   model; evaluated 8,464 distinct episode onsets across three point-in-time universe runs,
   producing 1.45×–1.57× 40-day precision lift and 2.45×–3.50× top/bottom-quintile risk ratios.
+- Pre-specified and rejected two plausible follow-ups: annual probability recalibration worsened
+  Brier score, while a cost-aware high-risk exclusion reduced drawdown but also reduced Sharpe
+  across all three universes—demonstrating disciplined negative-result reporting.
 - Built a separate 22-feature expected-return research layer with 33K walk-forward
   security-month predictions, cost-aware long-only/long-short simulation, six-factor HAC
   attribution, and an explicitly frozen prospective candidate after rejecting the primary

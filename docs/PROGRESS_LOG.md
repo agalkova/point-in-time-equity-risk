@@ -154,3 +154,22 @@ Current interpretation:
 - It does not identify fundamental bubbles or establish alpha.
 - Absolute live probabilities require a new, frozen walk-forward recalibration rule; current probability levels should not be taken literally.
 
+## 2026-10-23 — calibration and economic-utility follow-up
+
+Completed:
+
+- Froze v1.0 before execution with an annual, prior-outcome-only intercept adjustment and a legacy-threshold episode exclusion overlay.
+- Added explicit outcome-maturity cutoffs so no calibration year can use unresolved or future episode outcomes.
+- Confirmed that recalibration left every within-year ROC AUC unchanged, as required by the fixed-slope design.
+- Rejected recalibration after Brier score worsened in all three universes; log loss improved only in the Nasdaq-100 and S&P 400.
+- Applied a fixed legacy 80th-percentile risk cutoff to 40-day post-signal episode cohorts with next-day entry and 10-basis-point one-way costs.
+- Found lower volatility and maximum drawdown in all three overlay portfolios, but lower annual return and Sharpe in all three.
+- Rejected the portfolio overlay without changing the threshold after inspection.
+- Expanded the automated suite to 43 passing tests and documented the negative results as part of the final research narrative.
+
+Final v1.0 interpretation:
+
+- The score remains useful for relative fragility ranking.
+- Neither the tested calibration rule nor the tested trading overlay met its frozen success criterion.
+- Further historical tuning would add overfitting risk faster than portfolio value; future work should emphasize prospective evidence.
+
