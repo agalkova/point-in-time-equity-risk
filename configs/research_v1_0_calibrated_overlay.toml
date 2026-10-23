@@ -1,0 +1,21 @@
+[project]
+specification_version = "1.0.0-walk-forward-calibration-and-overlay"
+parent_specification = "0.9.0-exuberance-episode-hazard"
+random_seed = 42
+claim_status = "exploratory; ranking model and evaluation periods are already known"
+
+[recalibration]
+method = "fixed-slope-logit-intercept"
+first_evaluation_year = 2021
+last_evaluation_year = 2026
+outcome_maturity_buffer_calendar_days = 92
+minimum_prior_episodes = 100
+
+[portfolio]
+signal_horizon_days = 40
+holding_period_trading_days = 40
+entry_delay_trading_days = 1
+legacy_high_risk_quantile = 0.80
+one_way_cost_bps = 10.0
+annualization_days = 252
+
