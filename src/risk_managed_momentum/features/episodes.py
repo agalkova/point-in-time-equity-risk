@@ -51,6 +51,8 @@ def build_exuberance_episode_dataset(
     base_config: dict[str, Any],
     hazard_config: dict[str, Any],
     membership: pd.DataFrame | None = None,
+    *,
+    include_unlabeled: bool = False,
 ) -> EpisodeDataset:
     """Build one row per exuberance onset with a complete forward outcome window."""
     price = price.sort_index().astype(float)
@@ -84,7 +86,11 @@ def build_exuberance_episode_dataset(
         "drawdown_threshold": float(outcome["drawdown_threshold"]),
     }
     advanced = build_advanced_research_dataset(
-        price, volume, feature_config, membership=member
+        price,
+        volume,
+        feature_config,
+        membership=member,
+        include_unlabeled=include_unlabeled,
     )
 
     onset_pairs = (
@@ -108,6 +114,10 @@ def build_exuberance_episode_dataset(
     first_breach = frame["first_breach_days"]
     for horizon in hazard_config["outcome"]["horizon_end_days"]:
         frame[f"target_{int(horizon)}"] = first_breach.le(int(horizon)).astype(int)
+        if include_unlabeled:
+            frame[f"target_{int(horizon)}"] = frame[f"target_{int(horizon)}"].mask(
+                frame["future_min_return_60"].isna(), pd.NA
+            ).astype("Int64")
     frame["episode_id"] = (
         frame["ticker"].astype(str) + "_" + frame["date"].dt.strftime("%Y%m%d")
     )

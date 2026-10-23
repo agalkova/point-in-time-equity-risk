@@ -31,6 +31,8 @@ def build_research_dataset(
     volume: pd.DataFrame,
     config: dict[str, Any],
     membership: pd.DataFrame | None = None,
+    *,
+    include_unlabeled: bool = False,
 ) -> ResearchDataset:
     """Build the frozen v0.1 cross-sectional research table."""
     price = price.sort_index().astype(float)
@@ -129,14 +131,17 @@ def build_research_dataset(
     dataset["future_min_return"] = _flatten(forward_return, full_index)
     dataset["drawdown_severity"] = (-dataset["future_min_return"]).clip(lower=0.0)
     dataset["target"] = dataset["future_min_return"].le(threshold).astype(int)
+    if include_unlabeled:
+        dataset["target"] = dataset["target"].mask(
+            dataset["future_min_return"].isna(), pd.NA
+        ).astype("Int64")
     dataset["next_day_return"] = _flatten(next_day_return, full_index)
     dataset["feature_coverage"] = dataset[feature_columns].notna().sum(axis=1)
     dataset = dataset.reset_index()
-    dataset = dataset[
-        dataset["eligible"]
-        & dataset["future_min_return"].notna()
-        & dataset["feature_coverage"].ge(len(feature_columns) - 2)
-    ].copy()
+    keep = dataset["eligible"] & dataset["feature_coverage"].ge(len(feature_columns) - 2)
+    if not include_unlabeled:
+        keep &= dataset["future_min_return"].notna()
+    dataset = dataset[keep].copy()
     return ResearchDataset(frame=dataset, feature_columns=feature_columns)
 
 

@@ -1,0 +1,16 @@
+[pipeline]
+version = "1.0.0"
+model_specification = "0.9.0-exuberance-episode-hazard"
+recent_monitoring_calendar_days = 180
+
+[quality_gates]
+minimum_history_trading_days = 180
+minimum_latest_membership_coverage = 0.95
+maximum_market_data_staleness_calendar_days = 4
+minimum_recent_episodes = 25
+
+[drift]
+bins = 10
+warning_psi = 0.10
+failure_psi = 0.25
+

@@ -22,6 +22,8 @@ def build_advanced_research_dataset(
     volume: pd.DataFrame,
     config: dict[str, Any],
     membership: pd.DataFrame | None = None,
+    *,
+    include_unlabeled: bool = False,
 ) -> ResearchDataset:
     """Extend the v0.1 table with fixed nonlinear-model candidate features."""
     price = price.sort_index().astype(float)
@@ -58,7 +60,13 @@ def build_advanced_research_dataset(
         "rank_amihud_illiquidity_60": _rank(amihud60, member),
     }
 
-    base = build_research_dataset(price, volume, config, membership=member)
+    base = build_research_dataset(
+        price,
+        volume,
+        config,
+        membership=member,
+        include_unlabeled=include_unlabeled,
+    )
     frame = base.frame.copy()
     for name, values in advanced.items():
         long = _flatten(values).rename(columns={"value": name})
