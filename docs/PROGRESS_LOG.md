@@ -40,6 +40,12 @@
 - Marked the seven-year pass decision not evaluable rather than counting unavailable years as
   failures. All three measurable frozen thresholds passed, and all 33 repository tests pass.
 - Results and limitations are recorded in `docs/NDX_REPLICATION_STATUS.md`.
+- Repaired the incomplete NDX membership source with a checksum-pinned public reconstruction;
+  its 39-date overlap with PtData averaged 0.977 Jaccard similarity.
+- Expanded the NDX evaluation to the planned 2020–2026 period: 21,883 observations, 0.653 ROC
+  AUC, 1.49x average-precision lift, 0.219 mean daily rank IC, and a 3.54x top/bottom risk ratio.
+- The unchanged model passed all four frozen full-universe criteria, including positive annual
+  rank IC in all seven years. Recorded the 81.5% S&P overlap and mixed non-S&P diagnostic.
 
 ## 2026-10-21
 

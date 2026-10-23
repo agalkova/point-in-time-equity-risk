@@ -70,7 +70,9 @@ def main() -> None:
 
     bars = pd.read_csv(PROJECT_ROOT / config["data"]["bars_path"])
     membership_long = pd.read_csv(PROJECT_ROOT / config["data"]["membership_path"])
-    price, volume, membership = build_point_in_time_panel(bars, membership_long, aliases=[])
+    with (PROJECT_ROOT / "data/reference/ndx_symbol_aliases.toml").open("rb") as handle:
+        aliases = tomllib.load(handle)["alias"]
+    price, volume, membership = build_point_in_time_panel(bars, membership_long, aliases=aliases)
     coverage = coverage_summary(price, membership)
     ndx_dataset = build_research_dataset(price, volume, base_config, membership=membership)
     if ndx_dataset.feature_columns != legacy_dataset.feature_columns:

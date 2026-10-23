@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 
@@ -7,6 +8,34 @@ import pandas as pd
 import requests
 
 PTDATA_CONSTITUENTS_URL = "https://api.ptdata.io/v1/index-constituents"
+
+
+def verify_sha256(path: Path, expected: str) -> None:
+    observed = hashlib.sha256(path.read_bytes()).hexdigest()
+    if observed != expected:
+        raise ValueError(f"SHA-256 mismatch for {path.name}: {observed} != {expected}")
+
+
+def normalize_sparse_component_history(frame: pd.DataFrame) -> pd.DataFrame:
+    """Convert dated full-roster rows into one row per effective-date/ticker pair."""
+    required = {"date", "tickers"}
+    missing = required.difference(frame.columns)
+    if missing:
+        raise ValueError(f"Component history is missing columns: {sorted(missing)}")
+    rows = []
+    for record in frame.itertuples(index=False):
+        effective_date = pd.Timestamp(record.date).normalize()
+        tickers = sorted({item.strip().upper() for item in str(record.tickers).split(",") if item.strip()})
+        if not 90 <= len(tickers) <= 110:
+            raise ValueError(
+                f"Implausible Nasdaq-100 roster size {len(tickers)} on {effective_date.date()}"
+            )
+        rows.extend(
+            {"snapshot_date": effective_date, "ticker": ticker}
+            for ticker in tickers
+        )
+    result = pd.DataFrame(rows).drop_duplicates(["snapshot_date", "ticker"])
+    return result.sort_values(["snapshot_date", "ticker"]).reset_index(drop=True)
 
 
 def month_end_snapshot_dates(start: str, end: str) -> pd.DatetimeIndex:

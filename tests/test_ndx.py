@@ -2,7 +2,11 @@ import unittest
 
 import pandas as pd
 
-from risk_managed_momentum.data.ndx import expand_monthly_membership, month_end_snapshot_dates
+from risk_managed_momentum.data.ndx import (
+    expand_monthly_membership,
+    month_end_snapshot_dates,
+    normalize_sparse_component_history,
+)
 
 
 class NdxMembershipTests(unittest.TestCase):
@@ -34,6 +38,20 @@ class NdxMembershipTests(unittest.TestCase):
             set(result.loc[result["date"].eq(pd.Timestamp("2024-03-01")), "ticker"]),
             {"C"},
         )
+
+    def test_sparse_full_rosters_are_normalized(self) -> None:
+        tickers = ",".join(f"T{number:03d}" for number in range(100))
+        result = normalize_sparse_component_history(
+            pd.DataFrame({"date": ["2024-01-02"], "tickers": [tickers]})
+        )
+        self.assertEqual(len(result), 100)
+        self.assertEqual(result["snapshot_date"].iloc[0], pd.Timestamp("2024-01-02"))
+
+    def test_sparse_roster_rejects_implausible_size(self) -> None:
+        with self.assertRaises(ValueError):
+            normalize_sparse_component_history(
+                pd.DataFrame({"date": ["2024-01-02"], "tickers": ["A,B"]})
+            )
 
 
 if __name__ == "__main__":

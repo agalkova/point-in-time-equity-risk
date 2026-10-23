@@ -3,6 +3,13 @@
 # ticker reuse or incomplete rename mapping in the current-symbol response.
 
 [[alias]]
+membership_ticker = "FB"
+provider_ticker = "META"
+start = "2019-06-01"
+end = "2022-06-08"
+note = "Facebook renamed Meta Platforms; Alpaca's META series includes the pre-rename history."
+
+[[alias]]
 membership_ticker = "STI"
 provider_ticker = "STI"
 start = "2019-06-01"

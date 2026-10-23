@@ -59,14 +59,16 @@ See [docs/ALPHA_RESULTS.md](docs/ALPHA_RESULTS.md) and the prospective rules in
 
 ### Nasdaq-100 transfer test
 
-An untouched cross-universe test applied the legacy-selected drawdown-risk model to a
-point-in-time Nasdaq-100 panel. Over the free provider's usable July 2023–September 2026
-membership history, the model achieved **0.663 ROC AUC**, **1.57× average-precision lift**, and a
-**4.29×** highest- versus lowest-risk-decile event ratio. Mean daily rank IC was **0.226** with a
-40-day block interval of **[0.147, 0.287]**. All observed years were positive.
+An unchanged-model cross-universe test applied the legacy-selected drawdown-risk model to a
+point-in-time Nasdaq-100 panel from 2020 through 2026. It achieved **0.653 ROC AUC**, **1.49×
+average-precision lift**, and a **3.54×** highest- versus lowest-risk-decile event ratio. Mean
+daily rank IC was **0.219** with a 40-day block interval of **[0.162, 0.271]**, and annual rank IC
+was positive in all seven years. The result passed every pre-specified full-universe threshold.
 
-This is encouraging transfer evidence, not a completed seven-year confirmation: the provider
-returned empty membership histories before July 2023, and average NDX/S&P 500 overlap was 85%.
+This is supportive transfer evidence, not a fully independent-security confirmation: average
+NDX/S&P 500 overlap was 81.5%, and the non-S&P subset diagnostic was mixed. The free constituent
+history is a pinned community reconstruction validated against 39 independently retrieved PtData
+snapshots; it is not licensed official index history.
 See [docs/NDX_REPLICATION_STATUS.md](docs/NDX_REPLICATION_STATUS.md).
 
 ![Nasdaq-100 transfer-test annual stability and risk separation](docs/figures/v07_ndx_transfer.png)

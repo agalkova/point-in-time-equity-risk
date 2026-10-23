@@ -310,7 +310,7 @@ def ndx_transfer_figure() -> None:
     axes[1].set_ylabel("40-day drawdown event rate (%)")
     axes[1].set_title(f"{primary['top_to_bottom_risk_ratio']:.2f}× risk separation")
     axes[1].grid(axis="y", alpha=0.2)
-    figure.suptitle("Untouched Nasdaq-100 transfer test (available history)")
+    figure.suptitle("Unchanged-model Nasdaq-100 transfer test (2020–2026)")
     finish(FIGURES / "v07_ndx_transfer.png")
 
 

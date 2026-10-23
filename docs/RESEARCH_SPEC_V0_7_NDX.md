@@ -3,9 +3,11 @@
 Status: frozen before membership retrieval and model evaluation  
 Created: 2026-10-22
 
-Outcome note: the provider returned empty constituent lists before July 2023. The frozen
-seven-year interpretation rule is therefore retained but marked not evaluable; see
-`NDX_REPLICATION_STATUS.md` for the available-history result.
+Outcome note: PtData returned empty constituent lists before July 2023. After the partial result
+was observed, membership was repaired with a checksum-pinned public reconstruction and validated
+against the 39 available PtData snapshots. Model, features, target, evaluation dates, and pass
+criteria remained unchanged. This source substitution is disclosed in
+`NDX_REPLICATION_STATUS.md` and prevents describing the entire data workflow as untouched.
 
 ## Question
 
@@ -23,14 +25,16 @@ feature cross-section and market-regime variables are rebuilt inside the Nasdaq-
 
 ## Universe and data
 
-- Nasdaq-100 (`NDX`) constituent snapshots from PtData's point-in-time index endpoint.
-- Month-end snapshots from 2019-06 through 2026-09, expanded forward to business days.
+- Nasdaq-100 (`NDX`) effective-date constituent history from a pinned public reconstruction,
+  validated against PtData's point-in-time index endpoint over their shared history.
+- Effective-date roster snapshots expanded forward to business days from 2019-06 through
+  2026-09.
 - Alpaca SIP daily bars with `adjustment=all` over 2019-06-01 through 2026-09-30.
 - Evaluation period 2020-01-01 through 2026-09-30, requiring a complete 40-day target.
 
-The free source provides dated snapshots, not a licensed effective-date change history. Membership
-changes within a month can therefore be reflected with delay until the next snapshot. This is a
-known approximation and must be reported.
+The free source is a community reconstruction from public change tables, not licensed official
+index history. Its final recorded roster is carried forward through the evaluation end. This is a
+known limitation and must be reported.
 
 ## Independence limitation
 

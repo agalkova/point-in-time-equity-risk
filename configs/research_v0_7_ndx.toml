@@ -1,5 +1,5 @@
 [project]
-specification_version = "0.7.0-ndx-cross-universe-replication"
+specification_version = "0.7.1-ndx-membership-source-repair"
 parent_model = "v0.1 frozen logistic drawdown-risk model"
 random_seed = 42
 
@@ -8,12 +8,17 @@ index_code = "NDX"
 snapshot_start = "2019-06-30"
 evaluation_start = "2020-01-01"
 evaluation_end = "2026-09-30"
-snapshot_frequency = "month_end"
+snapshot_frequency = "effective_date_changes"
 
 [data]
 bars_path = "data/raw/alpaca/ndx_bars_2019-06-01_2026-09-30_all.csv.gz"
 membership_path = "data/interim/ndx/ndx_daily_membership.csv.gz"
 snapshot_path = "data/interim/ndx/ndx_membership_snapshots.csv.gz"
+
+[public_membership]
+revision = "1cc1de2770874293597a418b41b079e5337b260c"
+sha256 = "c7de3905bfdd228eefbd3c7df1539a1178bee9006a04688fb319314a646e18e8"
+url = "https://raw.githubusercontent.com/thuningxu/sp500nq100/1cc1de2770874293597a418b41b079e5337b260c/nasdaq100_components_history.csv"
 
 [inference]
 block_bootstrap_days = 40
