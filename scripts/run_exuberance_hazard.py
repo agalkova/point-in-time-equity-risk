@@ -4,6 +4,9 @@ import json
 import tomllib
 from pathlib import Path
 
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.metrics import average_precision_score, roc_auc_score

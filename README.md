@@ -33,6 +33,24 @@ alpha generation.
 Full interpretation, baselines, annual results, portfolio results, and limitations are in
 [docs/RESULTS.md](docs/RESULTS.md).
 
+### Corrected bubble-detection model
+
+Version 0.9 returns to the original project idea without the hindsight-defined labels. It detects
+the start of a measurable **exuberance episode**, then estimates a monotonic drawdown-risk curve
+over 10, 20, 40, and 60 trading days using one interpretable discrete-time hazard model.
+
+Across 8,464 modern episodes in the S&P 500, Nasdaq-100, and S&P 400, the 40-day model achieved
+0.618–0.628 ROC AUC and 1.45×–1.57× average-precision lift. Highest-risk-quintile episodes had
+2.45×–3.50× the drawdown rate of the lowest quintile, with 18–19 trading days of median warning
+lead time. It beat trailing run-up strength alone in all three universes. Absolute probabilities
+remain under-calibrated after the legacy-to-modern base-rate shift, so the supported claim is
+transferable early-warning ranking—not literal bubble identification or proven alpha.
+
+See [docs/EXUBERANCE_HAZARD_RESULTS.md](docs/EXUBERANCE_HAZARD_RESULTS.md) for the corrected
+framing, full horizon results, drivers, limitations, and reproduction instructions.
+
+![Exuberance episode hazard model](docs/figures/v09_exuberance_hazard.png)
+
 ### Independent mid-cap replication
 
 The strongest transfer test applies the unchanged model to a point-in-time S&P 400 MidCap panel
@@ -213,6 +231,7 @@ python scripts/run_alpha_research.py
 python scripts/run_alpha_sensitivity.py
 python scripts/run_optimized_alpha_portfolio.py
 python scripts/generate_prospective_alpha_candidate.py
+python scripts/run_exuberance_hazard.py
 python scripts/make_figures.py
 ```
 

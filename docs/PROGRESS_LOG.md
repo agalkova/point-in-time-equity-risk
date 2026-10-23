@@ -134,3 +134,23 @@ Next actions:
 2. Optionally add licensed point-in-time sector data; do not infer historical sectors from current labels.
 3. Create the GitHub remote only when authorized by the project owner.
 
+## 2026-10-23 — exuberance episode hazard model
+
+Completed:
+
+- Revisited the original notebook’s buildup, abnormal-volume, and later-burst concept.
+- Froze v0.9 before execution as a two-stage exuberance-onset and forward drawdown-hazard study.
+- Replaced hindsight-confirmed episode labels with one prediction at each new episode onset.
+- Added a pooled discrete-time logistic hazard model with monotonic 10-, 20-, 40-, and 60-day cumulative risk estimates.
+- Trained on 2,696 legacy episodes and evaluated 8,464 modern episodes across the point-in-time S&P 500, Nasdaq-100, and S&P 400 panels.
+- At 40 days, achieved 0.618–0.628 ROC AUC, 1.45×–1.57× average-precision lift, and 2.45×–3.50× highest/lowest-risk-quintile ratios.
+- Beat trailing 60-day return alone in all three universes and measured 18–19 trading days of median lead time among high-risk true events.
+- Diagnosed legacy-to-modern calibration drift rather than retrospectively altering the model.
+- Expanded the automated suite to 41 passing tests and added a full results report, coefficient table, calibration table, episode predictions, and publication figure.
+
+Current interpretation:
+
+- The corrected model is a credible multi-horizon fragility-ranking system and is much closer to the original project’s intended story.
+- It does not identify fundamental bubbles or establish alpha.
+- Absolute live probabilities require a new, frozen walk-forward recalibration rule; current probability levels should not be taken literally.
+

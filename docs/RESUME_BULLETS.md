@@ -17,6 +17,9 @@ Use one or two of these, adjusted to the space available:
 - Built a 31-feature, purged walk-forward model comparison across seven calendar-year
   folds, adding calibration, non-overlapping event/lead-time analysis, permutation
   importance, and a cash-matched portfolio diagnostic backed by 23 automated tests.
+- Reframed hindsight-labeled bubble detection as a two-stage exuberance-to-drawdown hazard
+  model; evaluated 8,464 distinct episode onsets across three point-in-time universe runs,
+  producing 1.45×–1.57× 40-day precision lift and 2.45×–3.50× top/bottom-quintile risk ratios.
 - Built a separate 22-feature expected-return research layer with 33K walk-forward
   security-month predictions, cost-aware long-only/long-short simulation, six-factor HAC
   attribution, and an explicitly frozen prospective candidate after rejecting the primary
@@ -30,4 +33,6 @@ Interview summary:
 > signal—but not a standalone alpha strategy. The most valuable part is the research design
 > and data engineering, including catching ticker reuse and source markup before they contaminated
 > the tests. The unchanged model subsequently passed a frozen, nearly non-overlapping S&P 400
-> replication across 2020–2026.
+> replication across 2020–2026. I then returned to the original bubble idea with a discrete-time
+> hazard model that produces 10/20/40/60-day early-warning risk curves at episode onset rather
+> than labeling an entire episode after its crash is already known.
