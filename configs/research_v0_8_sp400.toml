@@ -1,0 +1,40 @@
+[project]
+specification_version = "0.8.0-sp400-independent-replication"
+parent_model = "v0.1 frozen logistic drawdown-risk model"
+random_seed = 42
+
+[universe]
+index_code = "SP400"
+membership_start = "2019-06-01"
+evaluation_start = "2020-01-01"
+evaluation_end = "2026-09-30"
+membership_frequency = "effective_date_changes"
+
+[data]
+bars_path = "data/raw/alpaca/sp400_bars_2019-06-01_2026-09-30_all.csv.gz"
+membership_path = "data/interim/sp400/sp400_daily_membership.csv.gz"
+snapshot_path = "data/interim/sp400/sp400_membership_snapshots.csv.gz"
+
+[public_membership]
+repository = "https://github.com/arielNacamulli/pitindex"
+revision = "2df030e5c9be7c83cf4b28c3d8597d74d274757e"
+seed_url = "https://raw.githubusercontent.com/arielNacamulli/pitindex/2df030e5c9be7c83cf4b28c3d8597d74d274757e/pitindex/data/sp400_seed.csv"
+seed_sha256 = "b16cc5e36c57e4e4b3f731212196d60b04358f97985dad27adc0961716d3dc03"
+changes_url = "https://raw.githubusercontent.com/arielNacamulli/pitindex/2df030e5c9be7c83cf4b28c3d8597d74d274757e/pitindex/data/sp400_changes.csv"
+changes_sha256 = "ace43903dd31866b223f82455cc6f0ff98bceed608ee32bd1dd87feb0c955ea5"
+current_url = "https://raw.githubusercontent.com/arielNacamulli/pitindex/2df030e5c9be7c83cf4b28c3d8597d74d274757e/pitindex/data/sp400_current.csv"
+current_sha256 = "f73de533f7de27176bdcdaacce9ac5eee4257ef7d3cbf5851375c5a808e90416"
+
+[inference]
+block_bootstrap_days = 40
+bootstrap_iterations = 2000
+
+[quality_gates]
+minimum_current_roster_jaccard = 0.95
+minimum_median_price_coverage = 0.95
+
+[pass_rule]
+minimum_roc_auc = 0.60
+minimum_average_precision_lift = 1.25
+minimum_top_bottom_risk_ratio = 2.0
+minimum_positive_rank_ic_years = 6
