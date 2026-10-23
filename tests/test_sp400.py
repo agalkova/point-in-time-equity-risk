@@ -31,6 +31,19 @@ class Sp400MembershipTests(unittest.TestCase):
     def test_jaccard(self) -> None:
         self.assertEqual(roster_jaccard({"A", "B"}, {"B", "C"}), 1 / 3)
 
+    def test_markup_artifact_is_rejected_as_ticker(self) -> None:
+        seed = pd.DataFrame(
+            {
+                "effective_date": ["2019-01-01"] * 400,
+                "ticker": [f"T{number:03d}" for number in range(399)] + ["TEMPLATE:BAD"],
+            }
+        )
+        changes = pd.DataFrame(columns=["date", "action", "ticker"])
+        with self.assertRaises(ValueError):
+            build_event_sourced_snapshots(
+                seed, changes, start="2020-01-01", end="2020-01-02"
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

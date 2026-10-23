@@ -32,6 +32,11 @@ revision events can lag true index-effective dates by up to roughly one month. I
 official S&P constituent history. The exact source revision, file hashes, reconciliation, ticker
 coverage, and missing-symbol handling must be reported.
 
+The pinned event file contains one literal Wikipedia-template artifact,
+`TEMPLATE:INVESTORS EXCHANGE LINK`, during 2019. It is explicitly excluded as a non-security
+record before price retrieval. This was discovered by the ticker-format gate before any model
+result was observed.
+
 ## Pre-evaluation quality gates
 
 - Event-sourced final roster versus the pinned current roster: Jaccard similarity at least 0.95.

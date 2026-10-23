@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import re
+
 import pandas as pd
+
+VALID_TICKER = re.compile(r"^[A-Z][A-Z0-9.-]*$")
 
 
 def build_event_sourced_snapshots(
@@ -23,6 +27,13 @@ def build_event_sourced_snapshots(
     changes["date"] = pd.to_datetime(changes["date"]).dt.normalize()
     seed["ticker"] = seed["ticker"].astype(str).str.strip().str.upper()
     changes["ticker"] = changes["ticker"].astype(str).str.strip().str.upper()
+    invalid = sorted(
+        ticker
+        for ticker in set(seed["ticker"]) | set(changes["ticker"])
+        if not VALID_TICKER.fullmatch(ticker)
+    )
+    if invalid:
+        raise ValueError(f"Invalid ticker-like source values: {invalid}")
     if seed["effective_date"].nunique() != 1:
         raise ValueError("Seed must contain exactly one effective date")
     if not set(changes["action"]).issubset({"added", "removed"}):

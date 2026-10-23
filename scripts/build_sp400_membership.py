@@ -12,6 +12,7 @@ from risk_managed_momentum.data.ndx import expand_monthly_membership, verify_sha
 from risk_managed_momentum.data.sp400 import build_event_sourced_snapshots, roster_jaccard
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+SOURCE_EXCLUSIONS = {"TEMPLATE:INVESTORS EXCHANGE LINK"}
 
 
 def main() -> None:
@@ -30,9 +31,13 @@ def main() -> None:
         frames[name] = pd.read_csv(path)
 
     universe = config["universe"]
+    clean_seed = frames["seed"][~frames["seed"]["ticker"].isin(SOURCE_EXCLUSIONS)].copy()
+    clean_changes = frames["changes"][
+        ~frames["changes"]["ticker"].isin(SOURCE_EXCLUSIONS)
+    ].copy()
     snapshots = build_event_sourced_snapshots(
-        frames["seed"],
-        frames["changes"],
+        clean_seed,
+        clean_changes,
         start=universe["membership_start"],
         end=universe["evaluation_end"],
     )
@@ -65,6 +70,7 @@ def main() -> None:
             name: source[f"{name}_sha256"] for name in ("seed", "changes", "current")
         },
         "source_method": "Public change tables plus conservatively dated revision-history diffs",
+        "excluded_source_artifacts": sorted(SOURCE_EXCLUSIONS),
         "redistributed": False,
         "effective_snapshots": int(snapshots["snapshot_date"].nunique()),
         "unique_tickers": int(snapshots["ticker"].nunique()),
@@ -79,6 +85,7 @@ def main() -> None:
             "Community reconstruction, not licensed official S&P constituent history.",
             "Revision-derived event dates can lag true effective dates by up to roughly one month.",
             "Historical ticker identity is best effort and requires price-coverage auditing.",
+            "One explicit Wikipedia-template artifact is excluded; it is not a security ticker.",
         ],
     }
     (output_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
