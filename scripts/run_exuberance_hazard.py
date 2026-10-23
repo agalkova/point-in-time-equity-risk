@@ -13,7 +13,11 @@ from sklearn.metrics import average_precision_score, roc_auc_score
 
 from risk_managed_momentum.config import load_config
 from risk_managed_momentum.data.legacy import load_legacy_wide
-from risk_managed_momentum.data.panel import build_point_in_time_panel
+from risk_managed_momentum.data.universes import (
+    load_ndx_panel,
+    load_sp400_panel,
+    load_sp500_panel,
+)
 from risk_managed_momentum.evaluation.hazard import (
     calibration_by_stratum,
     episode_score_summary,
@@ -36,33 +40,15 @@ def load_toml(path: Path) -> dict:
 
 
 def load_modern_sp500(base_config: dict) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    source = base_config["modern_source"]
-    bars = pd.read_csv(PROJECT_ROOT / source["bars_path"])
-    aliases_bars = pd.read_csv(PROJECT_ROOT / source["historical_alias_bars_path"])
-    bars = pd.concat([bars, aliases_bars[bars.columns]], ignore_index=True)
-    membership = pd.read_csv(PROJECT_ROOT / source["membership_path"])
-    aliases = load_toml(PROJECT_ROOT / source["aliases_path"])["alias"]
-    return build_point_in_time_panel(bars, membership, aliases)
+    return load_sp500_panel(PROJECT_ROOT, base_config)
 
 
 def load_ndx() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    config = load_toml(PROJECT_ROOT / "configs/research_v0_7_ndx.toml")
-    bars = pd.read_csv(PROJECT_ROOT / config["data"]["bars_path"])
-    membership = pd.read_csv(PROJECT_ROOT / config["data"]["membership_path"])
-    aliases = load_toml(PROJECT_ROOT / "data/reference/ndx_symbol_aliases.toml")["alias"]
-    return build_point_in_time_panel(bars, membership, aliases)
+    return load_ndx_panel(PROJECT_ROOT)
 
 
 def load_sp400() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    config = load_toml(PROJECT_ROOT / "configs/research_v0_8_sp400.toml")
-    bars = pd.read_csv(PROJECT_ROOT / config["data"]["bars_path"])
-    gap_path = PROJECT_ROOT / config["data"]["historical_gap_bars_path"]
-    if gap_path.exists():
-        gap_bars = pd.read_csv(gap_path)
-        bars = pd.concat([bars, gap_bars[bars.columns]], ignore_index=True)
-    membership = pd.read_csv(PROJECT_ROOT / config["data"]["membership_path"])
-    aliases = load_toml(PROJECT_ROOT / "data/reference/sp400_symbol_aliases.toml")["alias"]
-    return build_point_in_time_panel(bars, membership, aliases)
+    return load_sp400_panel(PROJECT_ROOT)
 
 
 def benchmark_summary(frame: pd.DataFrame, target_column: str) -> dict[str, float]:

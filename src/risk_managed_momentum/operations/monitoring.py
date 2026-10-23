@@ -106,7 +106,7 @@ def build_health_report(
     warning_threshold = float(drift_config["warning_psi"])
     severe_drift = bool(
         (np.isfinite(score_psi) and score_psi > failure_threshold)
-        or (np.isfinite(maximum_feature_psi) and maximum_feature_psi > failure_threshold)
+        or (np.isfinite(median_feature_psi) and median_feature_psi > failure_threshold)
     )
     warning_drift = bool(
         (np.isfinite(score_psi) and score_psi > warning_threshold)

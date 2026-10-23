@@ -9,6 +9,10 @@ minimum_latest_membership_coverage = 0.95
 maximum_market_data_staleness_calendar_days = 4
 minimum_recent_episodes = 25
 
+[monitoring_reference]
+start = "2024-01-01"
+end = "2025-12-31"
+
 [drift]
 bins = 10
 warning_psi = 0.10

@@ -8,10 +8,14 @@ import tomllib
 from pathlib import Path
 
 import pandas as pd
-from run_exuberance_hazard import load_modern_sp500, load_ndx, load_sp400
 
 from risk_managed_momentum.config import load_config
 from risk_managed_momentum.data.legacy import load_legacy_wide
+from risk_managed_momentum.data.universes import (
+    load_ndx_panel,
+    load_sp400_panel,
+    load_sp500_panel,
+)
 from risk_managed_momentum.features.episodes import build_exuberance_episode_dataset
 from risk_managed_momentum.models.hazard import fit_hazard_model, predict_cumulative_risk
 from risk_managed_momentum.operations.artifacts import publish_atomic_run
@@ -103,12 +107,10 @@ def main() -> None:
         maximum_iterations=int(hazard_config["model"]["maximum_iterations"]),
         random_seed=int(hazard_config["project"]["random_seed"]),
     )
-    reference = predict_cumulative_risk(model, training)
-
     loaders = {
-        "sp500": lambda: load_modern_sp500(base_config),
-        "ndx": load_ndx,
-        "sp400": load_sp400,
+        "sp500": lambda: load_sp500_panel(PROJECT_ROOT, base_config),
+        "ndx": lambda: load_ndx_panel(PROJECT_ROOT),
+        "sp400": lambda: load_sp400_panel(PROJECT_ROOT),
     }
     price, volume, membership = loaders[args.universe]()
     requested_as_of = (
@@ -134,6 +136,12 @@ def main() -> None:
     if live.feature_columns != legacy.feature_columns:
         raise RuntimeError("Production feature schema differs from the frozen training schema")
     scored = predict_cumulative_risk(model, live.frame)
+    reference = scored[scored["date"].between(
+        operations["monitoring_reference"]["start"],
+        operations["monitoring_reference"]["end"],
+    )].copy()
+    if reference.empty:
+        raise RuntimeError("No episodes exist in the frozen modern monitoring reference window")
     recent_cutoff = market_data_date - pd.Timedelta(
         days=int(operations["pipeline"]["recent_monitoring_calendar_days"])
     )
