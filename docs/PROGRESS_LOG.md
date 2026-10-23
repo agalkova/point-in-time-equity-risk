@@ -32,9 +32,14 @@
   month-end membership and S&P-overlap limitations.
 - Added resumable point-in-time NDX membership ingestion, separate Alpaca SIP ingestion, identity
   checks, overlap diagnostics, non-S&P subset reporting, and locked pass criteria.
-- Cached the first six membership snapshots before the provider's daily free-IP quota was reached;
-  no NDX model result has been observed.
-- Resume instructions and pass criteria are recorded in `docs/FUNDAMENTALS_PILOT_STATUS.md`.
+- Retrieved all 88 requested NDX responses and discovered that the free provider returned empty
+  membership lists for the 49 months before July 2023; recorded this as a source-coverage limit.
+- Downloaded 217,527 adjusted SIP bars for all 123 tickers with no missing symbols.
+- Ran the untouched model on 9,242 eligible NDX observations. It achieved 0.663 ROC AUC, 1.57x
+  average-precision lift, 0.226 mean daily rank IC, and a 4.29x top/bottom risk ratio.
+- Marked the seven-year pass decision not evaluable rather than counting unavailable years as
+  failures. All three measurable frozen thresholds passed, and all 33 repository tests pass.
+- Results and limitations are recorded in `docs/NDX_REPLICATION_STATUS.md`.
 
 ## 2026-10-21
 

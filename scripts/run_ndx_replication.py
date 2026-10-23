@@ -126,13 +126,23 @@ def main() -> None:
         )
     annual = pd.DataFrame(annual_rows)
     non_sp500 = limited_subset_summary(frame[~frame["also_sp500_member"]], base_config)
+    expected_years = list(
+        range(
+            pd.Timestamp(universe["evaluation_start"]).year,
+            pd.Timestamp(universe["evaluation_end"]).year + 1,
+        )
+    )
+    observed_years = sorted(annual["year"].astype(int).tolist())
+    full_evaluation_coverage = observed_years == expected_years
+    positive_rank_ic_years = int(annual["mean_daily_rank_ic"].gt(0).sum())
     pass_rule = {
         "roc_auc_above_0_60": primary["roc_auc"] > 0.60,
         "top_to_bottom_risk_ratio_at_least_2": primary["top_to_bottom_risk_ratio"] >= 2.0,
         "rank_ic_positive_interval": primary["mean_daily_rank_ic_95pct_block_interval"][0]
         > 0.0,
-        "positive_rank_ic_at_least_six_years": int(annual["mean_daily_rank_ic"].gt(0).sum())
-        >= 6,
+        "positive_rank_ic_at_least_six_of_seven_years": (
+            positive_rank_ic_years >= 6 if full_evaluation_coverage else None
+        ),
     }
     summary = {
         "specification_version": config["project"]["specification_version"],
@@ -141,13 +151,22 @@ def main() -> None:
         "membership_snapshot_frequency": universe["snapshot_frequency"],
         "evaluation_first_signal": str(frame["date"].min().date()),
         "evaluation_last_signal": str(frame["date"].max().date()),
+        "data_coverage": {
+            "expected_evaluation_years": expected_years,
+            "observed_evaluation_years": observed_years,
+            "full_evaluation_coverage": full_evaluation_coverage,
+            "positive_rank_ic_years_observed": positive_rank_ic_years,
+            "coverage_status": (
+                "complete" if full_evaluation_coverage else "incomplete_provider_history"
+            ),
+        },
         "membership_tickers": int(membership.shape[1]),
         "median_membership_price_coverage": float(coverage["coverage_rate"].median()),
         "mean_daily_sp500_overlap": float(daily_overlap["overlap_rate"].mean()),
         "primary_ndx_results": primary,
         "non_sp500_member_diagnostic": non_sp500,
         "pass_rule": pass_rule,
-        "passed": all(pass_rule.values()),
+        "passed": all(pass_rule.values()) if full_evaluation_coverage else None,
     }
     TABLES.mkdir(parents=True, exist_ok=True)
     coverage.to_csv(TABLES / "v07_ndx_membership_coverage.csv", index=False)

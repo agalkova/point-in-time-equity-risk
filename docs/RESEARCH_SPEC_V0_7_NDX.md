@@ -3,6 +3,10 @@
 Status: frozen before membership retrieval and model evaluation  
 Created: 2026-10-22
 
+Outcome note: the provider returned empty constituent lists before July 2023. The frozen
+seven-year interpretation rule is therefore retained but marked not evaluable; see
+`NDX_REPLICATION_STATUS.md` for the available-history result.
+
 ## Question
 
 Does the unchanged v0.1 S&P-developed drawdown-risk model retain useful ranking power when the

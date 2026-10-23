@@ -283,6 +283,37 @@ def optimized_portfolio_figure() -> None:
     finish(FIGURES / "v06_portfolio_engineering.png")
 
 
+def ndx_transfer_figure() -> None:
+    annual = pd.read_csv(TABLES / "v07_ndx_annual.csv")
+    summary = json.loads((TABLES / "v07_ndx_summary.json").read_text())
+    primary = summary["primary_ndx_results"]
+    figure, axes = plt.subplots(1, 2, figsize=(11.0, 4.8))
+    axes[0].plot(
+        annual["year"],
+        annual["mean_daily_rank_ic"],
+        marker="o",
+        linewidth=2,
+        color=COLORS["navy"],
+    )
+    axes[0].axhline(0.0, color="black", linewidth=0.8)
+    axes[0].set_xticks(annual["year"])
+    axes[0].set_ylabel("Mean daily rank IC")
+    axes[0].set_title("Positive ranking in every observed year")
+    axes[0].grid(alpha=0.2)
+
+    labels = ["Lowest-risk decile", "Highest-risk decile"]
+    rates = [
+        primary["bottom_decile_event_rate"] * 100.0,
+        primary["top_decile_event_rate"] * 100.0,
+    ]
+    axes[1].bar(labels, rates, color=[COLORS["teal"], COLORS["blue"]])
+    axes[1].set_ylabel("40-day drawdown event rate (%)")
+    axes[1].set_title(f"{primary['top_to_bottom_risk_ratio']:.2f}× risk separation")
+    axes[1].grid(axis="y", alpha=0.2)
+    figure.suptitle("Untouched Nasdaq-100 transfer test (available history)")
+    finish(FIGURES / "v07_ndx_transfer.png")
+
+
 def main() -> None:
     FIGURES.mkdir(parents=True, exist_ok=True)
     decile_figure()
@@ -298,6 +329,7 @@ def main() -> None:
     alpha_sensitivity_figure()
     fundamental_pilot_figure()
     optimized_portfolio_figure()
+    ndx_transfer_figure()
     print(f"Saved figures to {FIGURES}")
 
 

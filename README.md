@@ -57,6 +57,20 @@ portfolio mapping was inspected after the primary result. It is therefore frozen
 See [docs/ALPHA_RESULTS.md](docs/ALPHA_RESULTS.md) and the prospective rules in
 [docs/PROSPECTIVE_SPEC_V0_4.md](docs/PROSPECTIVE_SPEC_V0_4.md).
 
+### Nasdaq-100 transfer test
+
+An untouched cross-universe test applied the legacy-selected drawdown-risk model to a
+point-in-time Nasdaq-100 panel. Over the free provider's usable July 2023–September 2026
+membership history, the model achieved **0.663 ROC AUC**, **1.57× average-precision lift**, and a
+**4.29×** highest- versus lowest-risk-decile event ratio. Mean daily rank IC was **0.226** with a
+40-day block interval of **[0.147, 0.287]**. All observed years were positive.
+
+This is encouraging transfer evidence, not a completed seven-year confirmation: the provider
+returned empty membership histories before July 2023, and average NDX/S&P 500 overlap was 85%.
+See [docs/NDX_REPLICATION_STATUS.md](docs/NDX_REPLICATION_STATUS.md).
+
+![Nasdaq-100 transfer-test annual stability and risk separation](docs/figures/v07_ndx_transfer.png)
+
 ### Portfolio engineering and prospective record
 
 A frozen constrained-optimization experiment did not improve the ridge candidate: annual return
