@@ -1,0 +1,32 @@
+[project]
+specification_version = "0.9.0-exuberance-episode-hazard"
+parent_specification = "0.8.0-sp400-independent-replication"
+random_seed = 42
+claim_status = "exploratory; all evaluation periods were previously opened"
+
+[episode]
+washout_trading_days = 20
+runup_lookback_days = 60
+minimum_runup = 0.20
+peak_lookback_days = 60
+maximum_distance_below_peak = -0.10
+
+[outcome]
+drawdown_threshold = -0.15
+maximum_horizon_days = 60
+horizon_end_days = [10, 20, 40, 60]
+
+[model]
+type = "pooled_discrete_time_logistic_hazard"
+c = 0.01
+maximum_iterations = 2000
+
+[training]
+start = "2012-12-01"
+end = "2019-03-15"
+
+[evaluation]
+start = "2020-01-01"
+end = "2026-09-30"
+risk_strata = 5
+
