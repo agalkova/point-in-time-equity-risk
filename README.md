@@ -33,6 +33,21 @@ alpha generation.
 Full interpretation, baselines, annual results, portfolio results, and limitations are in
 [docs/RESULTS.md](docs/RESULTS.md).
 
+### Independent mid-cap replication
+
+The strongest transfer test applies the unchanged model to a point-in-time S&P 400 MidCap panel
+with only **0.33% average daily overlap** with the S&P 500. Across 85,587 eligible observations,
+the model achieved **0.654 ROC AUC**, **1.49× average-precision lift**, a **2.98×**
+highest/lowest-risk-decile event ratio, and **0.182** mean daily rank IC with block interval
+**[0.146, 0.219]**. Annual rank IC was positive in all seven years. Both data-quality gates and
+all five frozen predictive criteria passed.
+
+The free membership history is a pinned public reconstruction rather than licensed official S&P
+data. Full provenance, coverage recovery, annual results, and limitations are documented in
+[docs/SP400_REPLICATION_RESULTS.md](docs/SP400_REPLICATION_RESULTS.md).
+
+![Cross-universe drawdown-risk validation](docs/figures/v08_cross_universe_validation.png)
+
 ## Advanced research layer
 
 An exploratory v0.2 layer adds 31 features, seven purged yearly walk-forward tests,

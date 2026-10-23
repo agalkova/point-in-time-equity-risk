@@ -46,6 +46,16 @@
   AUC, 1.49x average-precision lift, 0.219 mean daily rank IC, and a 3.54x top/bottom risk ratio.
 - The unchanged model passed all four frozen full-universe criteria, including positive annual
   rank IC in all seven years. Recorded the 81.5% S&P overlap and mixed non-S&P diagnostic.
+- Froze v0.8 before data retrieval as an independent S&P 400 MidCap replication with source and
+  price quality gates plus five predictive pass criteria.
+- Built 766,141 point-in-time daily membership rows from a checksum-pinned public reconstruction,
+  rejected two non-security markup artifacts, resolved eight ticker lineages, and recovered 6,950
+  dated historical bars for 17 low-coverage names.
+- Evaluated 85,587 eligible mid-cap observations with only 0.33% average S&P 500 overlap. The
+  unchanged model achieved 0.654 ROC AUC, 1.49x average-precision lift, 0.182 mean daily rank IC,
+  and a 2.98x top/bottom risk ratio.
+- Both data-quality gates and all five predictive criteria passed; annual rank IC was positive in
+  all seven years.
 
 ## 2026-10-21
 

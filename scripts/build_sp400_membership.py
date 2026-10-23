@@ -85,7 +85,7 @@ def main() -> None:
             "Community reconstruction, not licensed official S&P constituent history.",
             "Revision-derived event dates can lag true effective dates by up to roughly one month.",
             "Historical ticker identity is best effort and requires price-coverage auditing.",
-            "One explicit Wikipedia-template artifact is excluded; it is not a security ticker.",
+            "Two explicit Wikipedia markup artifacts are excluded; neither is a security ticker.",
         ],
     }
     (output_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")

@@ -314,6 +314,36 @@ def ndx_transfer_figure() -> None:
     finish(FIGURES / "v07_ndx_transfer.png")
 
 
+def cross_universe_figure() -> None:
+    modern = json.loads((TABLES / "modern_replication_summary.json").read_text())["scores"][
+        "model"
+    ]
+    ndx = json.loads((TABLES / "v07_ndx_summary.json").read_text())["primary_ndx_results"]
+    sp400 = json.loads((TABLES / "v08_sp400_summary.json").read_text())[
+        "primary_sp400_results"
+    ]
+    labels = ["S&P 500", "Nasdaq-100", "S&P 400"]
+    results = [modern, ndx, sp400]
+    metrics = [
+        ("roc_auc", "ROC AUC", 0.5),
+        ("average_precision_lift", "Average-precision lift", 1.0),
+        ("mean_daily_rank_ic", "Mean daily rank IC", 0.0),
+        ("top_to_bottom_risk_ratio", "Highest/lowest risk ratio", 1.0),
+    ]
+    figure, axes = plt.subplots(2, 2, figsize=(11.0, 7.4))
+    colors = [COLORS["navy"], COLORS["blue"], COLORS["teal"]]
+    for axis, (metric, title, reference) in zip(axes.flat, metrics, strict=True):
+        values = [result[metric] for result in results]
+        axis.bar(labels, values, color=colors)
+        axis.axhline(reference, color=COLORS["gold"], linestyle="--", linewidth=1.2)
+        axis.set_title(title)
+        axis.grid(axis="y", alpha=0.2)
+        for index, value in enumerate(values):
+            axis.text(index, value, f"{value:.2f}", ha="center", va="bottom")
+    figure.suptitle("Unchanged drawdown-risk model transfers across three universes")
+    finish(FIGURES / "v08_cross_universe_validation.png")
+
+
 def main() -> None:
     FIGURES.mkdir(parents=True, exist_ok=True)
     decile_figure()
@@ -330,6 +360,7 @@ def main() -> None:
     fundamental_pilot_figure()
     optimized_portfolio_figure()
     ndx_transfer_figure()
+    cross_universe_figure()
     print(f"Saved figures to {FIGURES}")
 
 
