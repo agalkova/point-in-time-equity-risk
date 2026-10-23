@@ -1,0 +1,57 @@
+# Historical S&P 400 membership symbols mapped to complete Alpaca provider series.
+
+[[alias]]
+membership_ticker = "AAXN"
+provider_ticker = "AXON"
+start = "2019-06-01"
+end = "2021-03-30"
+note = "Axon Enterprise changed its ticker from AAXN to AXON."
+
+[[alias]]
+membership_ticker = "ADS"
+provider_ticker = "BFH"
+start = "2020-06-22"
+end = "2022-04-29"
+note = "Alliance Data Systems became Bread Financial Holdings."
+
+[[alias]]
+membership_ticker = "BRKS"
+provider_ticker = "AZTA"
+start = "2021-01-07"
+end = "2021-12-30"
+note = "Brooks Automation renamed Azenta."
+
+[[alias]]
+membership_ticker = "FII"
+provider_ticker = "FHI"
+start = "2019-06-01"
+end = "2021-01-25"
+note = "Federated Investors became Federated Hermes."
+
+[[alias]]
+membership_ticker = "GPS"
+provider_ticker = "GAP"
+start = "2022-02-03"
+end = "2024-08-21"
+note = "Gap changed its ticker from GPS to GAP."
+
+[[alias]]
+membership_ticker = "HTA"
+provider_ticker = "HR"
+start = "2022-07-21"
+end = "2022-07-21"
+note = "Healthcare Trust of America combined into Healthcare Realty."
+
+[[alias]]
+membership_ticker = "MLHR"
+provider_ticker = "MLKN"
+start = "2019-06-01"
+end = "2021-11-16"
+note = "Herman Miller renamed MillerKnoll."
+
+[[alias]]
+membership_ticker = "WTR"
+provider_ticker = "WTRG"
+start = "2019-06-01"
+end = "2020-03-25"
+note = "Aqua America became Essential Utilities."

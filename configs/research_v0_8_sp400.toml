@@ -12,6 +12,7 @@ membership_frequency = "effective_date_changes"
 
 [data]
 bars_path = "data/raw/alpaca/sp400_bars_2019-06-01_2026-09-30_all.csv.gz"
+historical_gap_bars_path = "data/raw/alpaca/sp400_historical_gap_bars_all.csv.gz"
 membership_path = "data/interim/sp400/sp400_daily_membership.csv.gz"
 snapshot_path = "data/interim/sp400/sp400_membership_snapshots.csv.gz"
 

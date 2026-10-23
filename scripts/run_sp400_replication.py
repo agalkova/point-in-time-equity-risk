@@ -41,8 +41,16 @@ def main() -> None:
     )
 
     bars = pd.read_csv(PROJECT_ROOT / config["data"]["bars_path"])
+    gap_path = PROJECT_ROOT / config["data"]["historical_gap_bars_path"]
+    if gap_path.exists():
+        gap_bars = pd.read_csv(gap_path)
+        bars = pd.concat([bars, gap_bars[bars.columns]], ignore_index=True)
     membership_long = pd.read_csv(PROJECT_ROOT / config["data"]["membership_path"])
-    price, volume, membership = build_point_in_time_panel(bars, membership_long, aliases=[])
+    with (PROJECT_ROOT / "data/reference/sp400_symbol_aliases.toml").open("rb") as handle:
+        aliases = tomllib.load(handle)["alias"]
+    price, volume, membership = build_point_in_time_panel(
+        bars, membership_long, aliases=aliases
+    )
     coverage = coverage_summary(price, membership)
     minimum_coverage = float(config["quality_gates"]["minimum_median_price_coverage"])
     median_coverage = float(coverage["coverage_rate"].median())

@@ -32,10 +32,18 @@ revision events can lag true index-effective dates by up to roughly one month. I
 official S&P constituent history. The exact source revision, file hashes, reconciliation, ticker
 coverage, and missing-symbol handling must be reported.
 
-The pinned event file contains one literal Wikipedia-template artifact,
-`TEMPLATE:INVESTORS EXCHANGE LINK`, during 2019. It is explicitly excluded as a non-security
-record before price retrieval. This was discovered by the ticker-format gate before any model
-result was observed.
+The pinned event file contains two non-security artifacts: the literal Wikipedia-template value
+`TEMPLATE:INVESTORS EXCHANGE LINK` during 2019 and the sector header `INDUSTRIALS` during 2020.
+Both are explicitly excluded before evaluation. The first was caught by the ticker-format gate;
+the second was caught by Alpaca's missing-symbol audit. No model result had been observed.
+
+Eight missing historical symbols are mapped to complete successor series with dated aliases:
+`AAXN/AXON`, `ADS/BFH`, `BRKS/AZTA`, `FII/FHI`, `GPS/GAP`, `HTA/HR`, `MLHR/MLKN`, and
+`WTR/WTRG`. Coverage is measured after these point-in-time joins.
+
+Before model evaluation, any remaining ticker with less than 95% in-membership price coverage is
+queried once through Alpaca using an `asof` date equal to its first membership date. This recovery
+rule is mechanical and fixed; unresolved gaps remain missing and are reported rather than filled.
 
 ## Pre-evaluation quality gates
 

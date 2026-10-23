@@ -12,7 +12,7 @@ from risk_managed_momentum.data.ndx import expand_monthly_membership, verify_sha
 from risk_managed_momentum.data.sp400 import build_event_sourced_snapshots, roster_jaccard
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SOURCE_EXCLUSIONS = {"TEMPLATE:INVESTORS EXCHANGE LINK"}
+SOURCE_EXCLUSIONS = {"INDUSTRIALS", "TEMPLATE:INVESTORS EXCHANGE LINK"}
 
 
 def main() -> None:
