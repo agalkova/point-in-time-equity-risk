@@ -173,3 +173,23 @@ Final v1.0 interpretation:
 - Neither the tested calibration rule nor the tested trading overlay met its frozen success criterion.
 - Further historical tuning would add overfitting risk faster than portfolio value; future work should emphasize prospective evidence.
 
+## 2026-10-23 — production orchestration and monitoring
+
+Completed:
+
+- Separated live feature inference from research labeling so the latest market date can be scored without requiring or fabricating future outcomes.
+- Added one monitored command for S&P 500, Nasdaq-100, and S&P 400 episode-onset signals.
+- Added hard gates for data history, latest membership coverage, staleness, and recent episode volume.
+- Added score and feature PSI monitoring against a fixed 2024–2025 accepted operating reference.
+- Added source-file, feature-schema, signal, and health-report SHA-256 hashes to each run manifest.
+- Added atomic run publication, fail-closed empty outputs, code-revision identity, and byte-verifiable idempotent retries.
+- Verified authorized WARN runs on all three universes for 2025-12-26; the S&P 500 emitted one onset signal and the S&P 400 emitted two.
+- Verified that the 2026-09-30 S&P 500 run suppressed every signal when score PSI reached 0.521.
+- Expanded the automated suite to 46 passing tests and added scoped production-code linting to CI.
+
+Operational interpretation:
+
+- This is now a reproducible research-to-batch-inference system rather than only a historical backtest repository.
+- The runner deliberately creates signals and evidence but does not place orders.
+- Production health failures are retained as evidence rather than bypassed to force output.
+

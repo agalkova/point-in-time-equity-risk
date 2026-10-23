@@ -57,6 +57,19 @@ universes. The overlay reduced volatility and maximum drawdown everywhere, but a
 return and Sharpe everywhere. Both extensions were rejected under their precommitted rules.
 See [docs/CALIBRATED_OVERLAY_RESULTS.md](docs/CALIBRATED_OVERLAY_RESULTS.md).
 
+### Production and monitoring layer
+
+The frozen risk model now has a separate unlabeled inference path and a reproducible daily batch
+runner for the S&P 500, Nasdaq-100, and S&P 400 panels. Each run validates coverage and
+freshness, calculates score/feature drift, hashes its source data and feature schema, fails closed
+on unhealthy inputs, and atomically publishes versioned signals plus a health report and manifest.
+Identical retries are verified byte-for-byte instead of overwriting evidence.
+
+The integration test produced authorized historical snapshots for all three universes and also
+demonstrated the failure path: a 2026 S&P 500 run detected severe score drift and suppressed all
+signals. See [docs/PRODUCTION_RISK_PIPELINE.md](docs/PRODUCTION_RISK_PIPELINE.md) for the
+architecture, controls, examples, and runbook.
+
 ### Independent mid-cap replication
 
 The strongest transfer test applies the unchanged model to a point-in-time S&P 400 MidCap panel
@@ -239,6 +252,7 @@ python scripts/run_optimized_alpha_portfolio.py
 python scripts/generate_prospective_alpha_candidate.py
 python scripts/run_exuberance_hazard.py
 python scripts/run_calibrated_overlay.py
+python scripts/run_daily_risk_pipeline.py --universe sp500
 python scripts/make_figures.py
 ```
 
