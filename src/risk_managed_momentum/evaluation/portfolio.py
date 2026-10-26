@@ -5,6 +5,7 @@ from typing import Literal
 import numpy as np
 import pandas as pd
 
+from risk_managed_momentum.evaluation.held_returns import value_held_portfolio
 
 Frequency = Literal["weekly", "monthly"]
 Strategy = Literal["momentum", "risk_filtered", "risk_adjusted"]
@@ -66,9 +67,11 @@ def simulate_portfolio(
     top_n: int = 50,
     maximum_position_weight: float = 0.02,
     one_way_cost_bps: float = 10.0,
+    valuation_price: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     price = price.sort_index().astype(float)
-    returns = price.pct_change(fill_method=None)
+    valuation = price if valuation_price is None else valuation_price.reindex_like(price)
+    returns = valuation.pct_change(fill_method=None)
     work = signals.copy()
     work["date"] = pd.to_datetime(work["date"]).dt.normalize()
     dates = rebalance_dates(work["date"], frequency)
@@ -90,15 +93,10 @@ def simulate_portfolio(
     weights = pd.Series(0.0, index=price.columns)
     rows = []
     cost_rate = one_way_cost_bps / 10_000.0
-    simulation_dates = price.index[
-        (price.index >= min(dates)) & (price.index <= max(dates))
-    ]
+    simulation_dates = price.index[(price.index >= min(dates)) & (price.index <= max(dates))]
     for date in simulation_dates:
         asset_return = returns.loc[date]
-        missing_exposure = float(weights[asset_return.isna()].sum())
-        gross_return = float((weights * asset_return.fillna(0.0)).sum())
-        if 1.0 + gross_return > 0.0:
-            weights = weights.mul(1.0 + asset_return.fillna(0.0)).div(1.0 + gross_return)
+        gross_return, weights = value_held_portfolio(weights, asset_return, date=date)
 
         traded_notional = 0.0
         if date in targets:
@@ -115,7 +113,7 @@ def simulate_portfolio(
                 "transaction_cost": cost,
                 "invested_weight": float(weights.sum()),
                 "positions": int((weights > 0.0).sum()),
-                "missing_exposure": missing_exposure,
+                "missing_exposure": 0.0,
             }
         )
     return pd.DataFrame(rows)
@@ -136,11 +134,13 @@ def performance_summary(
     downside_volatility = float(np.sqrt((downside.pow(2)).mean()) * np.sqrt(252.0))
     drawdown = wealth.div(wealth.cummax()).sub(1.0)
     result: dict[str, float | int] = {
-        "trading_days": int(len(returns)),
+        "trading_days": len(returns),
         "cumulative_return": float(wealth.iloc[-1] - 1.0),
         "annualized_return": annual_return,
         "annualized_volatility": annual_volatility,
-        "sharpe_zero_rate": annual_return / annual_volatility if annual_volatility else float("nan"),
+        "sharpe_zero_rate": annual_return / annual_volatility
+        if annual_volatility
+        else float("nan"),
         "sortino_zero_rate": annual_return / downside_volatility
         if downside_volatility
         else float("nan"),
@@ -153,7 +153,9 @@ def performance_summary(
     if benchmark_returns is not None:
         aligned = pd.concat(
             [
-                pd.Series(returns.to_numpy(), index=pd.to_datetime(daily.loc[returns.index, "date"])),
+                pd.Series(
+                    returns.to_numpy(), index=pd.to_datetime(daily.loc[returns.index, "date"])
+                ),
                 benchmark_returns.rename("benchmark"),
             ],
             axis=1,

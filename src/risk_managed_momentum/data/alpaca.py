@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import os
 import time
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass
-from datetime import date, datetime, timezone
-from typing import Any, Iterable
+from datetime import UTC, date, datetime
+from typing import Any
 
 import pandas as pd
 import requests
-
 
 HISTORICAL_BARS_URL = "https://data.alpaca.markets/v2/stocks/bars"
 ALLOWED_ADJUSTMENTS = {"raw", "split", "dividend", "spin-off", "all"}
@@ -122,7 +122,7 @@ class AlpacaHistoricalClient:
         )
 
     @classmethod
-    def from_environment(cls, **kwargs: Any) -> "AlpacaHistoricalClient":
+    def from_environment(cls, **kwargs: Any) -> AlpacaHistoricalClient:
         return cls(
             os.environ.get("APCA_API_KEY_ID", ""),
             os.environ.get("APCA_API_SECRET_KEY", ""),
@@ -156,9 +156,10 @@ class AlpacaHistoricalClient:
         adjustment: str = "raw",
         limit: int = 10_000,
         asof: str | date | None = None,
+        allow_iex_price_only: bool = False,
     ) -> tuple[pd.DataFrame, DownloadManifest]:
         requested = normalize_symbols(symbols)
-        if feed != "sip":
+        if feed != "sip" and not allow_iex_price_only:
             raise ValueError("This project requires feed='sip'; IEX volume is not comparable")
         if adjustment not in ALLOWED_ADJUSTMENTS:
             raise ValueError(f"Unsupported adjustment: {adjustment}")
@@ -206,9 +207,8 @@ class AlpacaHistoricalClient:
             duplicate_count = int(frame.duplicated(["ticker", "timestamp"]).sum())
             if duplicate_count:
                 raise AlpacaDataError(f"Received {duplicate_count} duplicate ticker-timestamp rows")
-            invalid_ohlc = (
-                (frame["low"] > frame[["open", "close", "high"]].min(axis=1))
-                | (frame["high"] < frame[["open", "close", "low"]].max(axis=1))
+            invalid_ohlc = (frame["low"] > frame[["open", "close", "high"]].min(axis=1)) | (
+                frame["high"] < frame[["open", "close", "low"]].max(axis=1)
             )
             if invalid_ohlc.any():
                 raise AlpacaDataError(f"Received {int(invalid_ohlc.sum())} invalid OHLC rows")
@@ -227,9 +227,9 @@ class AlpacaHistoricalClient:
             requested_symbols=requested,
             returned_symbols=returned,
             missing_symbols=sorted(set(requested) - set(returned)),
-            rows=int(len(frame)),
+            rows=len(frame),
             pages=page_count,
-            retrieved_at_utc=datetime.now(timezone.utc).isoformat(),
+            retrieved_at_utc=datetime.now(UTC).isoformat(),
         )
         return frame, manifest
 
@@ -244,6 +244,7 @@ class AlpacaHistoricalClient:
         limit: int = 10_000,
         asof: str | date | None = None,
         batch_size: int = 100,
+        allow_iex_price_only: bool = False,
     ) -> tuple[pd.DataFrame, DownloadManifest]:
         requested = normalize_symbols(symbols)
         if batch_size < 1:
@@ -260,6 +261,7 @@ class AlpacaHistoricalClient:
                 adjustment=adjustment,
                 limit=limit,
                 asof=asof,
+                allow_iex_price_only=allow_iex_price_only,
             )
             frames.append(frame)
             manifests.append(manifest)
@@ -283,9 +285,8 @@ class AlpacaHistoricalClient:
             requested_symbols=requested,
             returned_symbols=returned,
             missing_symbols=sorted(set(requested) - set(returned)),
-            rows=int(len(combined)),
+            rows=len(combined),
             pages=sum(item.pages for item in manifests),
-            retrieved_at_utc=datetime.now(timezone.utc).isoformat(),
+            retrieved_at_utc=datetime.now(UTC).isoformat(),
         )
         return combined, manifest
-

@@ -1,0 +1,15 @@
+[record]
+version = "1.0.0"
+start_date = "2026-10-27"
+universe = "sp500"
+champion_artifact_id = "hazard-0.9.0-exuberance-episode-hazard-557fe470816e5057"
+challenger_artifact_id = "hazard-1.1.0-modern-hazard-challenger-modern_rolling-db408d030829121d"
+minimum_calendar_months = 12
+minimum_mature_episodes = 250
+outcome_horizon_trading_days = 60
+
+[governance]
+model_pointers_must_match_frozen_ids = true
+source_run_must_be_immutable = true
+predictions_are_never_rewritten = true
+historical_replays_are_not_prospective = true

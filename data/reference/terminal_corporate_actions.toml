@@ -1,0 +1,117 @@
+# Explicit repairs for terminal events missing from the provider's symbol-keyed
+# corporate-action response. Each entry is supported by the cited primary source.
+
+[[action]]
+action_symbol = "STI"
+action_date = "2019-12-06"
+action_type = "stock_mergers"
+acquirer_symbol = "TFC"
+acquiree_rate = 1.0
+acquirer_rate = 1.295
+source = "https://www.sec.gov/Archives/edgar/data/750556/000119312519308629/d808889d8k.htm"
+note = "SunTrust converted into 1.295 BB&T/Truist shares per STI share."
+
+[[action]]
+action_symbol = "WCG"
+action_date = "2020-01-23"
+action_type = "stock_and_cash_mergers"
+acquirer_symbol = "CNC"
+acquiree_rate = 1.0
+acquirer_rate = 3.38
+cash_rate = 120.0
+source = "https://investors.centene.com/2020-01-23-Centene-Completes-Acquisition-of-WellCare-Creating-a-Leading-Healthcare-Enterprise-Focused-on-Government-Sponsored-Healthcare-Programs"
+note = "WellCare holders received 3.38 CNC shares plus $120 cash per WCG share."
+
+[[action]]
+action_symbol = "DISCA"
+action_date = "2022-04-08"
+action_type = "stock_mergers"
+acquirer_symbol = "WBD"
+acquiree_rate = 1.0
+acquirer_rate = 1.0
+source = "https://www.sec.gov/Archives/edgar/data/1318285/000143710722000113/wf-form4_164980808736310.xml"
+note = "Discovery Series A converted one-for-one into WBD Series A."
+
+[[action]]
+action_symbol = "DISCK"
+action_date = "2022-04-08"
+action_type = "stock_mergers"
+acquirer_symbol = "WBD"
+acquiree_rate = 1.0
+acquirer_rate = 1.0
+source = "https://www.sec.gov/Archives/edgar/data/1318285/000143710722000113/wf-form4_164980808736310.xml"
+note = "Discovery Series C converted one-for-one into WBD Series A."
+
+[[action]]
+action_symbol = "ABMD"
+action_date = "2022-12-22"
+action_type = "cash_mergers"
+rate = 380.0
+source = "https://www.jnjmedtech.com/en-US/news-events/johnson-johnson-completes-acquisition-abiomed"
+note = "Uses the $380 upfront cash consideration; excludes the non-tradeable contingent right."
+
+[[action]]
+action_symbol = "SIVB"
+action_date = "2023-03-10"
+action_type = "worthless_removals"
+source = "https://www.fdic.gov/news/press-releases/2023/pr23019.html"
+note = "FDIC receivership did not protect shareholders; terminal common-equity value set to zero."
+
+[[action]]
+action_symbol = "SNDK"
+action_date = "2016-05-12"
+action_type = "stock_and_cash_mergers"
+acquirer_symbol = "WDC"
+acquiree_rate = 1.0
+acquirer_rate = 0.2387
+cash_rate = 67.50
+source = "https://www.sec.gov/Archives/edgar/data/1000180/000119312516588382/d154176dex994.htm"
+note = "SanDisk holders received 0.2387 WDC shares plus $67.50 cash per SNDK share."
+
+[[action]]
+action_symbol = "WFM"
+action_date = "2017-08-28"
+action_type = "cash_mergers"
+rate = 42.0
+source = "https://www.sec.gov/Archives/edgar/data/1018724/000119312518154502/d519156d424b3.htm"
+note = "Whole Foods holders received $42 cash per share."
+
+[[action]]
+action_symbol = "CSRA"
+action_date = "2018-04-03"
+action_type = "cash_mergers"
+rate = 41.25
+source = "https://www.sec.gov/Archives/edgar/data/40533/000004053318000018/gd-2018040110q.htm"
+note = "CSRA holders received $41.25 cash per share."
+
+[[action]]
+action_symbol = "ANDV"
+action_date = "2018-10-01"
+action_type = "stock_and_cash_mergers"
+acquirer_symbol = "MPC"
+acquiree_rate = 1.0
+acquirer_rate = 1.63
+cash_rate = 19.80
+source = "https://www.marathonpetroleum.com/content/documents/Investors/Shareholder_Services/8937_-_2.pdf"
+note = "Uses the final default/stock-election proration: about 1.63 MPC shares plus $19.80 cash."
+
+[[action]]
+action_symbol = "SCG"
+action_date = "2019-01-01"
+action_type = "stock_mergers"
+acquirer_symbol = "D"
+acquiree_rate = 1.0
+acquirer_rate = 0.669
+source = "https://www.sec.gov/Archives/edgar/data/715957/000119312519000622/d681735d8k.htm"
+note = "SCANA holders received 0.669 Dominion Energy shares per SCG share."
+
+[[action]]
+action_symbol = "ALXN"
+action_date = "2021-07-21"
+action_type = "stock_and_cash_mergers"
+acquirer_symbol = "AZN"
+acquiree_rate = 1.0
+acquirer_rate = 2.1243
+cash_rate = 60.0
+source = "https://www.sec.gov/Archives/edgar/data/899866/000110465921094624/tm2122733d25_8k.htm"
+note = "Alexion holders received 2.1243 AstraZeneca ADSs plus $60 cash per share."

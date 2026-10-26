@@ -100,9 +100,7 @@ def alert_transition(
     )
     previous_problem = bool(previous and previous.get("problem"))
     current_signature = alert_signature(event)
-    if current_problem and (
-        not previous_problem or previous.get("signature") != current_signature
-    ):
+    if current_problem and (not previous_problem or previous.get("signature") != current_signature):
         return True, "new_or_changed_problem"
     if previous_problem and not current_problem:
         return True, "recovered"
@@ -131,10 +129,7 @@ def write_alert_state(path: Path, event: dict[str, Any], *, problem: bool) -> No
 
 def notify(webhook: str | None, event: dict[str, Any]) -> str | None:
     try:
-        message = (
-            f"risk-managed-momentum: {event['status']} "
-            f"({event.get('stage', 'pipeline')})"
-        )
+        message = f"risk-managed-momentum: {event['status']} ({event.get('stage', 'pipeline')})"
         if webhook:
             send_webhook_alert(webhook, {"text": message, "event": event})
         elif platform.system() == "Darwin":
@@ -190,27 +185,48 @@ def main() -> None:
         pipeline = run_step(pipeline_command)
         steps.append(pipeline)
         result = parse_last_json(pipeline["stdout"]) or {}
+        prospective_return_code = 0
+        if result.get("output_path"):
+            prospective = run_step(
+                [
+                    sys.executable,
+                    "scripts/update_hazard_prospective_record.py",
+                    "--run-path",
+                    result["output_path"],
+                ]
+            )
+            steps.append(prospective)
+            prospective_return_code = int(prospective["return_code"])
+        maturation = run_step([sys.executable, "scripts/mature_hazard_prospective_outcomes.py"])
+        steps.append(maturation)
+        maturation_return_code = int(maturation["return_code"])
         health_status = result.get("health_status", "FAIL")
-        status = "PASS" if pipeline["return_code"] == 0 else "FAIL"
+        status = (
+            "PASS"
+            if pipeline["return_code"] == 0
+            and prospective_return_code == 0
+            and maturation_return_code == 0
+            else "FAIL"
+        )
         event = {
             "status": status,
             "health_status": health_status,
-            "stage": "risk_pipeline",
+            "stage": (
+                "prospective_record"
+                if prospective_return_code or maturation_return_code
+                else "risk_pipeline"
+            ),
             "started_at_utc": started,
             "completed_at_utc": datetime.now(UTC).isoformat(),
             "pipeline_result": result,
             "steps": steps,
         }
         previous = load_alert_state(alert_state_path)
-        should_alert, reason = alert_transition(
-            previous, event, alert_on_warn=args.alert_on_warn
-        )
+        should_alert, reason = alert_transition(previous, event, alert_on_warn=args.alert_on_warn)
         event["alert_reason"] = reason
         event["notification_error"] = notify(webhook, event) if should_alert else None
         if event["notification_error"] is None:
-            alert_problem = status == "FAIL" or (
-                args.alert_on_warn and health_status == "WARN"
-            )
+            alert_problem = status == "FAIL" or (args.alert_on_warn and health_status == "WARN")
             write_alert_state(alert_state_path, event, problem=alert_problem)
         receipt = publish_receipt(event)
         print(
@@ -224,8 +240,14 @@ def main() -> None:
                 indent=2,
             )
         )
-        if pipeline["return_code"] != 0:
-            raise SystemExit(pipeline["return_code"])
+        if (
+            pipeline["return_code"] != 0
+            or prospective_return_code != 0
+            or maturation_return_code != 0
+        ):
+            raise SystemExit(
+                pipeline["return_code"] or prospective_return_code or maturation_return_code
+            )
 
 
 if __name__ == "__main__":

@@ -45,6 +45,30 @@ class PortfolioTests(unittest.TestCase):
         )
         self.assertAlmostEqual(daily.iloc[0]["net_return"], -0.001)
 
+    def test_missing_held_return_fails_closed(self) -> None:
+        dates = pd.bdate_range("2024-01-01", periods=10)
+        price = pd.DataFrame(
+            {"A": [100.0] * 5 + [float("nan")] * 5},
+            index=dates,
+        )
+        signals = pd.DataFrame(
+            {
+                "date": dates,
+                "ticker": ["A"] * len(dates),
+                "rank_ret_60": [1.0] * len(dates),
+                "risk_score": [0.1] * len(dates),
+            }
+        )
+        with self.assertRaisesRegex(ValueError, "Missing held-security returns"):
+            simulate_portfolio(
+                price,
+                signals,
+                frequency="weekly",
+                strategy="momentum",
+                top_n=1,
+                maximum_position_weight=1.0,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

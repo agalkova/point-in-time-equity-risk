@@ -39,6 +39,7 @@ end = "2026-09-30"
 
 [modern_source]
 bars_path = "data/raw/alpaca/bars_2019-06-01_2026-09-30_all.csv.gz"
+prehistory_bars_path = "data/raw/alpaca/bars_2016-01-01_2019-06-02_sp500_all.csv.gz"
 historical_alias_bars_path = "data/raw/alpaca/bars_historical_aliases_all.csv.gz"
 membership_path = "data/interim/membership/sp500_daily_membership.csv.gz"
 aliases_path = "data/reference/modern_symbol_aliases.toml"

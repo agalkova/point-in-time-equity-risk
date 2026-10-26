@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 
+from risk_managed_momentum.evaluation.held_returns import value_held_portfolio
+
 
 @dataclass(frozen=True)
 class OptimizedWeights:
@@ -98,15 +100,11 @@ def optimize_alpha_weights(
         {"type": "eq", "fun": lambda weights: float(weights.sum() - 1.0)},
         {
             "type": "ineq",
-            "fun": lambda weights: float(
-                beta @ weights - float(settings["minimum_beta"])
-            ),
+            "fun": lambda weights: float(beta @ weights - float(settings["minimum_beta"])),
         },
         {
             "type": "ineq",
-            "fun": lambda weights: float(
-                float(settings["maximum_beta"]) - beta @ weights
-            ),
+            "fun": lambda weights: float(float(settings["maximum_beta"]) - beta @ weights),
         },
     ]
     initial = np.full(len(tickers), 1.0 / len(tickers))
@@ -137,9 +135,12 @@ def simulate_optimized_alpha_portfolio(
     benchmark_returns: pd.Series,
     signals: pd.DataFrame,
     config: dict[str, Any],
+    *,
+    valuation_price: pd.DataFrame | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     price = price.sort_index().astype(float)
-    returns = price.pct_change(fill_method=None)
+    valuation = price if valuation_price is None else valuation_price.reindex_like(price)
+    returns = valuation.pct_change(fill_method=None)
     work = signals.copy()
     work["date"] = pd.to_datetime(work["date"]).dt.normalize()
     work = work[work["date"].isin(price.index)]
@@ -155,10 +156,7 @@ def simulate_optimized_alpha_portfolio(
     simulation_dates = price.index[price.index >= min(by_date)]
     for date in simulation_dates:
         asset_return = returns.loc[date]
-        missing_exposure = float(current[asset_return.isna()].abs().sum())
-        gross_return = float((current * asset_return.fillna(0.0)).sum())
-        if 1.0 + gross_return > 0.0:
-            current = current.mul(1.0 + asset_return.fillna(0.0)).div(1.0 + gross_return)
+        gross_return, current = value_held_portfolio(current, asset_return, date=date)
 
         traded_notional = 0.0
         diagnostics: OptimizedWeights | None = None
@@ -198,7 +196,7 @@ def simulate_optimized_alpha_portfolio(
                 "gross_exposure": float(current.abs().sum()),
                 "invested_weight": float(current.abs().sum()),
                 "positions": int((current.abs() > 1e-8).sum()),
-                "missing_exposure": missing_exposure,
+                "missing_exposure": 0.0,
             }
         )
     return pd.DataFrame(rows), pd.DataFrame(holdings)

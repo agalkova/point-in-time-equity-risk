@@ -9,7 +9,6 @@ from dotenv import load_dotenv
 
 from risk_managed_momentum.data.alpaca import AlpacaHistoricalClient
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -18,7 +17,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--symbols-file", required=True, type=Path)
     parser.add_argument("--start", required=True)
     parser.add_argument("--end", required=True)
-    parser.add_argument("--adjustment", choices=["raw", "split", "dividend", "spin-off", "all"], default="raw")
+    parser.add_argument(
+        "--adjustment", choices=["raw", "split", "dividend", "spin-off", "all"], default="raw"
+    )
+    parser.add_argument("--feed", choices=["iex", "sip"], default="sip")
+    parser.add_argument(
+        "--allow-iex-price-only",
+        action="store_true",
+        help="Allow IEX only when volume is not used, such as merger consideration valuation.",
+    )
     parser.add_argument("--asof")
     parser.add_argument("--batch-size", type=int, default=100)
     parser.add_argument("--output-stem")
@@ -43,9 +50,10 @@ def main() -> None:
         start=args.start,
         end=args.end,
         adjustment=args.adjustment,
-        feed="sip",
+        feed=args.feed,
         asof=args.asof,
         batch_size=args.batch_size,
+        allow_iex_price_only=args.allow_iex_price_only,
     )
 
     stem = args.output_stem or f"bars_{args.start}_{args.end}_{args.adjustment}"
@@ -64,4 +72,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

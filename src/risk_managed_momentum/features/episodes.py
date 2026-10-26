@@ -7,6 +7,8 @@ from typing import Any
 import pandas as pd
 
 from risk_managed_momentum.features.advanced import build_advanced_research_dataset
+from risk_managed_momentum.features.build import ResearchDataset
+from risk_managed_momentum.features.targets import future_first_breach_days, future_min_return
 
 
 @dataclass(frozen=True)
@@ -31,9 +33,7 @@ def exuberance_onsets(
         price.rolling(peak_lookback_days, min_periods=peak_lookback_days).max()
     ).sub(1.0)
     eligible = (
-        runup.ge(minimum_runup)
-        & distance_below_peak.ge(maximum_distance_below_peak)
-        & membership
+        runup.ge(minimum_runup) & distance_below_peak.ge(maximum_distance_below_peak) & membership
     )
     recently_eligible = (
         eligible.shift(1)
@@ -53,6 +53,7 @@ def build_exuberance_episode_dataset(
     membership: pd.DataFrame | None = None,
     *,
     include_unlabeled: bool = False,
+    outcome_price: pd.DataFrame | None = None,
 ) -> EpisodeDataset:
     """Build one row per exuberance onset with a complete forward outcome window."""
     price = price.sort_index().astype(float)
@@ -90,8 +91,48 @@ def build_exuberance_episode_dataset(
         volume,
         feature_config,
         membership=member,
-        include_unlabeled=include_unlabeled,
+        include_unlabeled=include_unlabeled or outcome_price is not None,
     )
+
+    if outcome_price is not None:
+        valuation = outcome_price.reindex(index=price.index, columns=price.columns).astype(float)
+        maximum_horizon = int(outcome["maximum_horizon_days"])
+        repaired_minimum = future_min_return(valuation, maximum_horizon)
+        repaired_breach = future_first_breach_days(
+            valuation,
+            maximum_horizon,
+            float(outcome["drawdown_threshold"]),
+        )
+        lookup = pd.MultiIndex.from_frame(advanced.frame[["date", "ticker"]])
+        panel_index = pd.MultiIndex.from_product(
+            [valuation.index, valuation.columns], names=["date", "ticker"]
+        )
+        minimum_values = (
+            pd.Series(repaired_minimum.to_numpy().reshape(-1), index=panel_index)
+            .reindex(lookup)
+            .to_numpy()
+        )
+        breach_values = (
+            pd.Series(repaired_breach.to_numpy().reshape(-1), index=panel_index)
+            .reindex(lookup)
+            .to_numpy()
+        )
+        advanced.frame["future_min_return"] = minimum_values
+        advanced.frame["drawdown_severity"] = (-advanced.frame["future_min_return"]).clip(lower=0.0)
+        advanced.frame["target"] = (
+            advanced.frame["future_min_return"]
+            .le(float(outcome["drawdown_threshold"]))
+            .astype("Int64")
+        )
+        advanced.frame["target"] = advanced.frame["target"].mask(
+            advanced.frame["future_min_return"].isna(), pd.NA
+        )
+        advanced.frame["first_breach_days"] = breach_values
+        if not include_unlabeled:
+            advanced = ResearchDataset(
+                frame=advanced.frame[advanced.frame["future_min_return"].notna()].copy(),
+                feature_columns=advanced.feature_columns,
+            )
 
     onset_pairs = (
         onsets.rename_axis("date")
@@ -115,14 +156,13 @@ def build_exuberance_episode_dataset(
     for horizon in hazard_config["outcome"]["horizon_end_days"]:
         frame[f"target_{int(horizon)}"] = first_breach.le(int(horizon)).astype(int)
         if include_unlabeled:
-            frame[f"target_{int(horizon)}"] = frame[f"target_{int(horizon)}"].mask(
-                frame["future_min_return_60"].isna(), pd.NA
-            ).astype("Int64")
-    frame["episode_id"] = (
-        frame["ticker"].astype(str) + "_" + frame["date"].dt.strftime("%Y%m%d")
-    )
+            frame[f"target_{int(horizon)}"] = (
+                frame[f"target_{int(horizon)}"]
+                .mask(frame["future_min_return_60"].isna(), pd.NA)
+                .astype("Int64")
+            )
+    frame["episode_id"] = frame["ticker"].astype(str) + "_" + frame["date"].dt.strftime("%Y%m%d")
     return EpisodeDataset(
         frame=frame.sort_values(["date", "ticker"]).reset_index(drop=True),
         feature_columns=advanced.feature_columns,
     )
-

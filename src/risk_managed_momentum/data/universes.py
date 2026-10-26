@@ -13,12 +13,21 @@ def _toml(path: Path) -> dict:
         return tomllib.load(handle)
 
 
-def load_sp500_panel(project_root: Path, base_config: dict) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+def load_sp500_panel(
+    project_root: Path,
+    base_config: dict,
+    *,
+    membership_path: str | None = None,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     source = base_config["modern_source"]
     bars = pd.read_csv(project_root / source["bars_path"])
+    prehistory_path = project_root / source.get("prehistory_bars_path", "")
+    if source.get("prehistory_bars_path") and prehistory_path.exists():
+        prehistory = pd.read_csv(prehistory_path)
+        bars = pd.concat([prehistory[bars.columns], bars], ignore_index=True)
     alias_bars = pd.read_csv(project_root / source["historical_alias_bars_path"])
     bars = pd.concat([bars, alias_bars[bars.columns]], ignore_index=True)
-    membership = pd.read_csv(project_root / source["membership_path"])
+    membership = pd.read_csv(project_root / (membership_path or source["membership_path"]))
     aliases = _toml(project_root / source["aliases_path"])["alias"]
     return build_point_in_time_panel(bars, membership, aliases)
 
@@ -41,4 +50,3 @@ def load_sp400_panel(project_root: Path) -> tuple[pd.DataFrame, pd.DataFrame, pd
     membership = pd.read_csv(project_root / config["data"]["membership_path"])
     aliases = _toml(project_root / "data/reference/sp400_symbol_aliases.toml")["alias"]
     return build_point_in_time_panel(bars, membership, aliases)
-

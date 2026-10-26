@@ -38,6 +38,45 @@ class PanelTests(unittest.TestCase):
         self.assertEqual(volume.loc[pd.Timestamp("2024-01-03"), "CANON"], 110.0)
         self.assertTrue(member.to_numpy().all())
 
+    def test_index_removal_does_not_truncate_forward_prices(self) -> None:
+        dates = pd.bdate_range("2024-01-02", periods=4)
+        bars = pd.DataFrame(
+            {
+                "date": dates,
+                "ticker": ["OLD"] * 4,
+                "close": [10.0, 9.0, 8.0, 7.0],
+                "volume": [100.0] * 4,
+            }
+        )
+        membership = pd.DataFrame({"date": dates[:2], "ticker": ["OLD"] * 2})
+        price, _, member = build_point_in_time_panel(bars, membership, aliases=[])
+        self.assertEqual(price.loc[dates[-1], "OLD"], 7.0)
+        self.assertFalse(member.loc[dates[-1], "OLD"])
+
+    def test_asof_alias_does_not_leak_reused_ticker_history(self) -> None:
+        dates = pd.bdate_range("2024-01-02", periods=3)
+        bars = pd.DataFrame(
+            {
+                "date": dates,
+                "ticker": ["REUSE"] * 3,
+                "close": [10.0, 100.0, 101.0],
+                "volume": [100.0] * 3,
+            }
+        )
+        membership = pd.DataFrame({"date": [dates[0]], "ticker": ["REUSE"]})
+        aliases = [
+            {
+                "membership_ticker": "REUSE",
+                "provider_ticker": "REUSE",
+                "start": str(dates[0].date()),
+                "end": str(dates[0].date()),
+                "download_asof": str(dates[0].date()),
+            }
+        ]
+        price, _, _ = build_point_in_time_panel(bars, membership, aliases)
+        self.assertEqual(price.loc[dates[0], "REUSE"], 10.0)
+        self.assertTrue(price.loc[dates[1] :, "REUSE"].isna().all())
+
 
 if __name__ == "__main__":
     unittest.main()

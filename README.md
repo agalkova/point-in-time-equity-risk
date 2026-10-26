@@ -82,6 +82,14 @@ episodes. It nevertheless missed the prewritten incremental-lift requirement and
 as an immutable, non-authoritative shadow model. See
 [docs/HAZARD_CHALLENGER_RESULTS.md](docs/HAZARD_CHALLENGER_RESULTS.md).
 
+Version 1.2 then repaired a deeper outcome-integrity problem and expanded the point-in-time panel
+back to 2016. It audited 6,138 mature episodes, repaired 26 incomplete paths, and left zero mature
+paths unresolved. A frozen 2025 selection chose a rolling-2022 model, but paired 2026 inference
+showed mixed results: **1.767x precision lift versus 1.745x** for the active model, but **0.700 ROC
+AUC versus 0.707**. The precision-lift difference was not statistically resolved, so the model was
+not promoted. The complete audit and interpretation are in
+[docs/INTEGRITY_EXPANSION_RESULTS.md](docs/INTEGRITY_EXPANSION_RESULTS.md).
+
 ![Modern hazard challenger comparison](docs/figures/v11_hazard_challenger.png)
 
 The integration test produced authorized historical snapshots for all three universes and also
@@ -155,6 +163,11 @@ The original equal-weight ridge top-50 rule therefore remains the sole prospecti
 Immutable signal snapshots, content hashes, turnover, cost, and training cutoffs are managed by
 `generate_prospective_alpha_candidate.py`; operating rules are in
 [docs/PROSPECTIVE_OPERATIONS.md](docs/PROSPECTIVE_OPERATIONS.md).
+
+Separately, the hazard system now starts an immutable forward record on 2026-10-27. It pins exact
+champion and challenger artifacts, stores predictions before outcomes, and attaches realized
+10/20/40/60-day labels only after they mature. See
+[docs/PROSPECTIVE_HAZARD_SPEC.md](docs/PROSPECTIVE_HAZARD_SPEC.md).
 
 ## Research design
 

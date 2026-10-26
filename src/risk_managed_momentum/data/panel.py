@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from typing import Iterable, Mapping
+from collections.abc import Iterable, Mapping
 
 import pandas as pd
-
 
 BAR_COLUMNS = ["date", "ticker", "close", "volume"]
 
@@ -13,7 +12,12 @@ def build_point_in_time_panel(
     membership: pd.DataFrame,
     aliases: Iterable[Mapping[str, object]],
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """Return adjusted close, volume, and a point-in-time membership mask."""
+    """Return security histories plus a separate point-in-time membership mask.
+
+    Membership controls eligibility, but it must not truncate prices immediately
+    after an index removal: forward outcomes and open positions still require the
+    security's subsequent trading history.
+    """
     missing_bar_columns = set(BAR_COLUMNS) - set(bars.columns)
     if missing_bar_columns:
         raise ValueError(f"Bars missing columns: {sorted(missing_bar_columns)}")
@@ -31,33 +35,44 @@ def build_point_in_time_panel(
 
     trading_dates = pd.Index(sorted(bars["date"].unique()), name="date")
     membership = membership[membership["date"].isin(trading_dates)].copy()
-    membership["provider_ticker"] = membership["ticker"]
-    for row in aliases:
-        start = pd.Timestamp(str(row["start"])).normalize()
-        end = pd.Timestamp(str(row["end"])).normalize()
-        mask = (
-            membership["ticker"].eq(str(row["membership_ticker"]).upper())
-            & membership["date"].between(start, end)
-        )
-        membership.loc[mask, "provider_ticker"] = str(row["provider_ticker"]).upper()
-
-    joined = membership.merge(
-        bars,
-        left_on=["date", "provider_ticker"],
-        right_on=["date", "ticker"],
-        how="left",
-        suffixes=("_membership", "_provider"),
-        validate="one_to_one",
-    )
-    joined = joined.rename(columns={"ticker_membership": "ticker"})
-
     tickers = sorted(membership["ticker"].unique())
-    price = joined.pivot(index="date", columns="ticker", values="close").reindex(
-        index=trading_dates, columns=tickers
+    provider_price = bars.pivot(index="date", columns="ticker", values="close").reindex(
+        index=trading_dates
     )
-    volume = joined.pivot(index="date", columns="ticker", values="volume").reindex(
-        index=trading_dates, columns=tickers
+    provider_volume = bars.pivot(index="date", columns="ticker", values="volume").reindex(
+        index=trading_dates
     )
+    price = pd.DataFrame(index=trading_dates, columns=tickers, dtype=float)
+    volume = pd.DataFrame(index=trading_dates, columns=tickers, dtype=float)
+    alias_rows = list(aliases)
+    for ticker in tickers:
+        ticker_aliases = [
+            row
+            for row in alias_rows
+            if str(row["membership_ticker"]).upper() == str(ticker).upper()
+        ]
+        reuse_protected = any(
+            row.get("download_asof")
+            and not row.get("allow_current_series", False)
+            and str(row["provider_ticker"]).upper() == ticker
+            for row in ticker_aliases
+        )
+        if ticker in provider_price and not reuse_protected:
+            price[ticker] = provider_price[ticker]
+            volume[ticker] = provider_volume[ticker]
+        for row in ticker_aliases:
+            provider = str(row["provider_ticker"]).upper()
+            if provider not in provider_price:
+                continue
+            start = pd.Timestamp(str(row["start"])).normalize()
+            end = pd.Timestamp(str(row["end"])).normalize()
+            if not row.get("download_asof") and price[ticker].notna().sum() == 0:
+                price[ticker] = provider_price[provider]
+                volume[ticker] = provider_volume[provider]
+            else:
+                mask = price.index.to_series().between(start, end).to_numpy()
+                price.loc[mask, ticker] = provider_price.loc[mask, provider]
+                volume.loc[mask, ticker] = provider_volume.loc[mask, provider]
     member = (
         membership.assign(is_member=True)
         .pivot(index="date", columns="ticker", values="is_member")

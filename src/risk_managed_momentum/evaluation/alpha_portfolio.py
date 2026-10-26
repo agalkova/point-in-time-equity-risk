@@ -4,6 +4,8 @@ from typing import Literal
 
 import pandas as pd
 
+from risk_managed_momentum.evaluation.held_returns import value_held_portfolio
+
 PortfolioMode = Literal["long_only", "long_short", "equal_weight"]
 
 
@@ -43,9 +45,11 @@ def simulate_alpha_portfolio(
     mode: PortfolioMode,
     top_n: int,
     one_way_cost_bps: float,
+    valuation_price: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     price = price.sort_index().astype(float)
-    returns = price.pct_change(fill_method=None)
+    valuation = price if valuation_price is None else valuation_price.reindex_like(price)
+    returns = valuation.pct_change(fill_method=None)
     work = signals.copy()
     work["date"] = pd.to_datetime(work["date"]).dt.normalize()
     work = work[work["date"].isin(price.index)].copy()
@@ -67,10 +71,7 @@ def simulate_alpha_portfolio(
     simulation_dates = price.index[price.index >= min(targets)]
     for date in simulation_dates:
         asset_return = returns.loc[date]
-        missing_exposure = float(weights[asset_return.isna()].abs().sum())
-        gross_return = float((weights * asset_return.fillna(0.0)).sum())
-        if 1.0 + gross_return > 0.0:
-            weights = weights.mul(1.0 + asset_return.fillna(0.0)).div(1.0 + gross_return)
+        gross_return, weights = value_held_portfolio(weights, asset_return, date=date)
 
         traded_notional = 0.0
         if date in targets:
@@ -89,7 +90,7 @@ def simulate_alpha_portfolio(
                 "gross_exposure": float(weights.abs().sum()),
                 "invested_weight": float(weights.abs().sum()),
                 "positions": int((weights != 0.0).sum()),
-                "missing_exposure": missing_exposure,
+                "missing_exposure": 0.0,
             }
         )
     return pd.DataFrame(rows)

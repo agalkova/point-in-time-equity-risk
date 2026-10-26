@@ -1,0 +1,52 @@
+[project]
+specification_version = "1.2.0-integrity-expanded-hazard"
+parent_specification = "1.1.0-modern-hazard-challenger"
+random_seed = 42
+claim_status = "exploratory; historical evaluation periods were previously opened"
+
+[data]
+universe = "sp500"
+panel_start = "2016-01-01"
+panel_end = "2026-10-23"
+corporate_actions_path = "data/raw/alpaca/corporate_actions_2016-01-01_2026-10-26.csv.gz"
+corporate_action_overrides_path = "data/reference/terminal_corporate_actions.toml"
+successor_bars_path = "data/raw/alpaca/bars_corporate_action_successors_all.csv.gz"
+membership_path = "data/interim/membership/sp500_v12_daily_membership.csv.gz"
+
+[outcomes]
+maximum_internal_gap_days = 3
+action_match_calendar_days = 7
+drawdown_threshold = -0.15
+horizon_days = 60
+
+[model]
+c = 0.01
+maximum_iterations = 2000
+candidates = ["expanded_2016", "modern_2020", "rolling_2022"]
+training_end = "2024-12-31"
+expanded_start = "2016-07-01"
+modern_start = "2020-01-01"
+rolling_start = "2022-01-01"
+selection_start = "2025-01-01"
+selection_end = "2025-12-31"
+selection_horizon_days = 40
+selection_primary_metric = "average_precision_lift"
+selection_tiebreaker = "roc_auc"
+evaluation_start = "2026-01-01"
+evaluation_end = "2026-10-23"
+
+[inference]
+paired_block_bootstrap_days = 60
+bootstrap_iterations = 2000
+risk_strata = 5
+
+[fundamentals]
+status = "separate ablation; market-only model remains primary"
+availability_lag = "filing date"
+features = ["gross_margin", "operating_margin", "cash_flow_margin", "return_on_assets", "liabilities_to_assets", "asset_growth"]
+
+[prospective]
+record_start = "2026-10-27"
+minimum_calendar_months = 12
+minimum_mature_episodes = 250
+freeze_model_during_record = true
