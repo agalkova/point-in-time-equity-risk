@@ -17,6 +17,8 @@ jobs:
       - run: >-
           ruff check
           scripts/run_daily_risk_pipeline.py
+          scripts/register_hazard_model.py
           src/risk_managed_momentum/operations
           src/risk_managed_momentum/data/universes.py
           tests/test_operations.py
+          tests/test_pipeline_integration.py

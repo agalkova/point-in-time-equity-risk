@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import subprocess
 import tomllib
@@ -10,16 +9,20 @@ from pathlib import Path
 import pandas as pd
 
 from risk_managed_momentum.config import load_config
-from risk_managed_momentum.data.legacy import load_legacy_wide
 from risk_managed_momentum.data.universes import (
     load_ndx_panel,
     load_sp400_panel,
     load_sp500_panel,
 )
-from risk_managed_momentum.features.episodes import build_exuberance_episode_dataset
-from risk_managed_momentum.models.hazard import fit_hazard_model, predict_cumulative_risk
 from risk_managed_momentum.operations.artifacts import publish_atomic_run
-from risk_managed_momentum.operations.monitoring import build_health_report, file_sha256
+from risk_managed_momentum.operations.monitoring import file_sha256
+from risk_managed_momentum.operations.pipeline import score_and_monitor
+from risk_managed_momentum.operations.registry import (
+    canonical_json_bytes,
+    feature_schema_digest,
+    load_active_model,
+)
+from risk_managed_momentum.prospective import content_digest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -37,11 +40,6 @@ def git_revision() -> str:
         capture_output=True,
         text=True,
     ).stdout.strip()
-
-
-def feature_schema_digest(feature_columns: list[str]) -> str:
-    payload = json.dumps(feature_columns, separators=(",", ":")).encode("utf-8")
-    return hashlib.sha256(payload).hexdigest()
 
 
 def source_paths(universe: str, base_config: dict) -> list[Path]:
@@ -81,6 +79,11 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=PROJECT_ROOT / "reports/operations/risk_signals",
     )
+    parser.add_argument(
+        "--registry-root",
+        type=Path,
+        default=PROJECT_ROOT / "reports/operations/model_registry",
+    )
     return parser.parse_args()
 
 
@@ -89,24 +92,14 @@ def main() -> None:
     base_config = load_config(PROJECT_ROOT / "configs/research.toml")
     hazard_config = load_toml(PROJECT_ROOT / "configs/research_v0_9_exuberance_hazard.toml")
     operations = load_toml(PROJECT_ROOT / "configs/operations.toml")
-    legacy_price, legacy_volume = load_legacy_wide(
-        PROJECT_ROOT / base_config["legacy_source"]["price_path"],
-        PROJECT_ROOT / base_config["legacy_source"]["volume_path"],
-    )
-    legacy = build_exuberance_episode_dataset(
-        legacy_price, legacy_volume, base_config, hazard_config
-    )
-    training = legacy.frame[legacy.frame["date"].between(
-        hazard_config["training"]["start"], hazard_config["training"]["end"]
-    )].copy()
-    model = fit_hazard_model(
-        training,
-        legacy.feature_columns,
-        hazard_config["outcome"]["horizon_end_days"],
-        c=float(hazard_config["model"]["c"]),
-        maximum_iterations=int(hazard_config["model"]["maximum_iterations"]),
-        random_seed=int(hazard_config["project"]["random_seed"]),
-    )
+    model, model_metadata, model_path = load_active_model(args.registry_root)
+    if model_metadata["model_specification"] != operations["pipeline"]["model_specification"]:
+        raise RuntimeError("Active model specification differs from operations configuration")
+    paths = source_paths(args.universe, base_config)
+    sources = {
+        str(path.relative_to(PROJECT_ROOT)): file_sha256(path) for path in paths
+    }
+    data_fingerprint = content_digest(canonical_json_bytes(sources))
     loaders = {
         "sp500": lambda: load_sp500_panel(PROJECT_ROOT, base_config),
         "ndx": lambda: load_ndx_panel(PROJECT_ROOT),
@@ -116,7 +109,7 @@ def main() -> None:
     requested_as_of = (
         pd.Timestamp(args.as_of).normalize()
         if args.as_of
-        else pd.Timestamp(price.index.max()).normalize()
+        else pd.Timestamp.today().normalize()
     )
     available_dates = price.index[price.index <= requested_as_of]
     if available_dates.empty:
@@ -125,66 +118,26 @@ def main() -> None:
     price = price.loc[:market_data_date]
     volume = volume.loc[:market_data_date]
     membership = membership.loc[:market_data_date]
-    live = build_exuberance_episode_dataset(
-        price,
-        volume,
-        base_config,
-        hazard_config,
+    result = score_and_monitor(
+        price=price,
+        volume=volume,
         membership=membership,
-        include_unlabeled=True,
-    )
-    if live.feature_columns != legacy.feature_columns:
-        raise RuntimeError("Production feature schema differs from the frozen training schema")
-    scored = predict_cumulative_risk(model, live.frame)
-    reference = scored[scored["date"].between(
-        operations["monitoring_reference"]["start"],
-        operations["monitoring_reference"]["end"],
-    )].copy()
-    if reference.empty:
-        raise RuntimeError("No episodes exist in the frozen modern monitoring reference window")
-    recent_cutoff = market_data_date - pd.Timedelta(
-        days=int(operations["pipeline"]["recent_monitoring_calendar_days"])
-    )
-    recent = scored[scored["date"].ge(recent_cutoff)].copy()
-    health = build_health_report(
         requested_as_of=requested_as_of,
         market_data_date=market_data_date,
-        price=price,
-        membership=membership,
-        reference_episodes=reference,
-        recent_episodes=recent,
-        feature_columns=live.feature_columns,
-        score_column="risk_40",
-        quality_config=operations["quality_gates"],
-        drift_config=operations["drift"],
+        model=model,
+        base_config=base_config,
+        hazard_config=hazard_config,
+        operations_config=operations,
     )
-    signal_columns = [
-        "date",
-        "ticker",
-        "risk_10",
-        "risk_20",
-        "risk_40",
-        "risk_60",
-        "rank_ret_60",
-        "rank_volatility_20",
-        "rank_volume_z_20",
-        "market_return_20",
-        "market_breadth_20",
-    ]
-    signals = scored[scored["date"].eq(market_data_date)][signal_columns].copy()
-    signals = signals.sort_values(["risk_40", "ticker"], ascending=[False, True])
-    if not health["signals_authorized"]:
-        signals = signals.iloc[0:0].copy()
+    signals = result.signals
+    health = result.health
 
     revision = git_revision()
     run_id = (
         f"{args.universe}_{market_data_date.date()}_"
-        f"pipeline-{operations['pipeline']['version']}_code-{revision[:8]}"
+        f"pipeline-{operations['pipeline']['version']}_code-{revision[:8]}_"
+        f"model-{model_metadata['artifact_id'][-8:]}_data-{data_fingerprint[:8]}"
     )
-    sources = {
-        str(path.relative_to(PROJECT_ROOT)): file_sha256(path)
-        for path in source_paths(args.universe, base_config)
-    }
     manifest = {
         "run_id": run_id,
         "pipeline_version": operations["pipeline"]["version"],
@@ -193,11 +146,15 @@ def main() -> None:
         "universe": args.universe,
         "requested_as_of": str(requested_as_of.date()),
         "market_data_date": str(market_data_date.date()),
-        "training_last_episode_date": str(training["date"].max().date()),
-        "training_episodes": len(training),
-        "feature_count": len(live.feature_columns),
-        "feature_schema_sha256": feature_schema_digest(live.feature_columns),
+        "model_artifact_id": model_metadata["artifact_id"],
+        "model_artifact_path": str(model_path),
+        "model_sha256": model_metadata["model_sha256"],
+        "training_last_episode_date": model_metadata["training_last_episode_date"],
+        "training_episodes": model_metadata["training_episodes"],
+        "feature_count": len(result.feature_columns),
+        "feature_schema_sha256": feature_schema_digest(result.feature_columns),
         "source_sha256": sources,
+        "source_fingerprint_sha256": data_fingerprint,
         "health_status": health["status"],
         "signals_authorized": health["signals_authorized"],
         "signals_emitted": len(signals),

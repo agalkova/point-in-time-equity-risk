@@ -8,6 +8,10 @@ import numpy as np
 import pandas as pd
 
 
+def _finite_or_none(value: float) -> float | None:
+    return float(value) if np.isfinite(value) else None
+
+
 def file_sha256(path: Path, chunk_size: int = 1024 * 1024) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -72,11 +76,13 @@ def build_health_report(
         recent_episodes[score_column],
         bins=int(drift_config["bins"]),
     )
-    finite_feature_psi = {key: value for key, value in feature_psi.items() if np.isfinite(value)}
-    maximum_feature_psi = max(finite_feature_psi.values(), default=float("nan"))
+    available_feature_psi = {
+        key: value for key, value in feature_psi.items() if not np.isnan(value)
+    }
+    maximum_feature_psi = max(available_feature_psi.values(), default=float("nan"))
     median_feature_psi = (
-        float(np.median(list(finite_feature_psi.values())))
-        if finite_feature_psi
+        float(np.median(list(available_feature_psi.values())))
+        if available_feature_psi
         else float("nan")
     )
     gates = {
@@ -101,16 +107,21 @@ def build_health_report(
             "minimum": int(quality_config["minimum_recent_episodes"]),
             "passed": len(recent_episodes) >= int(quality_config["minimum_recent_episodes"]),
         },
+        "drift_metrics_available": {
+            "value": not np.isnan(score_psi) and bool(available_feature_psi),
+            "required": True,
+            "passed": not np.isnan(score_psi) and bool(available_feature_psi),
+        },
     }
     failure_threshold = float(drift_config["failure_psi"])
     warning_threshold = float(drift_config["warning_psi"])
     severe_drift = bool(
-        (np.isfinite(score_psi) and score_psi > failure_threshold)
-        or (np.isfinite(median_feature_psi) and median_feature_psi > failure_threshold)
+        (not np.isnan(score_psi) and score_psi > failure_threshold)
+        or (not np.isnan(median_feature_psi) and median_feature_psi > failure_threshold)
     )
     warning_drift = bool(
-        (np.isfinite(score_psi) and score_psi > warning_threshold)
-        or (np.isfinite(maximum_feature_psi) and maximum_feature_psi > warning_threshold)
+        (not np.isnan(score_psi) and score_psi > warning_threshold)
+        or (not np.isnan(maximum_feature_psi) and maximum_feature_psi > warning_threshold)
     )
     hard_gates_passed = all(item["passed"] for item in gates.values())
     status = "FAIL" if not hard_gates_passed or severe_drift else "WARN" if warning_drift else "PASS"
@@ -122,13 +133,14 @@ def build_health_report(
         "market_data_date": str(market_data_date.date()),
         "gates": gates,
         "drift": {
-            "score_psi": score_psi,
-            "maximum_feature_psi": maximum_feature_psi,
-            "median_feature_psi": median_feature_psi,
+            "score_psi": _finite_or_none(score_psi),
+            "maximum_feature_psi": _finite_or_none(maximum_feature_psi),
+            "median_feature_psi": _finite_or_none(median_feature_psi),
             "warning_threshold": warning_threshold,
             "failure_threshold": failure_threshold,
             "top_feature_psi": [
-                {"feature": feature, "psi": value} for feature, value in top_drift
+                {"feature": feature, "psi": _finite_or_none(value)}
+                for feature, value in top_drift
             ],
         },
     }

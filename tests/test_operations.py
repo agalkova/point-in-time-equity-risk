@@ -6,8 +6,17 @@ import numpy as np
 import pandas as pd
 
 from risk_managed_momentum.features.build import build_research_dataset
+from risk_managed_momentum.models.hazard import fit_hazard_model
 from risk_managed_momentum.operations.artifacts import publish_atomic_run
-from risk_managed_momentum.operations.monitoring import population_stability_index
+from risk_managed_momentum.operations.monitoring import (
+    build_health_report,
+    population_stability_index,
+)
+from risk_managed_momentum.operations.registry import (
+    activate_model,
+    load_active_model,
+    register_model_artifact,
+)
 
 
 class OperationsTests(unittest.TestCase):
@@ -62,6 +71,84 @@ class OperationsTests(unittest.TestCase):
                     health={"status": "PASS"},
                     manifest={"version": "1"},
                 )
+
+    def test_atomic_run_rejects_nonfinite_json(self) -> None:
+        with tempfile.TemporaryDirectory() as directory, self.assertRaises(ValueError):
+            publish_atomic_run(
+                Path(directory),
+                "run-nan",
+                signals=pd.DataFrame(),
+                health={"score_psi": float("nan")},
+                manifest={"version": "1"},
+            )
+
+    def test_model_registry_round_trip_and_checksum(self) -> None:
+        episodes = pd.DataFrame(
+            {
+                "factor_a": np.linspace(-1.0, 1.0, 20),
+                "factor_b": np.tile([0.0, 1.0], 10),
+                "first_breach_days": [5.0, 15.0, np.nan, np.nan] * 5,
+            }
+        )
+        fitted = fit_hazard_model(
+            episodes,
+            ["factor_a", "factor_b"],
+            [10, 20],
+            c=1.0,
+            maximum_iterations=200,
+            random_seed=7,
+        )
+        metadata = {
+            "model_specification": "test-v1",
+            "training_data_sha256": "data-hash",
+            "training_config_sha256": "config-hash",
+            "training_last_episode_date": "2024-12-31",
+            "training_episodes": len(episodes),
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            artifact, reused = register_model_artifact(root, fitted, metadata)
+            self.assertFalse(reused)
+            _, reused = register_model_artifact(root, fitted, metadata)
+            self.assertTrue(reused)
+            activate_model(root, artifact.name)
+            loaded, loaded_metadata, loaded_path = load_active_model(root)
+            self.assertEqual(loaded.feature_columns, ["factor_a", "factor_b"])
+            self.assertEqual(loaded_metadata["artifact_id"], artifact.name)
+            self.assertEqual(loaded_path, artifact)
+            model_path = artifact / "model.joblib"
+            model_path.write_bytes(model_path.read_bytes() + b"tampered")
+            with self.assertRaises(ValueError):
+                load_active_model(root)
+
+    def test_health_report_fails_for_stale_data_and_stays_json_safe(self) -> None:
+        dates = pd.bdate_range("2024-01-01", periods=200)
+        market_date = dates[-1]
+        price = pd.DataFrame({"A": np.linspace(100.0, 120.0, len(dates))}, index=dates)
+        membership = pd.DataFrame(True, index=dates, columns=["A"])
+        reference = pd.DataFrame(
+            {"factor": np.linspace(0.0, 1.0, 100), "risk": np.linspace(0.0, 1.0, 100)}
+        )
+        report = build_health_report(
+            requested_as_of=market_date + pd.Timedelta(days=10),
+            market_data_date=market_date,
+            price=price,
+            membership=membership,
+            reference_episodes=reference,
+            recent_episodes=reference.copy(),
+            feature_columns=["factor"],
+            score_column="risk",
+            quality_config={
+                "minimum_history_trading_days": 180,
+                "minimum_latest_membership_coverage": 0.95,
+                "maximum_market_data_staleness_calendar_days": 4,
+                "minimum_recent_episodes": 25,
+            },
+            drift_config={"bins": 10, "warning_psi": 0.10, "failure_psi": 0.25},
+        )
+        self.assertEqual(report["status"], "FAIL")
+        self.assertFalse(report["signals_authorized"])
+        self.assertFalse(report["gates"]["market_data_staleness_days"]["passed"])
 
 
 if __name__ == "__main__":
