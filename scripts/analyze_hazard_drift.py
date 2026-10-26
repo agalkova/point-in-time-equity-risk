@@ -127,9 +127,14 @@ def main() -> None:
     timeline_source = live.frame[["date"]].copy()
     timeline_source["champion_risk_40"] = champion_scored["risk_40"]
     timeline_source["challenger_risk_40"] = challenger_scored["risk_40"]
-    timeline_source["month"] = timeline_source["date"].dt.to_period("M").dt.to_timestamp()
-    for month, group in timeline_source.groupby("month"):
-        if len(group) < 10:
+    months = (
+        timeline_source["date"].dt.to_period("M").drop_duplicates().sort_values().tolist()
+    )
+    for month_period in months:
+        month = month_period.to_timestamp(how="end").normalize()
+        window_start = month - pd.Timedelta(days=180)
+        group = timeline_source[timeline_source["date"].between(window_start, month)]
+        if len(group) < 25:
             continue
         timeline_rows.append(
             {
@@ -231,7 +236,7 @@ def main() -> None:
         linewidth=2,
     )
     axes[0].axhline(0.25, color="black", linestyle="--", linewidth=1, label="Failure limit")
-    axes[0].set_title("Monthly 40-day score drift")
+    axes[0].set_title("Rolling 180-day 40-day score drift")
     axes[0].set_ylabel("PSI versus 2024–2025 reference")
     axes[0].legend(frameon=False)
     top = feature_drift.head(10).sort_values("psi")
@@ -243,6 +248,59 @@ def main() -> None:
     figure.tight_layout()
     figure.savefig(FIGURES / "v11_operational_drift.png", dpi=180, bbox_inches="tight")
     plt.close(figure)
+
+    comparison = pd.read_csv(TABLES / "v11_hazard_challenger_metrics.csv")
+    comparison = comparison[
+        comparison["period"].eq("evaluation_2026")
+        & comparison["horizon_days"].eq(40)
+    ].copy()
+    universe_order = ["S&P 500", "Nasdaq-100", "S&P 400"]
+    model_order = ["legacy_champion", "modern_rolling"]
+    colors = {"legacy_champion": "#6c757d", "modern_rolling": "#205493"}
+    labels = {"legacy_champion": "Legacy champion", "modern_rolling": "Modern challenger"}
+    comparison_figure, comparison_axes = plt.subplots(1, 3, figsize=(14, 4.8))
+    positions = np.arange(len(universe_order))
+    width = 0.36
+    for offset, model_name in enumerate(model_order):
+        subset = comparison[comparison["model"].eq(model_name)].set_index("universe")
+        x = positions + (offset - 0.5) * width
+        comparison_axes[0].bar(
+            x,
+            subset.loc[universe_order, "average_precision_lift"],
+            width,
+            label=labels[model_name],
+            color=colors[model_name],
+        )
+        comparison_axes[1].bar(
+            x,
+            subset.loc[universe_order, "roc_auc"],
+            width,
+            color=colors[model_name],
+        )
+    comparison_axes[0].axhline(1.0, color="black", linestyle="--", linewidth=1)
+    comparison_axes[0].set_title("40-day precision lift")
+    comparison_axes[0].legend(frameon=False)
+    comparison_axes[1].axhline(0.5, color="black", linestyle="--", linewidth=1)
+    comparison_axes[1].set_title("40-day ROC AUC")
+    for axis in comparison_axes[:2]:
+        axis.set_xticks(positions, universe_order, rotation=20)
+    comparison_axes[2].bar(
+        ["Legacy\nchampion", "Modern\nchallenger"],
+        [champion_psi, challenger_psi],
+        color=[colors["legacy_champion"], colors["modern_rolling"]],
+    )
+    comparison_axes[2].axhline(0.25, color="black", linestyle="--", linewidth=1)
+    comparison_axes[2].set_title("Current score PSI")
+    comparison_figure.suptitle(
+        "Modern hazard challenger: strong shadow model, promotion rule not met",
+        fontsize=14,
+        fontweight="bold",
+    )
+    comparison_figure.tight_layout()
+    comparison_figure.savefig(
+        FIGURES / "v11_hazard_challenger.png", dpi=180, bbox_inches="tight"
+    )
+    plt.close(comparison_figure)
 
     summary = {
         "active_champion_artifact": metadata["artifact_id"],

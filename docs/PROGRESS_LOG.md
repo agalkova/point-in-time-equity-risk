@@ -237,3 +237,28 @@ Operational interpretation:
 - The remaining live failure is model-regime drift, not a broken download or incomplete universe.
 - Any response to that drift must be treated as a new model release, not a threshold adjustment.
 
+## 2026-10-26 — modern challenger and shadow deployment
+
+Completed:
+
+- Froze two modern logistic-hazard candidates, their 2025 selection rule, 2026 evaluation, transfer
+  diagnostics, and promotion thresholds before generating results.
+- Selected the 2022–2024 rolling candidate over the 2020–2024 expanding candidate on 501 validation
+  episodes.
+- On 394 mature 2026 S&P 500 episodes, achieved 0.699 ROC AUC, 1.810× precision lift, 0.152 Brier
+  score, and a 7.25× top/bottom-quintile event ratio.
+- Passed absolute discrimination, calibration-tolerance, drift, and both transfer-universe gates.
+- Reduced current score PSI from 0.684 to 0.118, approximately an 83% reduction.
+- Withheld promotion because precision-lift improvement versus the champion was 0.014× rather than
+  the frozen 0.05× requirement.
+- Registered the selected model under an immutable `SHADOW` pointer and retained per-onset shadow
+  risk curves without granting signal authority.
+- Replaced repeat-every-run notifications with state-aware new-failure/change/recovery alerts.
+
+Interpretation:
+
+- The operational drift is consistent with market-regime change and legacy-model aging, not a
+  broken feed or incomplete membership panel.
+- The shadow model is materially more stable and predictively credible, but the frozen governance
+  contract correctly prevents calling a modest incremental improvement a release victory.
+

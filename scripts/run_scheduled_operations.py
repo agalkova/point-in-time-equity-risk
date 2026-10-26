@@ -83,8 +83,7 @@ def alert_signature(event: dict[str, Any]) -> str:
         "status": event.get("status"),
         "health_status": event.get("health_status"),
         "stage": event.get("stage"),
-        "run_id": pipeline.get("run_id"),
-        "market_data_date": pipeline.get("market_data_date"),
+        "health_reasons": pipeline.get("health_reasons", []),
         "stderr_sha256": hashlib.sha256(latest_stderr.encode("utf-8")).hexdigest(),
     }
     return hashlib.sha256(strict_json_bytes(identity)).hexdigest()

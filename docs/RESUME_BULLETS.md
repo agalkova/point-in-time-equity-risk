@@ -28,6 +28,10 @@ Use one or two of these, adjusted to the space available:
   code/model/data lineage, fail-closed signal suppression, atomic publication, byte-verifiable
   idempotent retries, transactional data refresh with rollback, concurrency locks, failure alerts,
   local scheduling, and credential-free end-to-end CI.
+- Built a governed champion–challenger release process: diagnosed market-regime drift, reduced
+  output PSI from 0.684 to 0.118 with a modern rolling hazard model, validated it across three
+  universes, and deployed immutable shadow scoring while withholding promotion after one frozen
+  incremental-performance criterion failed.
 - Built a separate 22-feature expected-return research layer with 33K walk-forward
   security-month predictions, cost-aware long-only/long-short simulation, six-factor HAC
   attribution, and an explicitly frozen prospective candidate after rejecting the primary

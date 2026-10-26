@@ -16,6 +16,7 @@ flowchart LR
     D --> E[Unlabeled feature inference]
     E --> F[Exuberance onset detector]
     M[Immutable model registry] --> G[Frozen v0.9 hazard model]
+    M --> S[Non-authoritative shadow challenger]
     F --> G
     G --> H[Coverage, freshness, and PSI gates]
     H -->|PASS or WARN| I[Authorized signals]
@@ -23,6 +24,7 @@ flowchart LR
     I --> K[Atomic run directory]
     J --> K
     K --> L[Hashes, manifest, health report]
+    S --> N[Retained shadow signals and PSI]
 ```
 
 ## Operational controls
@@ -37,6 +39,9 @@ Every run records:
 - price coverage, history length, staleness, and recent episode volume;
 - score PSI plus median, maximum, and top feature PSI values;
 - hashes binding the signal file and health report to the manifest.
+
+Operational inference refuses to run from a tracked dirty worktree. This prevents two different
+payloads from claiming the same Git revision and run identity during active development.
 
 Training is a separate, explicit operation. It produces an immutable `joblib` artifact plus
 strict JSON metadata containing the training-data/config hashes, feature schema, horizons,
@@ -132,6 +137,16 @@ python scripts/render_macos_schedule.py
 
 The generated plist is local operational output. Review it before copying it into
 `~/Library/LaunchAgents/`; rendering does not silently enable a background job.
+
+Alert state is retained separately from run receipts. A new failure reason, a changed failure, or a
+recovery creates a notification; an unchanged repeat is recorded but stays quiet.
+
+## Shadow model
+
+The registry may also contain a `SHADOW` pointer. A shadow artifact is checksum-verified and scored
+on the same episode onsets, but it cannot authorize a signal. Its per-ticker risk curves are retained
+in `shadow_signals.csv`, and its artifact identity and score PSI are recorded in health and manifest
+evidence. Changing `SHADOW` never changes `ACTIVE`.
 
 ## Verified operating examples
 

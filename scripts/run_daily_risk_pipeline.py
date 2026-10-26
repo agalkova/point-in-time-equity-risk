@@ -35,6 +35,15 @@ def load_toml(path: Path) -> dict:
 
 
 def git_revision() -> str:
+    status = subprocess.run(
+        ["git", "status", "--porcelain", "--untracked-files=no"],
+        cwd=PROJECT_ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    if status:
+        raise RuntimeError("Operational inference requires a clean tracked Git worktree")
     return subprocess.run(
         ["git", "rev-parse", "HEAD"],
         cwd=PROJECT_ROOT,
@@ -70,6 +79,25 @@ def source_paths(universe: str, base_config: dict) -> list[Path]:
     if gap.exists():
         paths.append(gap)
     return paths
+
+
+def health_reasons(health: dict) -> list[str]:
+    reasons = [
+        f"gate:{name}"
+        for name, value in health["gates"].items()
+        if not value["passed"]
+    ]
+    drift = health["drift"]
+    if drift["score_psi"] is not None and drift["score_psi"] > drift["failure_threshold"]:
+        reasons.append("drift:score_psi_failure")
+    if (
+        drift["median_feature_psi"] is not None
+        and drift["median_feature_psi"] > drift["failure_threshold"]
+    ):
+        reasons.append("drift:median_feature_psi_failure")
+    if health["status"] == "WARN" and not reasons:
+        reasons.append("drift:warning")
+    return sorted(reasons)
 
 
 def parse_args() -> argparse.Namespace:
@@ -225,6 +253,7 @@ def main() -> None:
             len(shadow_signals) if shadow_signals is not None else 0
         ),
         "market_data_date": str(market_data_date.date()),
+        "health_reasons": health_reasons(health),
     }
     print(json.dumps(result, indent=2))
     if health["status"] == "FAIL":

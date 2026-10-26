@@ -75,6 +75,15 @@ prevents concurrent runs, retains attempt receipts, supports private failure web
 weekday macOS schedule. A live October 23 refresh reached 100% current-member coverage but still
 failed closed on model-score drift, demonstrating that current data cannot bypass model controls.
 
+A frozen modern challenger study then diagnosed regime-driven model aging. The selected rolling
+hazard model reduced current score PSI from **0.684 to 0.118** while producing **0.699 ROC AUC**,
+**1.81× precision lift**, and a **7.25×** top/bottom-quintile risk ratio on mature 2026 S&P 500
+episodes. It nevertheless missed the prewritten incremental-lift requirement and was deployed only
+as an immutable, non-authoritative shadow model. See
+[docs/HAZARD_CHALLENGER_RESULTS.md](docs/HAZARD_CHALLENGER_RESULTS.md).
+
+![Modern hazard challenger comparison](docs/figures/v11_hazard_challenger.png)
+
 The integration test produced authorized historical snapshots for all three universes and also
 demonstrated the failure path: a 2026 S&P 500 run detected severe score drift and suppressed all
 signals. See [docs/PRODUCTION_RISK_PIPELINE.md](docs/PRODUCTION_RISK_PIPELINE.md) for the
@@ -263,6 +272,8 @@ python scripts/generate_prospective_alpha_candidate.py
 python scripts/run_exuberance_hazard.py
 python scripts/run_calibrated_overlay.py
 python scripts/register_hazard_model.py --activate
+python scripts/run_hazard_challenger.py
+python scripts/analyze_hazard_drift.py
 python scripts/run_scheduled_operations.py
 python scripts/make_figures.py
 ```
