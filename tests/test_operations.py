@@ -12,11 +12,13 @@ from risk_managed_momentum.operations.monitoring import (
     build_health_report,
     population_stability_index,
 )
+from risk_managed_momentum.operations.refresh import atomic_write_dataframes, merge_bar_history
 from risk_managed_momentum.operations.registry import (
     activate_model,
     load_active_model,
     register_model_artifact,
 )
+from risk_managed_momentum.operations.runtime import ConcurrentRunError, exclusive_run_lock
 
 
 class OperationsTests(unittest.TestCase):
@@ -149,6 +151,63 @@ class OperationsTests(unittest.TestCase):
         self.assertEqual(report["status"], "FAIL")
         self.assertFalse(report["signals_authorized"])
         self.assertFalse(report["gates"]["market_data_staleness_days"]["passed"])
+
+    def test_bar_refresh_replaces_overlap_without_duplicates(self) -> None:
+        columns = [
+            "timestamp",
+            "date",
+            "ticker",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+        ]
+        existing = pd.DataFrame(
+            [
+                ["2024-01-01T00:00:00Z", "2024-01-01", "A", 1, 1, 1, 1, 10],
+                ["2024-01-02T00:00:00Z", "2024-01-02", "A", 2, 2, 2, 2, 20],
+            ],
+            columns=columns,
+        )
+        incoming = pd.DataFrame(
+            [
+                ["2024-01-02T00:00:00Z", "2024-01-02", "A", 3, 3, 3, 3, 30],
+                ["2024-01-03T00:00:00Z", "2024-01-03", "A", 4, 4, 4, 4, 40],
+            ],
+            columns=columns,
+        )
+        merged = merge_bar_history(
+            existing,
+            incoming,
+            replace_from=pd.Timestamp("2024-01-02"),
+        )
+        self.assertEqual(merged["close"].tolist(), [1, 3, 4])
+        self.assertFalse(merged.duplicated(["ticker", "date"]).any())
+
+    def test_exclusive_run_lock_rejects_concurrent_holder(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            lock = Path(directory) / "pipeline.lock"
+            with (
+                exclusive_run_lock(lock),
+                self.assertRaises(ConcurrentRunError),
+                exclusive_run_lock(lock),
+            ):
+                self.fail("A second lock holder should never enter")
+
+    def test_dataframe_transaction_can_replace_multiple_directories(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            first = root / "one" / "first.csv"
+            second = root / "two" / "second.csv"
+            atomic_write_dataframes(
+                {
+                    first: pd.DataFrame({"value": [1]}),
+                    second: pd.DataFrame({"value": [2]}),
+                }
+            )
+            self.assertEqual(pd.read_csv(first)["value"].tolist(), [1])
+            self.assertEqual(pd.read_csv(second)["value"].tolist(), [2])
 
 
 if __name__ == "__main__":

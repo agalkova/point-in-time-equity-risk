@@ -102,6 +102,37 @@ CI runs a credential-free synthetic integration test through feature constructio
 registration/loading, inference, health gates, and atomic publication. Unit tests also verify
 checksum tamper detection, strict JSON serialization, staleness blocking, and idempotent retries.
 
+## Refresh and scheduling
+
+The operational S&P 500 refresh uses the existing local Alpaca credentials and a 400-calendar-day
+overlap window. It reconstructs membership through the requested date, downloads delayed SIP bars
+through the latest completed day allowed by the free account, replaces the overlap, and validates
+duplicates, schema, freshness, and current-member coverage before publishing. Bars, membership,
+and membership reference tables are replaced as one rollback-capable transaction.
+
+```bash
+python scripts/refresh_sp500_operations.py
+python scripts/run_scheduled_operations.py
+```
+
+The scheduler wrapper holds a non-blocking process lock, runs refresh before inference, retains a
+strict JSON receipt for every attempt, and propagates nonzero failure status. On macOS it uses a
+local notification by default. An HTTPS webhook can replace that local notification; the value
+remains outside Git:
+
+```text
+RMM_ALERT_WEBHOOK_URL=https://your-private-webhook
+```
+
+On macOS, render a weekday 6:15 p.m. `launchd` definition with:
+
+```bash
+python scripts/render_macos_schedule.py
+```
+
+The generated plist is local operational output. Review it before copying it into
+`~/Library/LaunchAgents/`; rendering does not silently enable a background job.
+
 ## Verified operating examples
 
 | Universe/date | Status | Authorized signals | Behavior |
@@ -110,8 +141,11 @@ checksum tamper detection, strict JSON serialization, staleness blocking, and id
 | Nasdaq-100 / 2025-12-26 | WARN | 0 | Healthy run with no new episode onset that day |
 | S&P 400 / 2025-12-26 | WARN | 2 | Emitted two new episode-onset records |
 | S&P 500 / 2026-09-30 | FAIL | 0 | Suppressed output after score PSI reached 0.521 versus the 0.25 failure threshold |
+| S&P 500 / 2026-10-23 | FAIL | 0 | Fresh, complete input passed every data gate, but score PSI reached 0.684; output remained suppressed |
 
-The 2026 failure is not retroactively “fixed.” It demonstrates intended production behavior: good coverage and fresh data are insufficient when the live score distribution has moved outside the accepted operating envelope.
+The 2026 failures are not retroactively “fixed.” The October refresh is especially informative:
+100% current-member coverage and acceptable three-day weekend staleness were not enough to bypass
+model-health controls. Fresh data and a healthy model are deliberately separate requirements.
 
 ## Interpretation
 

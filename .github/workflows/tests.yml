@@ -18,6 +18,9 @@ jobs:
           ruff check
           scripts/run_daily_risk_pipeline.py
           scripts/register_hazard_model.py
+          scripts/refresh_sp500_operations.py
+          scripts/run_scheduled_operations.py
+          scripts/render_macos_schedule.py
           src/risk_managed_momentum/operations
           src/risk_managed_momentum/data/universes.py
           tests/test_operations.py

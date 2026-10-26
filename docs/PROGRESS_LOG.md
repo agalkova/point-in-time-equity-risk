@@ -215,3 +215,25 @@ Operational interpretation:
 - CI covers the complete operational path without relying on private data or external services.
 - The project demonstrates model governance and reproducible batch inference, not just research.
 
+## 2026-10-26 — live data refresh and scheduled operations
+
+Completed:
+
+- Added a delayed-SIP S&P 500 refresh with a 400-calendar-day overlap and full point-in-time
+  membership reconstruction.
+- Staged and validated every replacement before publishing; added multi-file rollback behavior so
+  an interrupted update does not leave a mixed bars/membership state.
+- Added non-blocking run locks, retained orchestration receipts, nonzero failure propagation, and
+  optional private HTTPS webhook alerts.
+- Added a renderer for a weekday 6:15 p.m. macOS schedule without silently installing it.
+- Refreshed the live panel through 2026-10-23: 1,860 trading days, 503 current members, and 100%
+  latest-member price coverage.
+- Confirmed all data-quality gates passed with three-day weekend staleness and 335 recent episodes.
+- Preserved fail-closed behavior when score PSI reached 0.684; no signal was emitted.
+
+Operational interpretation:
+
+- The stale-data problem is resolved using the free delayed-SIP entitlement.
+- The remaining live failure is model-regime drift, not a broken download or incomplete universe.
+- Any response to that drift must be treated as a new model release, not a threshold adjustment.
+

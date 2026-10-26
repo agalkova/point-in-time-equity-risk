@@ -70,6 +70,11 @@ than silently retraining. Run identities bind the code revision, model artifact,
 fingerprint. A synthetic end-to-end CI test exercises the entire path without private data or API
 credentials.
 
+An operational wrapper now refreshes delayed SIP bars and point-in-time membership transactionally,
+prevents concurrent runs, retains attempt receipts, supports private failure webhooks, and renders a
+weekday macOS schedule. A live October 23 refresh reached 100% current-member coverage but still
+failed closed on model-score drift, demonstrating that current data cannot bypass model controls.
+
 The integration test produced authorized historical snapshots for all three universes and also
 demonstrated the failure path: a 2026 S&P 500 run detected severe score drift and suppressed all
 signals. See [docs/PRODUCTION_RISK_PIPELINE.md](docs/PRODUCTION_RISK_PIPELINE.md) for the
@@ -258,7 +263,7 @@ python scripts/generate_prospective_alpha_candidate.py
 python scripts/run_exuberance_hazard.py
 python scripts/run_calibrated_overlay.py
 python scripts/register_hazard_model.py --activate
-python scripts/run_daily_risk_pipeline.py --universe sp500
+python scripts/run_scheduled_operations.py
 python scripts/make_figures.py
 ```
 
