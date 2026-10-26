@@ -24,6 +24,7 @@ def publish_atomic_run(
     signals: pd.DataFrame,
     health: dict[str, Any],
     manifest: dict[str, Any],
+    shadow_signals: pd.DataFrame | None = None,
 ) -> tuple[Path, bool]:
     """Atomically publish a deterministic run, or verify an identical retry."""
     signal_content = csv_bytes(signals)
@@ -33,12 +34,17 @@ def publish_atomic_run(
         "signals_sha256": content_digest(signal_content),
         "health_sha256": content_digest(health_content),
     }
+    shadow_content = csv_bytes(shadow_signals) if shadow_signals is not None else None
+    if shadow_content is not None:
+        complete_manifest["shadow_signals_sha256"] = content_digest(shadow_content)
     manifest_content = _json_bytes(complete_manifest)
     files = {
         "signals.csv": signal_content,
         "health.json": health_content,
         "manifest.json": manifest_content,
     }
+    if shadow_content is not None:
+        files["shadow_signals.csv"] = shadow_content
     final = output_root / run_id
     if final.exists():
         for name, expected in files.items():

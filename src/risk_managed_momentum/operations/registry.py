@@ -79,12 +79,19 @@ def register_model_artifact(
 
 
 def activate_model(registry_root: Path, artifact_id: str) -> Path:
+    return set_model_pointer(registry_root, artifact_id, "ACTIVE")
+
+
+def set_model_pointer(registry_root: Path, artifact_id: str, pointer_name: str) -> Path:
+    if not pointer_name or not pointer_name.replace("_", "").isalnum():
+        raise ValueError(f"Invalid model pointer name: {pointer_name!r}")
+    pointer_name = pointer_name.upper()
     artifact_path = registry_root / artifact_id
     if not artifact_path.is_dir():
         raise FileNotFoundError(f"Cannot activate missing model artifact: {artifact_path}")
-    pointer = registry_root / "ACTIVE"
+    pointer = registry_root / pointer_name
     content = (artifact_id + "\n").encode("utf-8")
-    temporary = registry_root / ".ACTIVE.tmp"
+    temporary = registry_root / f".{pointer_name}.tmp"
     temporary.write_bytes(content)
     temporary.replace(pointer)
     return pointer
@@ -108,15 +115,21 @@ def load_model_artifact(artifact_path: Path) -> tuple[FittedHazardModel, dict[st
 
 
 def load_active_model(registry_root: Path) -> tuple[FittedHazardModel, dict[str, Any], Path]:
-    pointer = registry_root / "ACTIVE"
+    return load_model_pointer(registry_root, "ACTIVE")
+
+
+def load_model_pointer(
+    registry_root: Path,
+    pointer_name: str,
+) -> tuple[FittedHazardModel, dict[str, Any], Path]:
+    pointer_name = pointer_name.upper()
+    pointer = registry_root / pointer_name
     if not pointer.exists():
-        raise FileNotFoundError(
-            f"No active model pointer at {pointer}; run register_hazard_model.py --activate"
-        )
+        raise FileNotFoundError(f"No {pointer_name} model pointer at {pointer}")
     artifact_id = pointer.read_text().strip()
     artifact_path = registry_root / artifact_id
     fitted, metadata = load_model_artifact(artifact_path)
     if metadata["artifact_id"] != artifact_id:
-        raise ValueError("Active pointer and model metadata artifact IDs differ")
+        raise ValueError(f"{pointer_name} pointer and model metadata artifact IDs differ")
     return fitted, metadata, artifact_path
 

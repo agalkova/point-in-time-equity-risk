@@ -21,6 +21,8 @@ jobs:
           scripts/refresh_sp500_operations.py
           scripts/run_scheduled_operations.py
           scripts/render_macos_schedule.py
+          scripts/run_hazard_challenger.py
+          scripts/analyze_hazard_drift.py
           src/risk_managed_momentum/operations
           src/risk_managed_momentum/data/universes.py
           tests/test_operations.py

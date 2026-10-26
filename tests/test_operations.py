@@ -16,7 +16,9 @@ from risk_managed_momentum.operations.refresh import atomic_write_dataframes, me
 from risk_managed_momentum.operations.registry import (
     activate_model,
     load_active_model,
+    load_model_pointer,
     register_model_artifact,
+    set_model_pointer,
 )
 from risk_managed_momentum.operations.runtime import ConcurrentRunError, exclusive_run_lock
 from scripts.run_scheduled_operations import alert_signature, alert_transition
@@ -115,10 +117,13 @@ class OperationsTests(unittest.TestCase):
             _, reused = register_model_artifact(root, fitted, metadata)
             self.assertTrue(reused)
             activate_model(root, artifact.name)
+            set_model_pointer(root, artifact.name, "SHADOW")
             loaded, loaded_metadata, loaded_path = load_active_model(root)
             self.assertEqual(loaded.feature_columns, ["factor_a", "factor_b"])
             self.assertEqual(loaded_metadata["artifact_id"], artifact.name)
             self.assertEqual(loaded_path, artifact)
+            shadow, _, _ = load_model_pointer(root, "SHADOW")
+            self.assertEqual(shadow.feature_columns, loaded.feature_columns)
             model_path = artifact / "model.joblib"
             model_path.write_bytes(model_path.read_bytes() + b"tampered")
             with self.assertRaises(ValueError):

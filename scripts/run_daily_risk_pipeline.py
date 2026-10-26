@@ -14,13 +14,15 @@ from risk_managed_momentum.data.universes import (
     load_sp400_panel,
     load_sp500_panel,
 )
+from risk_managed_momentum.models.hazard import predict_cumulative_risk
 from risk_managed_momentum.operations.artifacts import publish_atomic_run
-from risk_managed_momentum.operations.monitoring import file_sha256
+from risk_managed_momentum.operations.monitoring import file_sha256, population_stability_index
 from risk_managed_momentum.operations.pipeline import score_and_monitor
 from risk_managed_momentum.operations.registry import (
     canonical_json_bytes,
     feature_schema_digest,
     load_active_model,
+    load_model_pointer,
 )
 from risk_managed_momentum.prospective import content_digest
 
@@ -131,6 +133,46 @@ def main() -> None:
     )
     signals = result.signals
     health = result.health
+    shadow_signals = None
+    shadow_metadata = None
+    try:
+        shadow_model, shadow_metadata, _ = load_model_pointer(args.registry_root, "SHADOW")
+    except FileNotFoundError:
+        shadow_model = None
+    if shadow_model is not None:
+        if shadow_model.feature_columns != result.feature_columns:
+            raise RuntimeError("Shadow model feature schema differs from production schema")
+        shadow_scored = predict_cumulative_risk(shadow_model, result.scored_episodes)
+        shadow_signals = shadow_scored[shadow_scored["date"].eq(market_data_date)][
+            ["date", "ticker", "risk_10", "risk_20", "risk_40", "risk_60"]
+        ].rename(
+            columns={
+                f"risk_{horizon}": f"shadow_risk_{horizon}"
+                for horizon in [10, 20, 40, 60]
+            }
+        )
+        shadow_signals = shadow_signals.sort_values(
+            ["shadow_risk_40", "ticker"], ascending=[False, True]
+        )
+        reference_mask = shadow_scored["date"].between(
+            operations["monitoring_reference"]["start"],
+            operations["monitoring_reference"]["end"],
+        )
+        recent_cutoff = market_data_date - pd.Timedelta(
+            days=int(operations["pipeline"]["recent_monitoring_calendar_days"])
+        )
+        recent_mask = shadow_scored["date"].ge(recent_cutoff)
+        shadow_psi = population_stability_index(
+            shadow_scored.loc[reference_mask, "risk_40"],
+            shadow_scored.loc[recent_mask, "risk_40"],
+            bins=int(operations["drift"]["bins"]),
+        )
+        health["shadow_model"] = {
+            "artifact_id": shadow_metadata["artifact_id"],
+            "score_psi": shadow_psi,
+            "episode_onsets_observed": len(shadow_signals),
+            "authorized_for_signals": False,
+        }
 
     revision = git_revision()
     run_id = (
@@ -138,6 +180,8 @@ def main() -> None:
         f"pipeline-{operations['pipeline']['version']}_code-{revision[:8]}_"
         f"model-{model_metadata['artifact_id'][-8:]}_data-{data_fingerprint[:8]}"
     )
+    if shadow_metadata is not None:
+        run_id += f"_shadow-{shadow_metadata['artifact_id'][-8:]}"
     manifest = {
         "run_id": run_id,
         "pipeline_version": operations["pipeline"]["version"],
@@ -149,6 +193,9 @@ def main() -> None:
         "model_artifact_id": model_metadata["artifact_id"],
         "model_artifact_path": str(model_path),
         "model_sha256": model_metadata["model_sha256"],
+        "shadow_model_artifact_id": (
+            shadow_metadata["artifact_id"] if shadow_metadata is not None else None
+        ),
         "training_last_episode_date": model_metadata["training_last_episode_date"],
         "training_episodes": model_metadata["training_episodes"],
         "feature_count": len(result.feature_columns),
@@ -165,6 +212,7 @@ def main() -> None:
         signals=signals,
         health=health,
         manifest=manifest,
+        shadow_signals=shadow_signals,
     )
     result = {
         "run_id": run_id,
@@ -173,6 +221,9 @@ def main() -> None:
         "health_status": health["status"],
         "signals_authorized": health["signals_authorized"],
         "signals_emitted": len(signals),
+        "shadow_episode_onsets_observed": (
+            len(shadow_signals) if shadow_signals is not None else 0
+        ),
         "market_data_date": str(market_data_date.date()),
     }
     print(json.dumps(result, indent=2))
