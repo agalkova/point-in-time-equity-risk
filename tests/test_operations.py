@@ -19,6 +19,7 @@ from risk_managed_momentum.operations.registry import (
     register_model_artifact,
 )
 from risk_managed_momentum.operations.runtime import ConcurrentRunError, exclusive_run_lock
+from scripts.run_scheduled_operations import alert_signature, alert_transition
 
 
 class OperationsTests(unittest.TestCase):
@@ -220,6 +221,34 @@ class OperationsTests(unittest.TestCase):
             first = destination.read_bytes()
             atomic_write_dataframes({destination: frame}, csv_options=options)
             self.assertEqual(destination.read_bytes(), first)
+
+    def test_alert_transition_suppresses_duplicate_and_reports_recovery(self) -> None:
+        failure = {
+            "status": "FAIL",
+            "health_status": "FAIL",
+            "stage": "risk_pipeline",
+            "pipeline_result": {"run_id": "run-1", "market_data_date": "2026-10-23"},
+            "steps": [{"stderr": ""}],
+        }
+        should_alert, reason = alert_transition(None, failure, alert_on_warn=True)
+        self.assertTrue(should_alert)
+        self.assertEqual(reason, "new_or_changed_problem")
+        previous = {
+            "problem": True,
+            "signature": alert_signature(failure),
+        }
+        should_alert, reason = alert_transition(previous, failure, alert_on_warn=True)
+        self.assertFalse(should_alert)
+        self.assertEqual(reason, "unchanged")
+        recovery = {
+            **failure,
+            "status": "PASS",
+            "health_status": "PASS",
+            "pipeline_result": {"run_id": "run-2", "market_data_date": "2026-10-24"},
+        }
+        should_alert, reason = alert_transition(previous, recovery, alert_on_warn=True)
+        self.assertTrue(should_alert)
+        self.assertEqual(reason, "recovered")
 
 
 if __name__ == "__main__":

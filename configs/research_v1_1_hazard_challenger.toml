@@ -1,0 +1,42 @@
+[project]
+specification_version = "1.1.0-modern-hazard-challenger"
+parent_specification = "0.9.0-exuberance-episode-hazard"
+random_seed = 42
+claim_status = "exploratory; modern periods were previously opened"
+
+[data]
+development_universe = "sp500"
+training_start = "2020-01-01"
+expanding_training_end = "2024-12-31"
+rolling_training_start = "2022-01-01"
+validation_start = "2025-01-01"
+validation_end = "2025-12-31"
+evaluation_start = "2026-01-01"
+evaluation_end = "2026-10-23"
+
+[model]
+c = 0.01
+maximum_iterations = 2000
+candidates = ["modern_expanding", "modern_rolling"]
+selection_horizon_days = 40
+selection_primary_metric = "average_precision_lift"
+selection_tiebreaker = "roc_auc"
+
+[evaluation]
+risk_strata = 5
+transfer_universes = ["ndx", "sp400"]
+
+[promotion]
+minimum_challenger_roc_auc = 0.60
+maximum_roc_auc_decline_vs_champion = 0.01
+minimum_average_precision_lift = 1.25
+minimum_lift_improvement_vs_champion = 0.05
+maximum_brier_increase_vs_champion = 0.01
+minimum_transfer_universes_passing = 1
+maximum_current_score_psi = 0.25
+
+[drift]
+reference_start = "2024-01-01"
+reference_end = "2025-12-31"
+recent_calendar_days = 180
+bins = 10

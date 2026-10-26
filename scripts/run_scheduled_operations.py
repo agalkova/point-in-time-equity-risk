@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import platform
@@ -75,6 +76,60 @@ def publish_receipt(payload: dict[str, Any]) -> Path:
     return destination
 
 
+def alert_signature(event: dict[str, Any]) -> str:
+    pipeline = event.get("pipeline_result", {})
+    latest_stderr = event.get("steps", [{}])[-1].get("stderr", "")[-500:]
+    identity = {
+        "status": event.get("status"),
+        "health_status": event.get("health_status"),
+        "stage": event.get("stage"),
+        "run_id": pipeline.get("run_id"),
+        "market_data_date": pipeline.get("market_data_date"),
+        "stderr_sha256": hashlib.sha256(latest_stderr.encode("utf-8")).hexdigest(),
+    }
+    return hashlib.sha256(strict_json_bytes(identity)).hexdigest()
+
+
+def alert_transition(
+    previous: dict[str, Any] | None,
+    event: dict[str, Any],
+    *,
+    alert_on_warn: bool,
+) -> tuple[bool, str]:
+    current_problem = event["status"] == "FAIL" or (
+        alert_on_warn and event.get("health_status") == "WARN"
+    )
+    previous_problem = bool(previous and previous.get("problem"))
+    current_signature = alert_signature(event)
+    if current_problem and (
+        not previous_problem or previous.get("signature") != current_signature
+    ):
+        return True, "new_or_changed_problem"
+    if previous_problem and not current_problem:
+        return True, "recovered"
+    return False, "unchanged"
+
+
+def load_alert_state(path: Path) -> dict[str, Any] | None:
+    return json.loads(path.read_text()) if path.exists() else None
+
+
+def write_alert_state(path: Path, event: dict[str, Any], *, problem: bool) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    state = {
+        "updated_at_utc": datetime.now(UTC).isoformat(),
+        "problem": problem,
+        "signature": alert_signature(event),
+        "status": event["status"],
+        "health_status": event.get("health_status"),
+        "stage": event.get("stage"),
+    }
+    with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as handle:
+        handle.write(strict_json_bytes(state))
+        temporary = Path(handle.name)
+    os.replace(temporary, path)
+
+
 def notify(webhook: str | None, event: dict[str, Any]) -> str | None:
     try:
         message = (
@@ -95,6 +150,7 @@ def main() -> None:
     load_dotenv(PROJECT_ROOT / ".env")
     webhook = os.environ.get("RMM_ALERT_WEBHOOK_URL")
     lock = PROJECT_ROOT / "reports/operations/.locks/daily-operations.lock"
+    alert_state_path = PROJECT_ROOT / "reports/operations/orchestrator/alert_state.json"
     started = datetime.now(UTC).isoformat()
     steps: list[dict[str, Any]] = []
     with exclusive_run_lock(lock):
@@ -112,7 +168,14 @@ def main() -> None:
                     "completed_at_utc": datetime.now(UTC).isoformat(),
                     "steps": steps,
                 }
-                event["notification_error"] = notify(webhook, event)
+                previous = load_alert_state(alert_state_path)
+                should_alert, reason = alert_transition(
+                    previous, event, alert_on_warn=args.alert_on_warn
+                )
+                event["alert_reason"] = reason
+                event["notification_error"] = notify(webhook, event) if should_alert else None
+                if event["notification_error"] is None:
+                    write_alert_state(alert_state_path, event, problem=True)
                 receipt = publish_receipt(event)
                 print(json.dumps({"status": "FAIL", "receipt": str(receipt)}, indent=2))
                 raise SystemExit(refresh["return_code"] or 1)
@@ -139,8 +202,17 @@ def main() -> None:
             "pipeline_result": result,
             "steps": steps,
         }
-        should_alert = status == "FAIL" or (args.alert_on_warn and health_status == "WARN")
-        event["notification_error"] = notify(webhook if should_alert else None, event)
+        previous = load_alert_state(alert_state_path)
+        should_alert, reason = alert_transition(
+            previous, event, alert_on_warn=args.alert_on_warn
+        )
+        event["alert_reason"] = reason
+        event["notification_error"] = notify(webhook, event) if should_alert else None
+        if event["notification_error"] is None:
+            alert_problem = status == "FAIL" or (
+                args.alert_on_warn and health_status == "WARN"
+            )
+            write_alert_state(alert_state_path, event, problem=alert_problem)
         receipt = publish_receipt(event)
         print(
             json.dumps(
