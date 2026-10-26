@@ -209,6 +209,18 @@ class OperationsTests(unittest.TestCase):
             self.assertEqual(pd.read_csv(first)["value"].tolist(), [1])
             self.assertEqual(pd.read_csv(second)["value"].tolist(), [2])
 
+    def test_dataframe_transaction_can_write_deterministic_gzip(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            destination = Path(directory) / "frame.csv.gz"
+            frame = pd.DataFrame({"value": [1, 2]})
+            options = {
+                destination: {"compression": {"method": "gzip", "mtime": 0}}
+            }
+            atomic_write_dataframes({destination: frame}, csv_options=options)
+            first = destination.read_bytes()
+            atomic_write_dataframes({destination: frame}, csv_options=options)
+            self.assertEqual(destination.read_bytes(), first)
+
 
 if __name__ == "__main__":
     unittest.main()

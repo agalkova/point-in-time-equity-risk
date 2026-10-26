@@ -137,8 +137,8 @@ def main() -> None:
                 membership_dir / "sp500_changes.csv": membership_source.changes,
             },
             csv_options={
-                bars_path: {"compression": "gzip"},
-                membership_path: {"compression": "gzip"},
+                bars_path: {"compression": {"method": "gzip", "mtime": 0}},
+                membership_path: {"compression": {"method": "gzip", "mtime": 0}},
             },
         )
         symbols_path = membership_dir / "sp500_symbols.txt"

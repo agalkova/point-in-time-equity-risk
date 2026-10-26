@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import gzip
+import io
 import json
 import os
 import tempfile
@@ -10,6 +12,22 @@ from typing import Any
 import pandas as pd
 
 from risk_managed_momentum.data.panel import build_point_in_time_panel
+
+
+def _write_csv(frame: pd.DataFrame, path: Path, options: dict[str, Any]) -> None:
+    compression = options.get("compression")
+    if isinstance(compression, dict) and compression.get("method") == "gzip":
+        gzip_options = dict(compression)
+        gzip_options.pop("method")
+        csv_options = {key: value for key, value in options.items() if key != "compression"}
+        with (
+            path.open("wb") as raw,
+            gzip.GzipFile(filename="", fileobj=raw, mode="wb", **gzip_options) as compressed,
+            io.TextIOWrapper(compressed, encoding="utf-8", newline="") as text,
+        ):
+            frame.to_csv(text, index=False, **csv_options)
+        return
+    frame.to_csv(path, index=False, **options)
 
 
 def merge_bar_history(
@@ -92,7 +110,7 @@ def atomic_write_dataframes(
             ) as handle:
                 temporary = Path(handle.name)
             options = csv_options.get(destination, {})
-            frame.to_csv(temporary, index=False, **options)
+            _write_csv(frame, temporary, options)
             staged.append((temporary, destination))
         for temporary, destination in staged:
             if destination.exists():
