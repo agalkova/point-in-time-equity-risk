@@ -65,6 +65,11 @@ freshness, calculates score/feature drift, hashes its source data and feature sc
 on unhealthy inputs, and atomically publishes versioned signals plus a health report and manifest.
 Identical retries are verified byte-for-byte instead of overwriting evidence.
 
+The daily runner now loads a checksum-verified artifact from an immutable model registry rather
+than silently retraining. Run identities bind the code revision, model artifact, and input-data
+fingerprint. A synthetic end-to-end CI test exercises the entire path without private data or API
+credentials.
+
 The integration test produced authorized historical snapshots for all three universes and also
 demonstrated the failure path: a 2026 S&P 500 run detected severe score drift and suppressed all
 signals. See [docs/PRODUCTION_RISK_PIPELINE.md](docs/PRODUCTION_RISK_PIPELINE.md) for the
@@ -252,6 +257,7 @@ python scripts/run_optimized_alpha_portfolio.py
 python scripts/generate_prospective_alpha_candidate.py
 python scripts/run_exuberance_hazard.py
 python scripts/run_calibrated_overlay.py
+python scripts/register_hazard_model.py --activate
 python scripts/run_daily_risk_pipeline.py --universe sp500
 python scripts/make_figures.py
 ```

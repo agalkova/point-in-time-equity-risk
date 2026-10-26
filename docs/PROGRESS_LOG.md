@@ -193,3 +193,25 @@ Operational interpretation:
 - The runner deliberately creates signals and evidence but does not place orders.
 - Production health failures are retained as evidence rather than bypassed to force output.
 
+## 2026-10-26 — immutable model release and end-to-end operations test
+
+Completed:
+
+- Fixed the freshness contract so an ordinary daily run compares the newest observation with the
+  actual current date; an old local snapshot can no longer present itself as fresh.
+- Separated training from inference and added immutable, checksum-verified model artifacts with an
+  atomic active-model pointer.
+- Bound every operational run to code, model, feature-schema, and source-data fingerprints.
+- Enforced standards-compliant JSON by rejecting non-finite values at publication boundaries.
+- Added explicit failure when drift cannot be measured and preserved fail-closed signal behavior.
+- Added a credential-free synthetic integration test covering features, registration/loading,
+  scoring, monitoring, and atomic publication.
+- Verified a historical S&P 500 replay with one authorized signal and an identical idempotent
+  retry; verified that a current-date run rejects the 2026-09-30 local snapshot as stale.
+
+Operational interpretation:
+
+- Daily scoring now consumes a promoted release rather than producing a newly trained model.
+- CI covers the complete operational path without relying on private data or external services.
+- The project demonstrates model governance and reproducible batch inference, not just research.
+

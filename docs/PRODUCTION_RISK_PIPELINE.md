@@ -15,7 +15,8 @@ flowchart LR
     C[Ticker lineage] --> D
     D --> E[Unlabeled feature inference]
     E --> F[Exuberance onset detector]
-    F --> G[Frozen v0.9 hazard model]
+    M[Immutable model registry] --> G[Frozen v0.9 hazard model]
+    F --> G
     G --> H[Coverage, freshness, and PSI gates]
     H -->|PASS or WARN| I[Authorized signals]
     H -->|FAIL| J[Empty fail-closed output]
@@ -37,9 +38,17 @@ Every run records:
 - score PSI plus median, maximum, and top feature PSI values;
 - hashes binding the signal file and health report to the manifest.
 
+Training is a separate, explicit operation. It produces an immutable `joblib` artifact plus
+strict JSON metadata containing the training-data/config hashes, feature schema, horizons,
+training cutoff, code revision, and model checksum. Daily inference loads only the artifact named
+by the atomic `ACTIVE` pointer and verifies its checksum and schema before scoring.
+
 Hard failures suppress all signals and return a nonzero process status. Warning-level drift is preserved in the health report but does not suppress output. Run publication uses a temporary directory followed by an atomic rename, so downstream readers never see a partially written run.
 
-The run identifier includes the universe, market date, pipeline version, and Git revision. Repeating an identical run verifies all bytes and reports an idempotent retry. A different payload at the same identity raises an error rather than overwriting evidence.
+The run identifier includes the universe, market date, pipeline version, Git revision, active
+model identity, and source-data fingerprint. Repeating an identical run verifies all bytes and
+reports an idempotent retry. A different payload at the same identity raises an error rather than
+overwriting evidence.
 
 ## Monitoring policy
 
@@ -57,13 +66,24 @@ An isolated feature can warn without suppressing the run; broad feature drift or
 
 ## Running the pipeline
 
+Register and activate the frozen model once (or whenever a deliberately versioned replacement is
+approved):
+
+```bash
+python scripts/register_hazard_model.py --activate
+```
+
+Then run inference:
+
 ```bash
 python scripts/run_daily_risk_pipeline.py --universe sp500 --as-of 2025-12-26
 python scripts/run_daily_risk_pipeline.py --universe ndx --as-of 2025-12-26
 python scripts/run_daily_risk_pipeline.py --universe sp400 --as-of 2025-12-26
 ```
 
-Omit `--as-of` to request the newest locally available market date. The configured four-day staleness gate prevents an old local snapshot from being presented as current.
+Omit `--as-of` for a real daily run. The requested cutoff becomes the actual current date, while
+the newest local observation remains the market-data date. Their difference drives the four-day
+staleness gate. Use `--as-of` only for an explicit historical replay.
 
 Outputs are written under:
 
@@ -74,7 +94,13 @@ reports/operations/risk_signals/<run-id>/
 └── signals.csv
 ```
 
-The generated directory is intentionally excluded from Git because it contains dated operational evidence tied to locally licensed data.
+Registered models are stored separately under `reports/operations/model_registry/`. Both generated
+locations are excluded from Git because they contain local artifacts tied to non-redistributable
+inputs.
+
+CI runs a credential-free synthetic integration test through feature construction, immutable model
+registration/loading, inference, health gates, and atomic publication. Unit tests also verify
+checksum tamper detection, strict JSON serialization, staleness blocking, and idempotent retries.
 
 ## Verified operating examples
 

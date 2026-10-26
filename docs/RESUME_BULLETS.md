@@ -24,8 +24,9 @@ Use one or two of these, adjusted to the space available:
   Brier score, while a cost-aware high-risk exclusion reduced drawdown but also reduced Sharpe
   across all three universes—demonstrating disciplined negative-result reporting.
 - Productionized daily risk inference across three universes with unlabeled feature generation,
-  coverage/freshness gates, PSI drift monitoring, source and schema hashing, fail-closed signal
-  suppression, atomic publication, and byte-verifiable idempotent retries.
+  an immutable checksum-verified model registry, coverage/freshness gates, PSI drift monitoring,
+  code/model/data lineage, fail-closed signal suppression, atomic publication, byte-verifiable
+  idempotent retries, and credential-free end-to-end CI.
 - Built a separate 22-feature expected-return research layer with 33K walk-forward
   security-month predictions, cost-aware long-only/long-short simulation, six-factor HAC
   attribution, and an explicitly frozen prospective candidate after rejecting the primary
