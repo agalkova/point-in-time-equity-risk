@@ -40,10 +40,10 @@ Exit condition: every model row is reproducible from timestamped source records 
 ## Phase 4: models and validation
 
 - [x] Reproduce the fixed drawdown-risk model.
-- [ ] Add an expected-return momentum baseline.
+- [x] Add an expected-return momentum baseline.
 - [x] Combine expected return and drawdown risk using validation data only.
 - [x] Run calendar-year and regime-sensitive stability tests.
-- [ ] Evaluate independent drawdown events and warning lead time.
+- [x] Evaluate independent drawdown events and warning lead time.
 - [x] Run the frozen 2020–2026 modern holdout once.
 
 Exit condition: results are reported against baselines with uncertainty estimates and no undisclosed tuning on the holdout.
@@ -89,8 +89,33 @@ claim, and supports only conclusions justified by the evidence.
 - [x] Download free official factor data and estimate six-factor alpha with HAC errors.
 - [x] Stress-test the ridge candidate across position counts and transaction costs.
 - [x] Freeze a prospective candidate without promoting the post-spec result to proven alpha.
-- [ ] Begin recording month-end prospective signals after the freeze date.
+- [x] Begin recording month-end prospective signals after the freeze date.
 
 Exit condition: a complete alpha-research attempt is published honestly, and any stronger
 claim depends on observations that were not available when the candidate was frozen.
+
+## Phase 9: SEC fundamentals and issuer identity
+
+- [x] Process all official quarterly Financial Statement Data Set archives from 2014 Q1 through
+  2026 Q3.
+- [x] Resolve point-in-time ticker intervals to permanent SEC CIK identifiers.
+- [x] Freeze separate nonfinancial, Financials, and Real Estate accounting schemas.
+- [x] Join statements on public filing date and expire stale annual filings.
+- [x] Run matched price-only, fundamentals-only, and combined walk-forward comparisons.
+- [x] Report the failed stability and long-short alpha tests without post-result retuning.
+
+Exit condition: the accounting panel passes identity, freshness, and timing gates, and the model
+claim remains limited to the evidence.
+
+## Phase 10: public release
+
+- [x] Consolidate the README around the primary results and limitations.
+- [x] Add a deterministic synthetic end-to-end demonstration.
+- [x] Add one-command verification and a public-repository audit.
+- [x] Expand CI to cover the SEC point-in-time path and release checks.
+- [x] Preregister the independent S&P 400 fundamental transfer test.
+- [ ] Reprocess SEC archives for the S&P 400 issuer set and run the frozen transfer test.
+
+The final item requires a new SEC archive pass. It is deliberately separate from the completed
+public release and must not be represented as an existing result.
 

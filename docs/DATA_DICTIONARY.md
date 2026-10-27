@@ -31,3 +31,18 @@
 | `risk_score` | float | Model score trained only on earlier samples. |
 | `risk_decile` | integer | Same-day cross-sectional score decile from 1 to 10. |
 
+## SEC fundamental panel fields
+
+| Field | Type | Definition |
+|---|---|---|
+| `cik` | integer | Permanent SEC issuer identifier matched within the applicable index-membership interval. |
+| `filed` | date | SEC filing date; the statement is unavailable to the model before this date. |
+| `period` | date | Fiscal period end reported by the annual statement. |
+| `filing_age_days` | integer | Calendar days between the signal date and filing date; filings older than 550 days expire. |
+| `fundamental_schema` | string | Frozen accounting schema: nonfinancial, Financials, or Real Estate. |
+| `sector_source` | string | Current GICS when available or SEC SIC proxy; the proxy is not presented as historical GICS. |
+| `schema_complete` | boolean | All six features required by the applicable accounting schema are present. |
+| `fundamental_rank_*` | float | Same-date percentile rank within the applicable accounting schema; missing values are not filled before ranking. |
+| `available_*` | float | Indicator that the corresponding raw accounting ratio is available. |
+| `fundamental_quality_score` | float | Direction-adjusted mean of available within-schema ranks when at least four schema features exist. |
+

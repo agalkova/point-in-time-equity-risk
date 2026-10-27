@@ -1,0 +1,20 @@
+version = "1.0"
+frozen_on = "2026-10-27"
+minimum_feature_coverage = 0.50
+minimum_schema_complete_coverage = 0.50
+minimum_identity_interval_coverage_for_model = 0.95
+minimum_identity_membership_day_coverage_for_download = 0.90
+missing_value_policy = "No median filling before cross-sectional ranking; retain availability flags."
+timing_policy = "A filing becomes usable on its SEC filing date."
+
+[schemas.nonfinancial_v1]
+sectors = ["Communication Services", "Consumer Discretionary", "Consumer Staples", "Energy", "Health Care", "Industrials", "Information Technology", "Materials", "Utilities"]
+features = ["gross_margin", "operating_margin", "cash_flow_margin", "return_on_assets", "liabilities_to_assets", "asset_growth"]
+
+[schemas.financials_v1]
+sectors = ["Financials"]
+features = ["net_margin", "return_on_assets", "equity_to_assets", "cash_flow_to_assets", "revenue_growth", "asset_growth"]
+
+[schemas.real_estate_v1]
+sectors = ["Real Estate"]
+features = ["net_margin", "cash_flow_margin", "return_on_assets", "liabilities_to_assets", "revenue_growth", "asset_growth"]

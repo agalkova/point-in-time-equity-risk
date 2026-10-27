@@ -5,17 +5,26 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> None:
     rng = np.random.default_rng(42)
-    dates = pd.bdate_range("2024-01-02", periods=180)
+    dates = pd.bdate_range("2023-01-03", periods=360)
     rows = []
     for index in range(12):
         ticker = f"SYN{index + 1:02d}"
-        shocks = rng.normal(0.0005 + index * 0.00003, 0.012 + index * 0.0002, len(dates))
+        shocks = rng.normal(0.0003 + index * 0.00002, 0.010 + index * 0.00015, len(dates))
+        # Deterministic run-up episodes make the example exercise both target classes. These
+        # synthetic events demonstrate pipeline mechanics; they are not calibrated market data.
+        runup_day = 105 + (index % 4) * 7
+        second_runup_day = 235 + (index % 3) * 6
+        shocks[runup_day] += 0.24
+        shocks[second_runup_day] += 0.23
+        if index % 2 == 0:
+            shocks[runup_day + 18] -= 0.20
+        if index % 3 == 0:
+            shocks[second_runup_day + 25] -= 0.18
         close = 50.0 * np.exp(np.cumsum(shocks))
         overnight = rng.normal(0.0, 0.002, len(dates))
         open_price = close * np.exp(overnight)

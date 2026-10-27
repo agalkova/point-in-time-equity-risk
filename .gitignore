@@ -5,6 +5,7 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .ruff_cache/
+/asof/
 build/
 dist/
 *.egg-info/
@@ -23,6 +24,7 @@ data/external/**
 reports/tables/**
 reports/figures/**
 reports/operations/**
+reports/example/**
 !reports/tables/.gitkeep
 !reports/figures/.gitkeep
 

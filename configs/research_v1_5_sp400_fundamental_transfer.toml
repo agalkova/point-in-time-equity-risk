@@ -1,0 +1,48 @@
+[project]
+specification_version = "1.5.0-sp400-fundamental-transfer"
+parent_specification = "1.4.0-point-in-time-fundamental-ablation"
+frozen_on = "2026-10-27"
+status = "preregistered_not_run"
+selection_disclosure = "Combined ridge was selected after reviewing the S&P 500 v1.4 results; this specification can support confirmation only on previously unseen securities."
+
+[universe]
+index_code = "SP400"
+evaluation_start = "2021-01-01"
+evaluation_end = "2026-09-30"
+membership_path = "data/interim/sp400/sp400_daily_membership.csv.gz"
+bars_path = "data/raw/alpaca/sp400_bars_2019-06-01_2026-09-30_all.csv.gz"
+historical_gap_bars_path = "data/raw/alpaca/sp400_historical_gap_bars_all.csv.gz"
+
+[candidate]
+model = "ridge"
+ridge_alpha = 100.0
+feature_set = "combined_price_and_fundamentals"
+target = "21-trading-day beta-adjusted future return"
+training_universe = "SP500"
+training_rule = "For each test year, fit only on S&P 500 signal dates before that year."
+test_rule = "Score S&P 400 securities in the test year without refitting on S&P 400 outcomes."
+
+[fundamentals]
+issuer_key = "cik"
+maximum_filing_age_days = 550
+minimum_quality_features = 4
+ranking_group = "date_and_accounting_schema"
+minimum_identity_coverage = 0.95
+minimum_filing_coverage = 0.90
+
+[portfolio]
+top_n = 50
+one_way_cost_bps = 10.0
+primary_mode = "long_short"
+
+[pass_rule]
+minimum_mean_monthly_rank_ic = 0.0
+minimum_positive_years = 4
+minimum_positive_accounting_schemas = 2
+require_positive_top_minus_bottom_residual_return = true
+require_positive_long_short_return_after_costs = true
+require_no_future_filing_violations = true
+
+[data_requirement]
+status = "blocked"
+reason = "The compact SEC history was filtered to S&P 500 issuer CIKs. Running this test requires reprocessing the 2014–2026 SEC quarterly archives for the S&P 400 identity set."

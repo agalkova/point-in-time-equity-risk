@@ -14,8 +14,17 @@ jobs:
           python-version: "3.12"
       - run: python -m pip install -e ".[dev]"
       - run: python -m unittest discover -s tests -v
+      - run: python scripts/run_example_pipeline.py --check
+      - run: python scripts/verify_public_repo.py
+      - run: python scripts/generate_example_data.py
+      - run: git diff --exit-code -- data/example/synthetic_bars.csv
       - run: >-
           ruff check
+          scripts/build_point_in_time_fundamental_panel.py
+          scripts/generate_example_data.py
+          scripts/run_example_pipeline.py
+          scripts/run_point_in_time_fundamental_ablation.py
+          scripts/verify_public_repo.py
           scripts/run_daily_risk_pipeline.py
           scripts/register_hazard_model.py
           scripts/refresh_sp500_operations.py
@@ -25,5 +34,7 @@ jobs:
           scripts/analyze_hazard_drift.py
           src/risk_managed_momentum/operations
           src/risk_managed_momentum/data/universes.py
+          src/risk_managed_momentum/features/sec_fundamentals.py
           tests/test_operations.py
           tests/test_pipeline_integration.py
+          tests/test_sec_fundamental_panel.py

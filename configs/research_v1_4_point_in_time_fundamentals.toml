@@ -1,0 +1,47 @@
+[project]
+specification_version = "1.4.0-point-in-time-fundamental-ablation"
+parent_specification = "1.3.0-sector-fundamentals"
+frozen_on = "2026-10-27"
+random_seed = 42
+claim_status = "exploratory marginal-signal test; no alpha claim without independent confirmation"
+
+[join]
+issuer_key = "cik"
+allow_filing_on_signal_date = true
+maximum_filing_age_days = 550
+minimum_quality_features = 4
+minimum_signal_identity_coverage = 0.95
+minimum_signal_filing_coverage = 0.50
+
+[ranking]
+grouping = "date_and_accounting_schema"
+historical_sector_policy = "Use the frozen accounting schema derived from current GICS when available and SEC SIC otherwise; do not claim historical GICS sector neutrality."
+missing_value_policy = "Rank only observed values. Preserve missing ranks and add availability flags before model-level imputation."
+
+[validation]
+first_test_year = 2021
+last_test_year = 2026
+purge_month_end_signals = 1
+minimum_training_observations = 3000
+
+[models.ridge]
+alpha = 100.0
+
+[models.hist_gradient_boosting]
+learning_rate = 0.04
+max_iter = 150
+max_leaf_nodes = 15
+min_samples_leaf = 100
+l2_regularization = 1.0
+
+[ensemble]
+ridge_weight = 0.5
+hist_gradient_boosting_weight = 0.5
+
+[portfolio]
+top_n = 50
+one_way_cost_bps = 10.0
+
+[inference]
+bootstrap_iterations = 2000
+block_length_months = 6

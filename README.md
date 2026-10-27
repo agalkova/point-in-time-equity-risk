@@ -1,345 +1,170 @@
-# Risk-Managed Momentum
+# Point-in-Time Equity Risk
 
-Research and engineering project for forecasting severe drawdowns after strong equity price run-ups.
+A point-in-time equity research system for identifying elevated drawdown risk after strong price
+run-ups. The project covers data ingestion, historical index membership, issuer identity, feature
+construction, model validation, portfolio simulation, and production monitoring.
+
+The main finding is a repeatable drawdown-risk ranking signal. The portfolio and expected-return
+experiments do not establish alpha, and the repository reports those negative results directly.
 
 ## Research question
 
-Among stocks that gained at least 20% over the previous 60 trading days and remain within 10% of their trailing high, can information available on the signal date rank the risk of a severe loss during the next 40 trading days?
+Among stocks that gained at least 20% over the previous 60 trading days and remain within 10% of
+their trailing high, can information available on the signal date rank the risk of a loss of at
+least 15% during the next 40 trading days?
 
-The project combines three deliverables:
+## Results
 
-1. A point-in-time equity data pipeline.
-2. A leakage-controlled cross-sectional drawdown-risk model.
-3. A transaction-cost-aware risk-managed momentum portfolio experiment.
+| Study | Sample | Main result | Conclusion |
+| --- | ---: | --- | --- |
+| S&P 500 out-of-time replication | 91,299 stock-date observations | 0.671 ROC AUC; 1.73× average-precision lift; 26.28% versus 7.44% event rate in the highest and lowest risk deciles | Drawdown risk is rankable out of time |
+| Unchanged S&P 400 replication | 85,587 stock-date observations | 0.654 ROC AUC; 1.49× precision lift; positive rank IC in all seven years | The risk model transfers to a nearly non-overlapping universe |
+| Exuberance hazard model | 8,464 episodes across three universes | 1.45×–1.57× 40-day precision lift; 18–19 trading days median warning lead time | Supports early-warning ranking, not literal bubble identification |
+| SEC fundamental ablation | 34,184 out-of-fold stock-month observations | Combined long-only return of 13.16% versus 10.52% for price-only; rank-IC uplift unstable and statistically unresolved | Fundamentals are a useful research lead, not proven alpha |
 
-## Result
+The primary S&P 500 risk model produced a mean daily rank IC of 0.178 with a 40-day block-bootstrap
+interval of [0.126, 0.226]. Annual risk separation was positive in every year from 2020 through the
+partial 2026 sample. A risk-filtered momentum portfolio reduced volatility, beta, and maximum
+drawdown, but also reduced return and market exposure. SPY buy-and-hold outperformed.
 
-The untouched 2020–2026 replication supports a real drawdown-risk ranking signal:
+The independent S&P 400 replication used the same model and feature definitions. Average daily
+overlap with the S&P 500 was 0.33%, and all frozen predictive criteria passed. The constituent
+history is a pinned public reconstruction rather than licensed official index history.
 
-- 91,299 eligible stock-date observations and 13,688 drawdown events.
-- ROC AUC: **0.671**; average-precision lift: **1.73×**.
-- Highest-risk-decile event rate: **26.28%** versus **7.44%** in the lowest decile.
-- Mean daily rank IC: **0.178**, with 40-day block-bootstrap interval **[0.126, 0.226]**.
-- Positive annual risk separation in every year from 2020 through the partial 2026 sample.
+Full results:
 
-The portfolio result is deliberately more restrained. Validation selected no risk penalty for
-the return-ranking model. A monthly highest-risk-quintile exclusion reduced volatility,
-beta, and maximum drawdown after costs, but also reduced return and market exposure. SPY
-buy-and-hold outperformed. The defensible claim is **risk ranking**, not bubble prediction or
-alpha generation.
+- [S&P 500 replication](docs/RESULTS.md)
+- [S&P 400 independent replication](docs/SP400_REPLICATION_RESULTS.md)
+- [Exuberance hazard model](docs/EXUBERANCE_HAZARD_RESULTS.md)
+- [SEC fundamental analysis](docs/POINT_IN_TIME_FUNDAMENTAL_RESULTS.md)
+- [Production pipeline](docs/PRODUCTION_RISK_PIPELINE.md)
 
-![Modern drawdown-event rate by predicted risk decile](docs/figures/modern_decile_event_rates.png)
-
-Full interpretation, baselines, annual results, portfolio results, and limitations are in
-[docs/RESULTS.md](docs/RESULTS.md).
-
-### Corrected bubble-detection model
-
-Version 0.9 returns to the original project idea without the hindsight-defined labels. It detects
-the start of a measurable **exuberance episode**, then estimates a monotonic drawdown-risk curve
-over 10, 20, 40, and 60 trading days using one interpretable discrete-time hazard model.
-
-Across 8,464 modern episodes in the S&P 500, Nasdaq-100, and S&P 400, the 40-day model achieved
-0.618–0.628 ROC AUC and 1.45×–1.57× average-precision lift. Highest-risk-quintile episodes had
-2.45×–3.50× the drawdown rate of the lowest quintile, with 18–19 trading days of median warning
-lead time. It beat trailing run-up strength alone in all three universes. Absolute probabilities
-remain under-calibrated after the legacy-to-modern base-rate shift, so the supported claim is
-transferable early-warning ranking—not literal bubble identification or proven alpha.
-
-See [docs/EXUBERANCE_HAZARD_RESULTS.md](docs/EXUBERANCE_HAZARD_RESULTS.md) for the corrected
-framing, full horizon results, drivers, limitations, and reproduction instructions.
-
-![Exuberance episode hazard model](docs/figures/v09_exuberance_hazard.png)
-
-A frozen follow-up tested walk-forward intercept recalibration and a high-risk episode exclusion
-portfolio. Recalibration overshot changing regimes and worsened Brier score in all three
-universes. The overlay reduced volatility and maximum drawdown everywhere, but also reduced
-return and Sharpe everywhere. Both extensions were rejected under their precommitted rules.
-See [docs/CALIBRATED_OVERLAY_RESULTS.md](docs/CALIBRATED_OVERLAY_RESULTS.md).
-
-### Production and monitoring layer
-
-The frozen risk model now has a separate unlabeled inference path and a reproducible daily batch
-runner for the S&P 500, Nasdaq-100, and S&P 400 panels. Each run validates coverage and
-freshness, calculates score/feature drift, hashes its source data and feature schema, fails closed
-on unhealthy inputs, and atomically publishes versioned signals plus a health report and manifest.
-Identical retries are verified byte-for-byte instead of overwriting evidence.
-
-The daily runner now loads a checksum-verified artifact from an immutable model registry rather
-than silently retraining. Run identities bind the code revision, model artifact, and input-data
-fingerprint. A synthetic end-to-end CI test exercises the entire path without private data or API
-credentials.
-
-An operational wrapper now refreshes delayed SIP bars and point-in-time membership transactionally,
-prevents concurrent runs, retains attempt receipts, supports private failure webhooks, and renders a
-weekday macOS schedule. A live October 23 refresh reached 100% current-member coverage but still
-failed closed on model-score drift, demonstrating that current data cannot bypass model controls.
-
-A frozen modern challenger study then diagnosed regime-driven model aging. The selected rolling
-hazard model reduced current score PSI from **0.684 to 0.118** while producing **0.699 ROC AUC**,
-**1.81× precision lift**, and a **7.25×** top/bottom-quintile risk ratio on mature 2026 S&P 500
-episodes. It nevertheless missed the prewritten incremental-lift requirement and was deployed only
-as an immutable, non-authoritative shadow model. See
-[docs/HAZARD_CHALLENGER_RESULTS.md](docs/HAZARD_CHALLENGER_RESULTS.md).
-
-Version 1.2 then repaired a deeper outcome-integrity problem and expanded the point-in-time panel
-back to 2016. It audited 6,138 mature episodes, repaired 26 incomplete paths, and left zero mature
-paths unresolved. A frozen 2025 selection chose a rolling-2022 model, but paired 2026 inference
-showed mixed results: **1.767x precision lift versus 1.745x** for the active model, but **0.700 ROC
-AUC versus 0.707**. The precision-lift difference was not statistically resolved, so the model was
-not promoted. The complete audit and interpretation are in
-[docs/INTEGRITY_EXPANSION_RESULTS.md](docs/INTEGRITY_EXPANSION_RESULTS.md).
-
-![Modern hazard challenger comparison](docs/figures/v11_hazard_challenger.png)
-
-The integration test produced authorized historical snapshots for all three universes and also
-demonstrated the failure path: a 2026 S&P 500 run detected severe score drift and suppressed all
-signals. See [docs/PRODUCTION_RISK_PIPELINE.md](docs/PRODUCTION_RISK_PIPELINE.md) for the
-architecture, controls, examples, and runbook.
-
-### Independent mid-cap replication
-
-The strongest transfer test applies the unchanged model to a point-in-time S&P 400 MidCap panel
-with only **0.33% average daily overlap** with the S&P 500. Across 85,587 eligible observations,
-the model achieved **0.654 ROC AUC**, **1.49× average-precision lift**, a **2.98×**
-highest/lowest-risk-decile event ratio, and **0.182** mean daily rank IC with block interval
-**[0.146, 0.219]**. Annual rank IC was positive in all seven years. Both data-quality gates and
-all five frozen predictive criteria passed.
-
-The free membership history is a pinned public reconstruction rather than licensed official S&P
-data. Full provenance, coverage recovery, annual results, and limitations are documented in
-[docs/SP400_REPLICATION_RESULTS.md](docs/SP400_REPLICATION_RESULTS.md).
-
-![Cross-universe drawdown-risk validation](docs/figures/v08_cross_universe_validation.png)
-
-## Advanced research layer
-
-An exploratory v0.2 layer adds 31 features, seven purged yearly walk-forward tests,
-logistic and gradient-boosted models, a fixed ensemble, calibration diagnostics,
-non-overlapping event evaluation, feature importance, and a cash-matched portfolio test.
-The ensemble modestly improves probabilistic ranking, but a transparent four-factor score
-remains competitive. More importantly, the risk filter does **not** beat ordinary momentum
-after matching cash exposure. This strengthens the research process without overstating a
-trading result.
-
-See [docs/ADVANCED_RESULTS.md](docs/ADVANCED_RESULTS.md) for the full comparison.
-
-## Exploratory alpha study
-
-Version 0.3 separately predicts beta-adjusted future returns across the full point-in-time
-universe. The primary ensemble failed to produce alpha. A simpler ridge model subsequently
-showed a promising top-50 portfolio—21.34% annual return after modeled costs, 1.19 Sharpe,
-and 5.48% estimated annual six-factor alpha—but its alpha t-statistic was only 1.46 and the
-portfolio mapping was inspected after the primary result. It is therefore frozen as a
-**prospective candidate**, not reported as proven alpha.
-
-See [docs/ALPHA_RESULTS.md](docs/ALPHA_RESULTS.md) and the prospective rules in
-[docs/PROSPECTIVE_SPEC_V0_4.md](docs/PROSPECTIVE_SPEC_V0_4.md).
-
-### Nasdaq-100 transfer test
-
-An unchanged-model cross-universe test applied the legacy-selected drawdown-risk model to a
-point-in-time Nasdaq-100 panel from 2020 through 2026. It achieved **0.653 ROC AUC**, **1.49×
-average-precision lift**, and a **3.54×** highest- versus lowest-risk-decile event ratio. Mean
-daily rank IC was **0.219** with a 40-day block interval of **[0.162, 0.271]**, and annual rank IC
-was positive in all seven years. The result passed every pre-specified full-universe threshold.
-
-This is supportive transfer evidence, not a fully independent-security confirmation: average
-NDX/S&P 500 overlap was 81.5%, and the non-S&P subset diagnostic was mixed. The free constituent
-history is a pinned community reconstruction validated against 39 independently retrieved PtData
-snapshots; it is not licensed official index history.
-See [docs/NDX_REPLICATION_STATUS.md](docs/NDX_REPLICATION_STATUS.md).
-
-![Nasdaq-100 transfer-test annual stability and risk separation](docs/figures/v07_ndx_transfer.png)
-
-### Portfolio engineering and prospective record
-
-A frozen constrained-optimization experiment did not improve the ridge candidate: annual return
-fell from 21.34% to 13.97%, Sharpe fell from 1.19 to 0.81, and maximum drawdown worsened. The
-optimizer was rejected without post-result tuning. See
-[docs/PORTFOLIO_ENGINEERING_RESULTS.md](docs/PORTFOLIO_ENGINEERING_RESULTS.md).
-
-The original equal-weight ridge top-50 rule therefore remains the sole prospective candidate.
-Immutable signal snapshots, content hashes, turnover, cost, and training cutoffs are managed by
-`generate_prospective_alpha_candidate.py`; operating rules are in
-[docs/PROSPECTIVE_OPERATIONS.md](docs/PROSPECTIVE_OPERATIONS.md).
-
-Separately, the hazard system now starts an immutable forward record on 2026-10-27. It pins exact
-champion and challenger artifacts, stores predictions before outcomes, and attaches realized
-10/20/40/60-day labels only after they mature. See
-[docs/PROSPECTIVE_HAZARD_SPEC.md](docs/PROSPECTIVE_HAZARD_SPEC.md).
-
-## Research design
+## System design
 
 ```mermaid
 flowchart LR
-    A[Public constituent history] --> B[Point-in-time daily membership]
-    C[Alpaca SIP daily bars] --> D[Corporate-action and ticker lineage]
-    B --> E[Leakage-safe feature panel]
-    D --> E
-    E --> F[Legacy model selection]
-    F --> G[Untouched 2020–2026 replication]
-    G --> H[Block-bootstrap inference]
-    G --> I[Cost-aware portfolio experiment]
+    A[Point-in-time index membership] --> D[Security-date panel]
+    B[Daily SIP market data] --> C[Symbol and corporate-action lineage]
+    C --> D
+    E[SEC quarterly archives] --> F[CIK identity and filing-date fundamentals]
+    F --> D
+    D --> G[Leakage-controlled features and targets]
+    G --> H[Chronological validation]
+    H --> I[Cost-aware portfolio tests]
+    H --> J[Registered model artifacts]
+    J --> K[Daily scoring and drift monitoring]
 ```
 
-The pipeline fails closed on ambiguous symbol joins. That check caught a reused ticker and
-prevented an unrelated company's history from entering the holdout.
+The pipeline uses permanent SEC CIK identifiers where accounting data is involved and dated ticker
+aliases for market data. Membership changes are effective only from their recorded dates. Filings
+become available on the SEC filing date, not the fiscal period end. Ambiguous joins fail closed.
+
+## Research controls
+
+- Point-in-time S&P 500, Nasdaq-100, and S&P 400 membership panels
+- Explicit ticker-reuse and corporate-action handling
+- Forward targets that exclude the signal date
+- Chronological and purged walk-forward evaluation
+- Frozen specifications and pass/fail rules recorded before model comparisons
+- Block-bootstrap uncertainty estimates for serially dependent observations
+- Transaction costs, turnover, exposure, drawdown, and six-factor attribution
+- Immutable model artifacts, input hashes, drift checks, and fail-closed publication
+- Automated tests for feature timing, membership timing, outcome integrity, filing timing, and
+  operational idempotency
+
+The test suite currently contains 84 tests. The SEC panel has 98.33% point-in-time issuer coverage,
+97.37% fresh-filing coverage, and zero filings joined before their public date.
 
 ## Repository structure
 
 ```text
-configs/                  Frozen research and data settings
-data/                     Local data layers; contents are excluded from Git
-docs/                     Specification, decisions, progress, and data definitions
-reports/                  Generated tables and figures
-scripts/                  Command-line entry points
-src/risk_managed_momentum Reusable pipeline and research code
-tests/                    Timing, target, and data-contract tests
+configs/                   Frozen research, data, and release specifications
+data/example/              Redistribution-safe synthetic OHLCV data
+docs/                      Methods, results, limitations, and operating notes
+reports/                   Generated local tables and figures; excluded from Git
+scripts/                   Reproducible command-line entry points
+src/risk_managed_momentum/ Reusable data, feature, model, evaluation, and operations code
+tests/                     Unit and end-to-end pipeline tests
 ```
+
+Vendor data, derived panels, credentials, and generated reports are excluded from version control.
+The public repository contains a deterministic synthetic dataset for schema and execution checks.
 
 ## Quick start
 
-Create an environment and install the project:
+Python 3.11 or newer is required.
 
 ```bash
-python -m venv .venv
+make install
+make verify
+make demo
+```
+
+`make verify` runs lint checks, all tests, the public-repository audit, and the synthetic pipeline.
+`make demo` writes a local demonstration report to `reports/example/`. Synthetic metrics are not
+research evidence.
+
+Equivalent commands without `make`:
+
+```bash
+python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e ".[dev]"
-```
-
-Run the tests:
-
-```bash
 python -m unittest discover -s tests -v
+python scripts/verify_public_repo.py
+python scripts/run_example_pipeline.py --check
 ```
 
-Run the legacy source audit:
+## Reproducing the SEC fundamental study
+
+The study requires the local market, membership, identity, factor, and normalized SEC datasets
+described in [Data sources](docs/DATA_SOURCES.md). Once those files are present:
 
 ```bash
-python scripts/audit_legacy_data.py
+make fundamentals-research
 ```
 
-The original non-redistributable legacy price and volume files belong under
-`data/external/legacy/` using the filenames in `configs/research.toml`. Their locations can
-instead be supplied through `RMM_LEGACY_PRICE_PATH` and `RMM_LEGACY_VOLUME_PATH`. No
-machine-specific path is committed.
+This command rebuilds the filing-date-safe panel and runs the frozen price-only,
+fundamentals-only, and combined walk-forward comparison. Machine-readable results are written under
+`reports/tables/`.
 
-Reproduce the frozen legacy feasibility result:
+The next independent fundamental test is preregistered for the S&P 400 but has not been run. The
+compact SEC history currently contains only the S&P 500 issuer set, so the quarterly archives must
+be reprocessed for S&P 400 CIKs first. See the
+[S&P 400 fundamental transfer plan](docs/SP400_FUNDAMENTAL_TRANSFER_PLAN.md).
 
-```bash
-python scripts/run_legacy_feasibility.py
-```
+## Data and credentials
 
-Build the point-in-time membership history:
-
-```bash
-python scripts/build_sp500_membership.py --start 2019-06-01 --end 2026-09-30
-```
-
-Create a private `.env` file in the project root (it is excluded from Git):
+Market data is retrieved from Alpaca with the SIP feed. Credentials belong in an untracked `.env`
+file:
 
 ```text
 APCA_API_KEY_ID=...
 APCA_API_SECRET_KEY=...
 ```
 
-Then run a download:
+Official SEC bulk archives require no API key. Request identity and download procedures are
+documented in [Data sources](docs/DATA_SOURCES.md). Public index histories are pinned to recorded
+source revisions and checksums. Their limitations are stated in the corresponding result reports.
 
-```bash
-python scripts/download_alpaca.py --symbols-file data/reference/pilot_symbols.txt \
-  --start 2016-01-01 --end 2019-06-12
-```
+## Selected documentation
 
-The downloader explicitly requests the `sip` feed. It refuses to continue if the response cannot be identified as the requested historical source.
+- [Research specification](docs/RESEARCH_SPEC.md)
+- [Data dictionary](docs/DATA_DICTIONARY.md)
+- [Data sources and provenance](docs/DATA_SOURCES.md)
+- [Decision log](docs/DECISIONS.md)
+- [Progress log](docs/PROGRESS_LOG.md)
+- [Prospective alpha operations](docs/PROSPECTIVE_OPERATIONS.md)
+- [Resume bullets](docs/RESUME_BULLETS.md)
 
-After downloading both `raw` and `all` adjustment variants for the reconciliation period:
+## Scope of the claims
 
-```bash
-python scripts/reconcile_overlap.py \
-  --raw-bars data/raw/alpaca/bars_2016-01-01_2019-06-12_raw.csv.gz \
-  --adjusted-bars data/raw/alpaca/bars_2016-01-01_2019-06-12_all.csv.gz
-```
+This repository supports three claims:
 
-The audit compares price levels, daily returns, consolidated volume, coverage dates, and symbol mappings for each pilot security.
+1. Severe post-run-up drawdown risk can be ranked out of time.
+2. The frozen risk model transferred to a nearly non-overlapping mid-cap universe.
+3. A point-in-time SEC pipeline can evaluate accounting signals without ticker-only joins or filing
+   date leakage.
 
-The completed pilot retrieved 16,810 overlapping observations across all 20 requested
-securities, including renamed and delisted names. Results support raw close as the closest
-match to the legacy price level, while adjusted returns are retained as a candidate for
-economically meaningful return features. See `docs/DATA_SOURCES.md` for the reconciliation
-summary and limitations.
-
-After the documented data downloads, reproduce the modern research outputs:
-
-```bash
-python scripts/download_historical_aliases.py
-python scripts/run_modern_replication.py
-python scripts/run_portfolio_experiment.py
-python scripts/run_advanced_walk_forward.py
-python scripts/run_exposure_matched_portfolio.py
-python scripts/download_fama_french_factors.py
-python scripts/run_alpha_research.py
-python scripts/run_alpha_sensitivity.py
-python scripts/run_optimized_alpha_portfolio.py
-python scripts/generate_prospective_alpha_candidate.py
-python scripts/run_exuberance_hazard.py
-python scripts/run_calibrated_overlay.py
-python scripts/register_hazard_model.py --activate
-python scripts/run_hazard_challenger.py
-python scripts/analyze_hazard_drift.py
-python scripts/run_scheduled_operations.py
-python scripts/make_figures.py
-```
-
-### SEC fundamentals proof of concept
-
-Version 0.5 tests whether filing-date-safe annual fundamentals add ranking information to the
-existing price model. Set a descriptive SEC request identity locally; it is never saved:
-
-```bash
-export SEC_USER_AGENT="Your Name your-email@example.com"
-python scripts/download_sec_fundamentals.py
-python scripts/run_fundamental_pilot.py
-```
-
-If the SEC returns HTTP 403, use the documented no-key point-in-time fallback:
-
-```bash
-python scripts/download_ptdata_fundamentals.py
-python scripts/run_fundamental_pilot.py
-```
-
-The pilot intentionally uses only about 22 issuers and begins from today's constituent list,
-so its portfolio results are diagnostic rather than investable evidence. Its frozen design and
-expansion criteria are in
-[docs/RESEARCH_SPEC_V0_5_FUNDAMENTALS.md](docs/RESEARCH_SPEC_V0_5_FUNDAMENTALS.md).
-
-The completed pilot found a small, statistically inconclusive rank-IC improvement and materially
-worse concentrated portfolio performance. The feature set was rejected rather than tuned after
-inspection. See [docs/FUNDAMENTAL_RESULTS.md](docs/FUNDAMENTAL_RESULTS.md).
-
-## Research controls
-
-The primary eligibility rule, outcome, time splits, metrics, and modern holdout policy are defined in [docs/RESEARCH_SPEC.md](docs/RESEARCH_SPEC.md). Any change must be recorded in [docs/DECISIONS.md](docs/DECISIONS.md) before the modern holdout is evaluated.
-
-Raw vendor data and API credentials must never be committed. The repository includes
-reproducible download code, schemas, validation summaries, and a small redistribution-safe
-synthetic example dataset.
-
-## Portfolio value
-
-This repository demonstrates three job-relevant capabilities together:
-
-- **Quantitative research:** forward labels, chronological model selection, factor baselines,
-  regime reporting, block-bootstrap uncertainty, and transaction-cost-aware simulation.
-- **Data engineering:** authenticated paginated ingestion, manifests, data contracts,
-  point-in-time membership reconstruction, and dated corporate-action mappings.
-- **Research judgment:** leakage controls, an untouched holdout, explicit negative results,
-  and claims calibrated to evidence.
-
-Suggested resume language is in [docs/RESUME_BULLETS.md](docs/RESUME_BULLETS.md).
-
-## Status
-
-See [docs/PROGRESS_LOG.md](docs/PROGRESS_LOG.md) for completed work and the next action.
-
+It does not support claims of reliable bubble identification, market-neutral alpha, or production
+trading profitability.

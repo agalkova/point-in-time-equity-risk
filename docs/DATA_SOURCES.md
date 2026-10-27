@@ -97,3 +97,26 @@ That service reports SEC Companyfacts as its upstream source and returns source 
 knowledge timestamps. The project retains every raw response and labels the provider dependency;
 it does not describe the fallback as a direct SEC download.
 
+## SEC Financial Statement Data Set archives
+
+The expanded fundamental study uses the official quarterly Financial Statement Data Sets published
+by the SEC. Each archive contains submission, numeric fact, presentation, and tag tables. The local
+processor reads the archives in bounded chunks, retains annual 10-K and 10-K/A filings, removes
+dimensional segment and co-registrant facts, and records the source accession, tag, fiscal period,
+and filing date for every normalized value.
+
+The completed local history covers 2014 Q1 through 2026 Q3:
+
+- 51 quarterly archives
+- 7,815 normalized annual filings
+- 683 issuers in the S&P 500 identity set
+- zero duplicate accessions
+- zero unparsed filing dates
+- zero filings dated before their fiscal period end
+
+Raw archives and normalized outputs are excluded from Git. The committed code, schema files,
+identity rules, and audit scripts reproduce the transformation when the official archives are
+available locally. The compact history is scoped to the S&P 500 issuer set; it cannot be used as an
+independent S&P 400 fundamental sample without reprocessing the source archives for additional
+CIKs.
+

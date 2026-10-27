@@ -262,3 +262,181 @@ Interpretation:
 - The shadow model is materially more stable and predictively credible, but the frozen governance
   contract correctly prevents calling a modest incremental improvement a release victory.
 
+## 2026-10-27 — official SEC archive fundamentals pilot
+
+Completed:
+
+- Downloaded the official 2024 Q1 SEC Financial Statement Data Set through the ordinary SEC data
+  page after API and scripted archive requests returned HTTP 403.
+- Added a disk-conscious parser that streams the archive, filters co-registrant and dimensional
+  facts, preserves CIK/accession/source tags, and uses the actual filing date.
+- Tested 30 unique issuers across all 11 GICS sectors and reconciled all six derived features to
+  their accounting inputs with zero discrepancies or range flags.
+- Raised gross-margin coverage by deriving gross profit from cost of revenue and raised leverage
+  coverage by deriving liabilities from assets minus equity when direct tags were absent.
+- Measured 63.3%–100% individual-feature coverage, 46.7% universal complete-case coverage, and
+  56.0% nonfinancial complete-case coverage.
+- Stopped before 2014–2026 expansion because the universal schema missed the frozen 50% gate.
+
+Interpretation:
+
+- Official direct SEC data is now a viable source; the remaining limitation is sector-specific
+  accounting structure and historical CIK identity coverage.
+- The next defensible step is a frozen sector-aware schema, not median imputation or selective
+  deletion of inconvenient sectors.
+
+## 2026-10-27 — sector-aware fundamentals and historical SEC identity
+
+Completed:
+
+- Froze separate nonfinancial, Financials, and Real Estate feature schemas with actual filing-date
+  availability and no structural median filling.
+- Added comparative revenue from the same filed 10-K, plus net margin, equity/assets,
+  cash-flow/assets, and revenue-growth calculations.
+- Re-ran the 30-company SEC archive pilot: schema complete-case coverage is 56%, 100%, and 100%,
+  respectively; the two 100% results have only three and two issuers and remain provisional.
+- Built 731 historical membership intervals and resolved them to permanent SEC CIKs using current
+  constituents, the official SEC ticker registry, and decisive filing-name matches.
+- Resolved 628 intervals covering 94.21% of membership-days; retained 103 uncertain intervals in a
+  review queue rather than guessing through ticker reuse, acquisitions, or weak name matches.
+- Passed the 90% staged-download gate but kept fundamentals disabled because 85.91% interval
+  coverage remains below the frozen 95% model-enablement gate.
+
+Next action:
+
+- Process SEC quarterly archives chronologically and use each archive's issuer names to shrink the
+  historical identity review queue before any fundamental model comparison.
+
+## 2026-10-27 — first historical SEC archive block
+
+Completed:
+
+- Validated and processed all sixteen quarterly archives from 2014 through 2017, together with the
+  existing 2024 Q1 and 2026 Q1 checkpoints.
+- Built a resumable per-quarter pipeline and a combined 3,352-filing panel covering 670 issuers.
+- Verified zero duplicate accessions, zero unparsed filing/period dates, and zero filings dated
+  before their fiscal period end.
+- Improved permanent-CIK resolution from 630 to 690 of 731 membership intervals; resolved intervals
+  represent 97.57% of membership-days, while 94.39% interval coverage remains five resolutions
+  short of the frozen model gate.
+- Measured historical complete-case coverage of 41.1% for nonfinancials, 52.5% for Financials, and
+  73.1% for Real Estate. The older data therefore overturned the small pilot's optimistic
+  nonfinancial coverage result.
+
+Interpretation:
+
+- The identity design is working and is close to its gate.
+- The nonfinancial schema is not yet historically robust; gross margin and cash-flow margin are the
+  primary missing inputs. No model should be fit until the remaining quarters establish whether
+  this persists across 2018–2025.
+- Historical sector labels remain unavailable for former constituents; SEC SIC is used only to
+  select an accounting schema, not presented as true historical GICS.
+
+## 2026-10-27 — 2018–2021 SEC archive block
+
+Completed:
+
+- Added all sixteen quarterly archives from 2018 through 2021 to the resumable historical panel.
+- Preserved prior CIK resolutions and earlier quarter outputs after their raw source ZIPs were
+  removed; added an automated carry-forward test for this cumulative contract.
+- Expanded the panel to 5,801 filings and 679 issuers with zero duplicate accessions, date parsing
+  failures, or filings dated before their fiscal period end.
+- Resolved 698 of 731 membership intervals, covering 98.06% of membership-days and 95.49% of
+  intervals. The frozen historical identity gate now passes.
+- Improved complete-case coverage to 46.7% for nonfinancials, 57.4% for Financials, and 78.5% for
+  Real Estate. Nonfinancial coverage passes annually from 2019 onward but remains below 50% across
+  the partial full-period panel.
+
+Interpretation:
+
+- Identity resolution is no longer the reason the fundamental model is disabled.
+- The remaining decision depends on the 2022–2025 archive block and the nonfinancial missingness
+  contract; changing the research start date after observing coverage would require a new frozen
+  specification rather than an undocumented exclusion.
+
+## 2026-10-27 — complete 2014 Q1–2026 Q3 SEC archive history
+
+Completed:
+
+- Processed all 51 quarterly SEC Financial Statement Data Set archives from 2014 Q1 through 2026
+  Q3 into a compact 7,815-filing, 683-issuer panel.
+- Verified zero duplicate accessions, unparsed filing dates, or filings dated before their fiscal
+  period end.
+- Tightened historical identity matching after audit examples exposed time-inconsistent ticker
+  reuse and an Alexion/Lexicon look-alike; filing-name matches now require membership-time overlap
+  and exact agreement on a distinctive name anchor.
+- Resolved 699 of 731 intervals, covering 98.15% of membership-days and 95.62% of intervals. The
+  identity gate passes without accepting the detected false matches.
+- Achieved complete-case coverage of 50.1% for nonfinancials, 61.6% for Financials, and 82.7% for
+  Real Estate. All frozen archive-stage coverage gates pass.
+
+Interpretation:
+
+- The historical SEC archive and issuer-identity foundation is complete enough to advance.
+- The nonfinancial gate passes by only 0.06 percentage points, so missingness must remain explicit
+  and sensitivity analysis is mandatory.
+- SIVB was safely resolved in the final block; its 2022–2023 filings are present, while earlier
+  filings remain a documented one-company backfill gap.
+- The next stage is a filing-date-safe as-of join to the research episodes, followed by historical
+  sector-treatment and coverage audits before any model is enabled.
+
+## 2026-10-27 — point-in-time SEC fundamental ablation
+
+Completed:
+
+- Froze the v1.4 join, freshness, missingness, model, validation, and portfolio rules before fitting
+  the expanded fundamental models.
+- Replaced ticker-only joins with membership-interval CIK joins and actual filing-date as-of joins;
+  stale annual filings expire after 550 days.
+- Built a 41,240-row monthly panel with 98.33% identity coverage, 97.37% usable filing coverage,
+  97.06% quality-score coverage, and zero future-filing timing violations.
+- Preserved missing values for unresolved identities and the known SIVB backfill gap rather than
+  substituting later statements.
+- Ran price-only, fundamentals-only, and combined ridge/gradient-boosting ensembles on 34,184
+  identical out-of-fold observations across 68 months and six expanding yearly tests.
+- The combined ensemble improved mean rank IC by 0.0056, but its paired block interval was
+  [-0.0294, 0.0336]; the improvement occurred in only three of six years and two of three accounting
+  schemas, so the frozen directional gate failed.
+- The combined long-only portfolio returned 13.16% annually with a 0.64 Sharpe versus 10.52% and
+  0.58 for price-only, but had higher risk and statistically weak 1.66% six-factor alpha
+  (HAC t=0.52).
+- Post-specification long-short diagnostics were negative after costs, rejecting a market-neutral
+  alpha interpretation.
+- Added point-in-time identity, no-leakage, filing-expiry, missing-rank, and quality-direction tests;
+  the full suite now passes 84 tests.
+
+Interpretation:
+
+- The official SEC archive pipeline is a strong portfolio-quality data-engineering contribution.
+- Fundamentals provide a modest research signal, especially in the transparent ridge model, but
+  the effect is unstable and does not establish alpha.
+- Further tuning on the same holdout is not justified. A frozen simpler candidate needs prospective
+  or independent-market confirmation.
+
+## 2026-10-27 — public release hardening
+
+Completed:
+
+- Rewrote the README around the primary research question, three strongest results, system design,
+  reproduction path, and explicit claim boundaries.
+- Replaced the broad résumé list with role-specific quantitative-research and data-engineering
+  bullets tied to measured results.
+- Added a deterministic public demonstration with 4,320 synthetic OHLCV rows, chronological
+  training and test samples, and an explicit non-research disclaimer.
+- Added a Makefile target that runs focused linting, all 84 tests, the synthetic pipeline, and a
+  public-repository audit.
+- Expanded CI to reproduce the synthetic data byte-for-byte and validate the SEC point-in-time
+  components.
+- Added release checks for credentials, vendor or derived datasets, oversized files, broken README
+  links, machine-specific paths, and synthetic-data labeling.
+- Preregistered the unchanged S&P 400 combined-ridge transfer test with coverage and performance
+  gates. The test is marked not run because the SEC archives must first be reprocessed for S&P 400
+  CIKs.
+
+Release status:
+
+- `make verify` passes.
+- The public tree contains no vendor datasets or credential files.
+- The repository is ready for review or publication after the owner chooses the destination and
+  commits the current changes.
+
