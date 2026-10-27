@@ -42,6 +42,23 @@ The independent S&P 400 replication used the same model and feature definitions.
 overlap with the S&P 500 was 0.33%, and all frozen predictive criteria passed. The constituent
 history is a pinned public reconstruction rather than licensed official index history.
 
+## Visual summary
+
+The risk ranking is monotonic in the S&P 500 holdout: realized 40-day drawdown rates increase from
+7.44% in the lowest predicted-risk decile to 26.28% in the highest.
+
+![Realized drawdown event rate by predicted-risk decile](docs/figures/modern_decile_event_rates.png)
+
+The unchanged model also retains useful separation in the Nasdaq-100 and S&P 400, providing a test
+outside the universe used for the primary replication.
+
+![Cross-universe validation of the unchanged drawdown-risk model](docs/figures/v08_cross_universe_validation.png)
+
+The SEC pipeline covers most eligible observations while enforcing filing-date availability and
+permanent issuer identity.
+
+![Point-in-time SEC panel coverage and timing quality](docs/figures/v14_fundamental_data_quality.png)
+
 Full results:
 
 - [S&P 500 replication](docs/RESULTS.md)

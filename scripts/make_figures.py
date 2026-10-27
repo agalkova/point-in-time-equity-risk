@@ -344,6 +344,43 @@ def cross_universe_figure() -> None:
     finish(FIGURES / "v08_cross_universe_validation.png")
 
 
+def fundamental_data_quality_figure() -> None:
+    summary = json.loads((TABLES / "v14_fundamental_ablation_summary.json").read_text())
+    audit = summary["panel_audit"]
+    labels = ["Issuer identity", "Fresh filing", "Quality score"]
+    values = [
+        audit["identity_coverage"] * 100.0,
+        audit["filing_coverage_after_550_day_expiry"] * 100.0,
+        audit["quality_score_coverage"] * 100.0,
+    ]
+    colors = [COLORS["navy"], COLORS["blue"], COLORS["teal"]]
+    figure, axis = plt.subplots(figsize=(8.8, 4.8))
+    bars = axis.bar(labels, values, color=colors, width=0.62)
+    axis.set_ylim(0.0, 105.0)
+    axis.set_ylabel("Eligible stock-month observations covered (%)")
+    axis.set_title("Point-in-time SEC panel: broad coverage with no future-filing joins")
+    axis.grid(axis="y", alpha=0.2)
+    for bar, value in zip(bars, values, strict=True):
+        axis.text(
+            bar.get_x() + bar.get_width() / 2.0,
+            value + 1.2,
+            f"{value:.1f}%",
+            ha="center",
+            va="bottom",
+        )
+    figure.text(
+        0.5,
+        0.01,
+        (
+            f"{audit['panel_rows']:,} stock-month rows • {audit['issuers']:,} issuers • "
+            f"{audit['timing_violations']} future-filing violations"
+        ),
+        ha="center",
+        color=COLORS["navy"],
+    )
+    finish(FIGURES / "v14_fundamental_data_quality.png")
+
+
 def main() -> None:
     FIGURES.mkdir(parents=True, exist_ok=True)
     decile_figure()
@@ -361,6 +398,7 @@ def main() -> None:
     optimized_portfolio_figure()
     ndx_transfer_figure()
     cross_universe_figure()
+    fundamental_data_quality_figure()
     print(f"Saved figures to {FIGURES}")
 
 
