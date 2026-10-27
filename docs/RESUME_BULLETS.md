@@ -29,13 +29,13 @@ Use the bullets that match the role. Keep two or three on a one-page résumé.
 
 ## Short interview description
 
-> The project began as my James Rocco Scholarship study of speculative bubbles using price and
-> volume data. I later rebuilt it as a forward drawdown-risk ranking problem, with point-in-time
-> membership, symbol history, and a frozen out-of-time evaluation. The resulting model transferred
-> unchanged to a nearly non-overlapping S&P 400 universe. I then added a filing-date-safe SEC
-> fundamentals pipeline and tested expected-return signals. Those results were promising in some
-> long-only comparisons but did not support an alpha claim, which is documented as a negative result
-> rather than tuned away.
+> The project began as my student-designed study of speculative bubbles, supported by the James
+> Rocco Quantitative Data Research Scholarship. I later rebuilt it as a forward drawdown-risk
+> ranking problem, with point-in-time membership, symbol history, and a frozen out-of-time
+> evaluation. The resulting model transferred unchanged to a nearly non-overlapping S&P 400
+> universe. I then added a filing-date-safe SEC fundamentals pipeline and tested expected-return
+> signals. Those results were promising in some long-only comparisons but did not support an alpha
+> claim, which is documented as a negative result rather than tuned away.
 
 ## One-line project description
 
