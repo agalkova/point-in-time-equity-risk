@@ -9,12 +9,14 @@ experiments do not establish alpha, and the repository reports those negative re
 
 ## Project origin
 
-This work began as a student-designed research project supported by the James Rocco Quantitative
-Data Research Scholarship. The original study explored whether price and volume patterns could help
-identify speculative equity bubbles. This repository extends that work into a broader point-in-time
-research system: it replaces hindsight-defined bubble labels with forward drawdown targets, expands
-the market history and investment universes, incorporates filing-date-safe SEC fundamentals, and
-adds leakage-controlled validation, portfolio diagnostics, and production monitoring.
+I started this project as a student-designed study supported by the James Rocco Quantitative Data
+Research Scholarship. My original question was whether price and volume patterns could help
+identify speculative equity bubbles.
+
+Since then, I have taken the project well beyond the original study. I replaced hindsight-defined
+bubble labels with forward drawdown targets, expanded the market history and investment universes,
+incorporated filing-date-safe SEC fundamentals, and added leakage-controlled validation, portfolio
+diagnostics, and production monitoring.
 
 ## Research question
 
