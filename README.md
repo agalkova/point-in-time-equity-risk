@@ -44,20 +44,15 @@ history is a pinned public reconstruction rather than licensed official index hi
 
 ## Visual summary
 
-The risk ranking is monotonic in the S&P 500 holdout: realized 40-day drawdown rates increase from
-7.44% in the lowest predicted-risk decile to 26.28% in the highest.
+Realized drawdown rates increase monotonically across predicted-risk deciles in both the S&P 500
+holdout and the independent S&P 400 replication.
 
-![Realized drawdown event rate by predicted-risk decile](docs/figures/modern_decile_event_rates.png)
+![Realized drawdown event rate by predicted-risk decile in the S&P 500 and S&P 400](docs/figures/readme_decile_transfer.png)
 
-The unchanged model also retains useful separation in the Nasdaq-100 and S&P 400, providing a test
-outside the universe used for the primary replication.
+The cross-sectional ranking remains positive in every out-of-time year for both universes, although
+its strength varies with the market environment.
 
-![Cross-universe validation of the unchanged drawdown-risk model](docs/figures/v08_cross_universe_validation.png)
-
-The SEC pipeline covers most eligible observations while enforcing filing-date availability and
-permanent issuer identity.
-
-![Point-in-time SEC panel coverage and timing quality](docs/figures/v14_fundamental_data_quality.png)
+![Annual mean daily rank IC in the S&P 500 and S&P 400](docs/figures/readme_annual_transfer.png)
 
 Full results:
 

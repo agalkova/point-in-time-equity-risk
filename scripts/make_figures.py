@@ -381,6 +381,87 @@ def fundamental_data_quality_figure() -> None:
     finish(FIGURES / "v14_fundamental_data_quality.png")
 
 
+def readme_decile_transfer_figure() -> None:
+    from risk_managed_momentum.evaluation.ranking import decile_table
+
+    series = {
+        "S&P 500": (
+            pd.read_csv(TABLES / "modern_model_predictions.csv.gz"),
+            COLORS["navy"],
+            "o",
+        ),
+        "S&P 400": (
+            pd.read_csv(TABLES / "v08_sp400_predictions.csv.gz"),
+            COLORS["teal"],
+            "s",
+        ),
+    }
+    figure, axis = plt.subplots(figsize=(9.2, 5.0))
+    for label, (predictions, color, marker) in series.items():
+        deciles = decile_table(predictions, "risk_score")
+        rates = deciles["event_rate"] * 100.0
+        axis.plot(
+            deciles["risk_decile"],
+            rates,
+            marker=marker,
+            linewidth=2.2,
+            markersize=6,
+            color=color,
+            label=label,
+        )
+        for index in (0, len(deciles) - 1):
+            axis.annotate(
+                f"{rates.iloc[index]:.1f}%",
+                (deciles["risk_decile"].iloc[index], rates.iloc[index]),
+                xytext=(0, 9),
+                textcoords="offset points",
+                ha="center",
+                color=color,
+            )
+    axis.set_xticks(range(1, 11))
+    axis.set_xlabel("Predicted risk decile (10 = highest risk)")
+    axis.set_ylabel("Realized 40-day drawdown event rate (%)")
+    axis.set_title("Realized drawdown risk rises across both test universes")
+    axis.legend(frameon=False)
+    axis.grid(alpha=0.2)
+    finish(FIGURES / "readme_decile_transfer.png")
+
+
+def readme_annual_transfer_figure() -> None:
+    series = {
+        "S&P 500": (
+            pd.read_csv(TABLES / "modern_model_annual.csv"),
+            COLORS["navy"],
+            "o",
+        ),
+        "S&P 400": (
+            pd.read_csv(TABLES / "v08_sp400_annual.csv"),
+            COLORS["teal"],
+            "s",
+        ),
+    }
+    figure, axis = plt.subplots(figsize=(9.2, 5.0))
+    for label, (annual, color, marker) in series.items():
+        axis.plot(
+            annual["year"],
+            annual["mean_daily_rank_ic"],
+            marker=marker,
+            linewidth=2.2,
+            markersize=6,
+            color=color,
+            label=label,
+        )
+    axis.axhline(0.0, color="black", linewidth=0.9)
+    axis.set_xticks(series["S&P 500"][0]["year"])
+    axis.set_xlabel("Out-of-time test year")
+    axis.set_ylabel("Mean daily rank IC")
+    axis.set_title("Risk ranking remains positive in every out-of-time year")
+    axis.legend(frameon=False)
+    axis.grid(alpha=0.2)
+    figure.text(0.5, 0.01, "2026 is a partial sample through August 4.", ha="center")
+    finish(FIGURES / "readme_annual_transfer.png")
+
+
 def main() -> None:
     FIGURES.mkdir(parents=True, exist_ok=True)
     decile_figure()
@@ -399,6 +480,8 @@ def main() -> None:
     ndx_transfer_figure()
     cross_universe_figure()
     fundamental_data_quality_figure()
+    readme_decile_transfer_figure()
+    readme_annual_transfer_figure()
     print(f"Saved figures to {FIGURES}")
 
 
