@@ -1,5 +1,7 @@
 # Point-in-Time Equity Risk
 
+[![Tests](https://github.com/agalkova/point-in-time-equity-risk/actions/workflows/tests.yml/badge.svg)](https://github.com/agalkova/point-in-time-equity-risk/actions/workflows/tests.yml)
+
 This project asks a practical question: **after a stock rises quickly, can we identify which stocks
 are most likely to suffer a large decline next?**
 
