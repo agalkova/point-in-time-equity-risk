@@ -1,11 +1,32 @@
 # Point-in-Time Equity Risk
 
-A point-in-time equity research system for identifying elevated drawdown risk after strong price
-run-ups. The project covers data ingestion, historical index membership, issuer identity, feature
-construction, model validation, portfolio simulation, and production monitoring.
+This project asks a practical question: **after a stock rises quickly, can we identify which stocks
+are most likely to suffer a large decline next?**
 
-The main finding is a repeatable drawdown-risk ranking signal. The portfolio and expected-return
-experiments do not establish alpha, and the repository reports those negative results directly.
+I built a research pipeline that uses price, trading volume, index membership, and SEC financial
+statements to estimate the risk of a stock losing at least 15% during the next 40 trading days. The
+model does not try to predict an exact future price. It ranks stocks from lower to higher drawdown
+risk, where a drawdown is a decline from the price observed when the prediction is made.
+
+## What the project does
+
+1. Reconstructs which companies belonged to each index at each point in history.
+2. Uses only market and financial information that was publicly available on the prediction date.
+3. Trains and evaluates the model in chronological order, so future observations cannot leak into
+   the past.
+4. Tests the same model on later periods and on a separate group of mid-cap stocks.
+5. Examines whether the risk signal improves a momentum strategy after costs and market exposure
+   are considered.
+
+The main result is that the model consistently separates higher-risk stocks from lower-risk stocks.
+That result also transferred from the S&P 500 to a nearly non-overlapping S&P 400 sample. The
+trading experiments did **not** establish a reliable market-beating strategy, so this is best viewed
+as a drawdown-risk and financial-data-engineering project rather than a claim of proven alpha.
+
+“Point-in-time” means that every prediction is built from the information an investor could
+actually have known on that date. This matters because using today’s index members, revised company
+identifiers, or financial statements before their filing dates can make a historical model look
+better than it really was.
 
 ## Project origin
 
