@@ -396,7 +396,7 @@ def readme_decile_transfer_figure() -> None:
             "s",
         ),
     }
-    figure, axis = plt.subplots(figsize=(9.2, 5.0))
+    _figure, axis = plt.subplots(figsize=(9.2, 5.0))
     for label, (predictions, color, marker) in series.items():
         deciles = decile_table(predictions, "risk_score")
         rates = deciles["event_rate"] * 100.0
