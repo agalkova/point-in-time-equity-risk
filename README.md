@@ -8,6 +8,9 @@ statements to estimate the risk of a stock losing at least 15% during the next 4
 model does not try to predict an exact future price. It ranks stocks from lower to higher drawdown
 risk, where a drawdown is a decline from the price observed when the prediction is made.
 
+Identifying that risk before a decline could help investors review vulnerable positions, size
+exposure more carefully, and decide when additional risk controls may be warranted.
+
 ## What the project does
 
 1. Reconstructs which companies belonged to each index at each point in history.
