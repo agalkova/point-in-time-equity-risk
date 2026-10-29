@@ -1,8 +1,11 @@
-# Production drawdown-risk pipeline
+# Operational drawdown-risk pipeline
 
 ## Purpose
 
-The research pipeline originally required a complete future outcome window, which is correct for evaluation but makes true inference impossible. The production layer separates those concerns: it can create features and episode-onset scores for the newest market date without inventing a target, while the historical research builders retain their strict forward-label requirements by default.
+The research pipeline originally required a complete future outcome window, which is correct for
+evaluation but makes true inference impossible. The operational layer separates those concerns: it
+can create features and episode-onset scores for the newest market date without inventing a target,
+while the historical research builders retain their strict forward-label requirements by default.
 
 This is a research-grade batch system, not an order-execution service. It creates monitored risk signals and immutable evidence; it does not place trades.
 

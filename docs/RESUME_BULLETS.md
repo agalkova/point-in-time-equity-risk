@@ -23,9 +23,9 @@ Use the bullets that match the role. Keep two or three on a one-page résumé.
 - Processed 51 SEC Financial Statement Data Set archives into 7,815 normalized annual filings;
   resolved historical issuer identity with permanent CIKs and built an as-of panel with 98.33%
   identity coverage, 97.37% fresh-filing coverage, and zero future-filing violations.
-- Productionized daily risk inference with checksum-verified model artifacts, input and feature
-  hashes, freshness and coverage gates, PSI drift monitoring, atomic publication, idempotent
-  retries, and fail-closed signal suppression.
+- Built a governed daily risk-inference pipeline with checksum-verified model artifacts, input and
+  feature hashes, freshness and coverage gates, PSI drift monitoring, atomic publication,
+  idempotent retries, and fail-closed signal suppression.
 
 ## Short interview description
 
@@ -39,5 +39,5 @@ Use the bullets that match the role. Keep two or three on a one-page résumé.
 
 ## One-line project description
 
-Point-in-time equity research and production-monitoring system combining market data, historical
+Point-in-time equity research and operational-monitoring system combining market data, historical
 index membership, corporate-action lineage, and SEC filings with leakage-controlled validation.

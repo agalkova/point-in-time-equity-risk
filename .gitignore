@@ -1,6 +1,5 @@
 .DS_Store
 .env
-/AGENTS.md
 .venv/
 __pycache__/
 *.py[cod]
@@ -26,13 +25,7 @@ reports/tables/**
 reports/figures/**
 reports/operations/**
 reports/example/**
-reports/cloud/**
+reports/prospective/**
 !reports/tables/.gitkeep
 !reports/figures/.gitkeep
-
-# Local Terraform working files and plans
-**/.terraform/**
-*.tfstate
-*.tfstate.*
-*.tfplan
 

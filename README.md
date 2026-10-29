@@ -42,7 +42,7 @@ identify speculative equity bubbles.
 Since then, I have taken the project well beyond the original study. I replaced hindsight-defined
 bubble labels with forward drawdown targets, expanded the market history and investment universes,
 incorporated filing-date-safe SEC fundamentals, and added leakage-controlled validation, portfolio
-diagnostics, and production monitoring.
+diagnostics, and operational monitoring.
 
 ## Research question
 
@@ -86,7 +86,7 @@ Full results:
 - [S&P 400 independent replication](docs/SP400_REPLICATION_RESULTS.md)
 - [Exuberance hazard model](docs/EXUBERANCE_HAZARD_RESULTS.md)
 - [SEC fundamental analysis](docs/POINT_IN_TIME_FUNDAMENTAL_RESULTS.md)
-- [Production pipeline](docs/PRODUCTION_RISK_PIPELINE.md)
+- [Operational pipeline](docs/PRODUCTION_RISK_PIPELINE.md)
 
 ## System design
 
@@ -198,6 +198,7 @@ source revisions and checksums. Their limitations are stated in the correspondin
 
 ## Selected documentation
 
+- [Documentation guide](docs/README.md)
 - [Research specification](docs/RESEARCH_SPEC.md)
 - [Data dictionary](docs/DATA_DICTIONARY.md)
 - [Data sources and provenance](docs/DATA_SOURCES.md)
