@@ -108,6 +108,12 @@ The pipeline uses permanent SEC CIK identifiers where accounting data is involve
 aliases for market data. Membership changes are effective only from their recorded dates. Filings
 become available on the SEC filing date, not the fiscal period end. Ambiguous joins fail closed.
 
+The public synthetic proof can also run as a scheduled AWS workload. GitHub Actions authenticates
+with short-lived OIDC credentials, publishes an immutable container to ECR, and deploys a Fargate
+task with Terraform. Each run writes a checksum manifest and health record to a private,
+versioned S3 bucket; CloudWatch handles logs and failure alarms. This cloud path demonstrates the
+operating design without uploading licensed market data or claiming synthetic results as research.
+
 ## Research controls
 
 - Point-in-time S&P 500, Nasdaq-100, and S&P 400 membership panels
@@ -121,15 +127,17 @@ become available on the SEC filing date, not the fiscal period end. Ambiguous jo
 - Automated tests for feature timing, membership timing, outcome integrity, filing timing, and
   operational idempotency
 
-The test suite currently contains 84 tests. The SEC panel has 98.33% point-in-time issuer coverage,
+The test suite currently contains 87 tests. The SEC panel has 98.33% point-in-time issuer coverage,
 97.37% fresh-filing coverage, and zero filings joined before their public date.
 
 ## Repository structure
 
 ```text
 configs/                   Frozen research, data, and release specifications
+cloud/status/              Minimal read-only status page for the synthetic cloud proof
 data/example/              Redistribution-safe synthetic OHLCV data
 docs/                      Methods, results, limitations, and operating notes
+infra/                     Terraform bootstrap and AWS workload definitions
 reports/                   Generated local tables and figures; excluded from Git
 scripts/                   Reproducible command-line entry points
 src/risk_managed_momentum/ Reusable data, feature, model, evaluation, and operations code
@@ -147,11 +155,13 @@ Python 3.11 or newer is required.
 make install
 make verify
 make demo
+make cloud-demo
 ```
 
 `make verify` runs lint checks, all tests, the public-repository audit, and the synthetic pipeline.
 `make demo` writes a local demonstration report to `reports/example/`. Synthetic metrics are not
-research evidence.
+research evidence. `make cloud-demo` exercises the same immutable run-bundle contract used by the
+scheduled container, but writes only to the local `reports/cloud/` directory.
 
 Equivalent commands without `make`:
 
@@ -204,6 +214,7 @@ source revisions and checksums. Their limitations are stated in the correspondin
 - [Decision log](docs/DECISIONS.md)
 - [Progress log](docs/PROGRESS_LOG.md)
 - [Prospective alpha operations](docs/PROSPECTIVE_OPERATIONS.md)
+- [AWS synthetic deployment](docs/AWS_DEPLOYMENT.md)
 - [Resume bullets](docs/RESUME_BULLETS.md)
 
 ## Scope of the claims

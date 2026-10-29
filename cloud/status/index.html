@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Operational status for the synthetic point-in-time equity-risk pipeline." />
+    <title>Equity Risk Pipeline Status</title>
+    <style>
+      :root { color-scheme: light; --ink:#17232d; --navy:#123a54; --green:#237a45; --muted:#536675; --line:#d9e0e4; }
+      * { box-sizing: border-box; }
+      body { margin:0; background:#fff; color:var(--ink); font:400 15px/1.6 Tahoma,Verdana,Arial,sans-serif; }
+      main { width:min(760px,calc(100% - 36px)); margin:70px auto; }
+      .eyebrow { margin:0 0 8px; color:var(--green); font-size:12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; }
+      h1 { margin:0 0 14px; color:var(--navy); font-size:clamp(2rem,5vw,3.2rem); line-height:1.05; }
+      .intro { max-width:65ch; margin:0 0 36px; color:var(--muted); }
+      .status { padding:22px 24px; border-left:5px solid var(--green); background:#f3f8f4; }
+      .status.fail { border-color:#a33; background:#fff5f5; }
+      .status h2 { margin:0 0 5px; color:var(--navy); font-size:1.25rem; }
+      dl { display:grid; grid-template-columns:190px 1fr; gap:0; margin:28px 0 0; border-top:1px solid var(--line); }
+      dt,dd { margin:0; padding:10px 0; border-bottom:1px solid var(--line); overflow-wrap:anywhere; }
+      dt { color:var(--muted); }
+      dd { font-weight:700; }
+      footer { margin-top:32px; color:var(--muted); font-size:12px; }
+      a { color:#116da1; }
+      @media(max-width:560px){ dl{grid-template-columns:1fr} dt{padding-bottom:0;border-bottom:0} dd{padding-top:2px} }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">Synthetic deployment proof</p>
+      <h1>Equity Risk Pipeline</h1>
+      <p class="intro">
+        This page reports the latest scheduled run of the public synthetic demonstration. It does
+        not expose research data, credentials, or investment signals.
+      </p>
+      <section class="status" id="status" aria-live="polite">
+        <h2 id="headline">Loading latest run…</h2>
+        <p id="message">Reading the deployment manifest.</p>
+      </section>
+      <dl id="details" hidden>
+        <dt>Run ID</dt><dd id="run-id"></dd>
+        <dt>Run date</dt><dd id="run-date"></dd>
+        <dt>Deployment commit</dt><dd id="commit"></dd>
+        <dt>Container image</dt><dd id="image"></dd>
+        <dt>Input data hash</dt><dd id="input-hash"></dd>
+        <dt>Manifest</dt><dd id="manifest"></dd>
+      </dl>
+      <footer>
+        Research infrastructure demonstration by
+        <a href="https://agalkova.com/">Anastasia Galkova</a>. Not investment advice.
+      </footer>
+    </main>
+    <script>
+      const text = (id, value) => { document.getElementById(id).textContent = value || "—"; };
+      fetch("/synthetic/status/latest.json", { cache: "no-store" })
+        .then((response) => { if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.json(); })
+        .then((run) => {
+          text("headline", run.status === "PASS" ? "Latest run passed" : "Latest run failed");
+          text("message", "The scheduled container completed and published its validated manifest.");
+          text("run-id", run.run_id); text("run-date", run.run_date_utc); text("commit", run.commit_sha);
+          text("image", run.image_uri); text("input-hash", run.input_sha256); text("manifest", run.manifest_uri);
+          document.getElementById("details").hidden = false;
+          if (run.status !== "PASS") document.getElementById("status").classList.add("fail");
+        })
+        .catch((error) => {
+          text("headline", "No successful run published yet");
+          text("message", `The infrastructure is available, but the latest manifest could not be loaded (${error.message}).`);
+          document.getElementById("status").classList.add("fail");
+        });
+    </script>
+  </body>
+</html>

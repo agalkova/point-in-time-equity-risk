@@ -1,7 +1,7 @@
 PYTHON ?= .venv/bin/python
 RUFF ?= .venv/bin/ruff
 
-.PHONY: install test lint verify demo fundamentals-panel fundamentals-research
+.PHONY: install test lint verify demo cloud-demo fundamentals-panel fundamentals-research
 
 install:
 	python3 -m venv .venv
@@ -14,10 +14,13 @@ lint:
 	$(RUFF) check \
 		scripts/build_point_in_time_fundamental_panel.py \
 		scripts/generate_example_data.py \
+		scripts/run_cloud_synthetic_job.py \
 		scripts/run_example_pipeline.py \
 		scripts/run_point_in_time_fundamental_ablation.py \
 		scripts/verify_public_repo.py \
 		src/risk_managed_momentum/features/sec_fundamentals.py \
+		src/risk_managed_momentum/operations/cloud.py \
+		tests/test_cloud_job.py \
 		tests/test_sec_fundamental_panel.py
 
 verify: lint test
@@ -26,6 +29,9 @@ verify: lint test
 
 demo:
 	$(PYTHON) scripts/run_example_pipeline.py
+
+cloud-demo:
+	$(PYTHON) scripts/run_cloud_synthetic_job.py
 
 fundamentals-panel:
 	$(PYTHON) scripts/build_point_in_time_fundamental_panel.py

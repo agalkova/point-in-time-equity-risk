@@ -25,6 +25,13 @@ reports/tables/**
 reports/figures/**
 reports/operations/**
 reports/example/**
+reports/cloud/**
 !reports/tables/.gitkeep
 !reports/figures/.gitkeep
+
+# Local Terraform working files and plans
+**/.terraform/**
+*.tfstate
+*.tfstate.*
+*.tfplan
 

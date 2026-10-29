@@ -1,0 +1,7 @@
+aws_region          = "us-east-2"
+schedule_state      = "DISABLED"
+monthly_budget_usd  = 10
+enable_status_site  = true
+
+# Set locally or through TF_VAR_alert_email. Do not commit a personal address.
+# alert_email = "you@example.com"

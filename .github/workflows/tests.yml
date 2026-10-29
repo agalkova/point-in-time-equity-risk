@@ -22,6 +22,7 @@ jobs:
           ruff check
           scripts/build_point_in_time_fundamental_panel.py
           scripts/generate_example_data.py
+          scripts/run_cloud_synthetic_job.py
           scripts/run_example_pipeline.py
           scripts/run_point_in_time_fundamental_ablation.py
           scripts/verify_public_repo.py
@@ -35,6 +36,30 @@ jobs:
           src/risk_managed_momentum/operations
           src/risk_managed_momentum/data/universes.py
           src/risk_managed_momentum/features/sec_fundamentals.py
+          tests/test_cloud_job.py
           tests/test_operations.py
           tests/test_pipeline_integration.py
           tests/test_sec_fundamental_panel.py
+
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build --tag point-in-time-equity-risk:test .
+      - run: docker run --read-only --tmpfs /app/output point-in-time-equity-risk:test
+
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v4.0.1
+        with:
+          terraform_version: 1.16.3
+      - name: Check formatting
+        run: terraform fmt -check -recursive infra
+      - name: Validate bootstrap
+        working-directory: infra/bootstrap
+        run: terraform init -backend=false && terraform validate
+      - name: Validate workload
+        working-directory: infra/terraform
+        run: terraform init -backend=false && terraform validate

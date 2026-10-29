@@ -27,6 +27,13 @@ Use the bullets that match the role. Keep two or three on a one-page résumé.
   hashes, freshness and coverage gates, PSI drift monitoring, atomic publication, idempotent
   retries, and fail-closed signal suppression.
 
+After the AWS smoke test has passed, this optional cloud-deployment bullet can replace or accompany
+the preceding operations bullet:
+
+- Deployed the redistribution-safe pipeline as an immutable ECS Fargate workload using Terraform,
+  GitHub Actions OIDC, ECR vulnerability scanning, versioned S3 artifacts, EventBridge scheduling,
+  least-privilege runtime IAM, CloudWatch alarms, and automated smoke tests.
+
 ## Short interview description
 
 > The project began as my student-designed study of speculative bubbles, supported by the James
