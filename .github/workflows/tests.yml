@@ -46,7 +46,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build --tag point-in-time-equity-risk:test .
-      - run: docker run --read-only --tmpfs /app/output point-in-time-equity-risk:test
+      - run: >-
+          docker run --rm --read-only
+          --mount type=volume,destination=/app/output
+          point-in-time-equity-risk:test
 
   terraform:
     runs-on: ubuntu-latest

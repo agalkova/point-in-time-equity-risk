@@ -31,7 +31,9 @@ access through Origin Access Control. The image tag and research artifacts are i
 
 ```bash
 docker build -t point-in-time-equity-risk:local .
-docker run --rm --read-only --tmpfs /app/output point-in-time-equity-risk:local
+docker run --rm --read-only \
+  --mount type=volume,destination=/app/output \
+  point-in-time-equity-risk:local
 ```
 
 The process exits nonzero when validation or publication fails. With no `ARTIFACT_BUCKET`, it writes
