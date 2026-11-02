@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Mapping
+from collections.abc import Mapping
 
 import numpy as np
 import pandas as pd
@@ -107,7 +107,7 @@ def reconcile_legacy_overlap(
             {
                 "legacy_ticker": ticker,
                 "provider_ticker": str(group["provider_ticker"].iloc[0]),
-                "overlap_rows": int(len(group)),
+                "overlap_rows": len(group),
                 "overlap_start": str(group["date"].min().date()),
                 "overlap_end": str(group["date"].max().date()),
                 "raw_return_correlation": _correlation(

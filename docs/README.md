@@ -24,7 +24,6 @@ research decisions, validation results, and engineering details behind that summ
 
 - [Operational drawdown-risk pipeline](PRODUCTION_RISK_PIPELINE.md)
 - [Prospective hazard record](PROSPECTIVE_HAZARD_SPEC.md)
-- [Prospective operations](PROSPECTIVE_OPERATIONS.md)
 
 The operational pipeline is a local research batch system. It produces monitored signals and
 immutable evidence but does not place trades or claim to be a live production service.
@@ -40,6 +39,7 @@ immutable evidence but does not place trades or claim to be a live production se
 - [Hazard challenger](HAZARD_CHALLENGER_RESULTS.md)
 - [Fundamental readiness status](FUNDAMENTALS_PILOT_STATUS.md)
 - [S&P 400 fundamental transfer plan](SP400_FUNDAMENTAL_TRANSFER_PLAN.md)
+- [Archived prospective alpha plan](PROSPECTIVE_OPERATIONS.md)
 
 ## Research history
 
@@ -62,3 +62,6 @@ The versioned specifications show how the project changed without rewriting earl
 The [project plan](PROJECT_PLAN.md) and [progress log](PROGRESS_LOG.md) retain the chronological work
 record. [Resume bullets](RESUME_BULLETS.md) contains concise descriptions for applications and
 interviews.
+
+The v1.0 research record is closed. Archived plans document ideas that were specified but not run;
+they are not active commitments or project results.

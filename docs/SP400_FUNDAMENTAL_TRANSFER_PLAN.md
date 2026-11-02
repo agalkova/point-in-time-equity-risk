@@ -2,7 +2,7 @@
 
 ## Status
 
-Preregistered and not run.
+Preregistered, not run, and deferred outside the completed v1.0 study. No result is claimed.
 
 The v1.4 S&P 500 analysis identified combined ridge as a prospective candidate after results were
 reviewed. It is therefore not confirmatory evidence on the S&P 500 sample. The next valid test is an

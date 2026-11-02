@@ -2,14 +2,13 @@ from __future__ import annotations
 
 import json
 import tomllib
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
 from dotenv import load_dotenv
 
 from risk_managed_momentum.data.alpaca import AlpacaHistoricalClient
-
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -50,11 +49,11 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     combined.to_csv(output_dir / "bars_historical_aliases_all.csv.gz", index=False, compression="gzip")
     manifest = {
-        "retrieved_at_utc": datetime.now(timezone.utc).isoformat(),
+        "retrieved_at_utc": datetime.now(UTC).isoformat(),
         "adjustment": "all",
         "feed": "sip",
         "downloads": records,
-        "rows": int(len(combined)),
+        "rows": len(combined),
     }
     (output_dir / "bars_historical_aliases_all.manifest.json").write_text(
         json.dumps(manifest, indent=2) + "\n"

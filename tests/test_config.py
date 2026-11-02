@@ -4,7 +4,6 @@ from pathlib import Path
 
 from risk_managed_momentum.config import configured_ranges, load_config
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
