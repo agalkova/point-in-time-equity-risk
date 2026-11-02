@@ -9,6 +9,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
+from run_exuberance_hazard import load_modern_sp500, load_ndx, load_sp400
 from sklearn.metrics import roc_auc_score
 
 from risk_managed_momentum.config import load_config
@@ -23,7 +24,6 @@ from risk_managed_momentum.evaluation.recalibration import (
 )
 from risk_managed_momentum.features.episodes import build_exuberance_episode_dataset
 from risk_managed_momentum.models.hazard import fit_hazard_model, predict_cumulative_risk
-from run_exuberance_hazard import load_modern_sp500, load_ndx, load_sp400
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 TABLES = PROJECT_ROOT / "reports/tables"

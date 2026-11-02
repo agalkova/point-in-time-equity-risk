@@ -14,7 +14,6 @@ from risk_managed_momentum.evaluation.portfolio import performance_summary, simu
 from risk_managed_momentum.features.build import build_research_dataset, split_research_dataset
 from risk_managed_momentum.models.drawdown import select_logistic_model
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PENALTIES = (0.0, 0.25, 0.5, 1.0)
 FREQUENCIES = ("weekly", "monthly")
@@ -49,7 +48,7 @@ def main() -> None:
 
     portfolio_config = config["portfolio"]
     simulation_kwargs = {
-        "top_n": int(round(1.0 / float(portfolio_config["maximum_position_weight"]))),
+        "top_n": round(1.0 / float(portfolio_config["maximum_position_weight"])),
         "maximum_position_weight": float(portfolio_config["maximum_position_weight"]),
         "one_way_cost_bps": float(portfolio_config["one_way_cost_bps"]),
     }

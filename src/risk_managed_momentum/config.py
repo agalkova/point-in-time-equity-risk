@@ -7,7 +7,6 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-
 DEFAULT_CONFIG = Path(__file__).resolve().parents[2] / "configs" / "research.toml"
 
 
@@ -39,7 +38,7 @@ class DateRange:
     end: date
 
     @classmethod
-    def from_mapping(cls, value: dict[str, str]) -> "DateRange":
+    def from_mapping(cls, value: dict[str, str]) -> DateRange:
         return cls(start=date.fromisoformat(value["start"]), end=date.fromisoformat(value["end"]))
 
     def validate(self) -> None:

@@ -10,7 +10,6 @@ from risk_managed_momentum.config import load_config
 from risk_managed_momentum.data.legacy import load_legacy_wide
 from risk_managed_momentum.data.reconcile import reconcile_legacy_overlap
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 

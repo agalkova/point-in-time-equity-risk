@@ -20,7 +20,6 @@ from risk_managed_momentum.evaluation.ranking import (
 from risk_managed_momentum.features.build import build_research_dataset, split_research_dataset
 from risk_managed_momentum.models.drawdown import select_logistic_model
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -160,7 +159,7 @@ def main() -> None:
     summary = {
         "specification_version": config["project"]["specification_version"],
         "model_selected_on_legacy_validation": selected.name,
-        "final_model_training_observations": int(len(development)),
+        "final_model_training_observations": len(development),
         "modern_period_first_signal": str(modern["date"].min().date()),
         "modern_period_last_signal_with_full_target": str(modern["date"].max().date()),
         "membership_tickers": int(membership.shape[1]),

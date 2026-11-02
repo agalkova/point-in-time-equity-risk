@@ -141,7 +141,8 @@ The public repository contains a deterministic synthetic dataset for schema and 
 
 ## Quick start
 
-Python 3.11 or newer is required.
+Python 3.12 or newer is required. The lock file records the exact environment used for the public
+verification run.
 
 ```bash
 make install
@@ -158,7 +159,8 @@ Equivalent commands without `make`:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -e ".[dev]"
+python -m pip install -r requirements-lock.txt
+python -m pip install -e . --no-deps
 python -m unittest discover -s tests -v
 python scripts/verify_public_repo.py
 python scripts/run_example_pipeline.py --check
