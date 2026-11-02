@@ -31,7 +31,9 @@ Exit condition: price and volume definitions are understood, ticker mappings are
 
 - [x] Build a dated ticker-history alias table with explicit reuse handling.
 - [x] Add point-in-time S&P 500 membership.
-- [ ] Add sector classifications available on each signal date.
+- Deferred: historical GICS classifications were not available from a suitable public
+  point-in-time source. SEC SIC is used only to choose an accounting schema and is not presented as
+  historical sector membership.
 - [x] Build leakage-safe price/volume features with explicit signal-date timing.
 - [x] Add data-quality checks for duplicates, membership coverage, ticker reuse, and missing symbols.
 
@@ -89,7 +91,7 @@ claim, and supports only conclusions justified by the evidence.
 - [x] Download free official factor data and estimate six-factor alpha with HAC errors.
 - [x] Stress-test the ridge candidate across position counts and transaction costs.
 - [x] Freeze a prospective candidate without promoting the post-spec result to proven alpha.
-- [x] Begin recording month-end prospective signals after the freeze date.
+- [x] Build the append-only machinery for a prospective month-end record.
 
 Exit condition: a complete alpha-research attempt is published honestly, and any stronger
 claim depends on observations that were not available when the candidate was frozen.
@@ -114,8 +116,14 @@ claim remains limited to the evidence.
 - [x] Add one-command verification and a public-repository audit.
 - [x] Expand CI to cover the SEC point-in-time path and release checks.
 - [x] Preregister the independent S&P 400 fundamental transfer test.
-- [ ] Reprocess SEC archives for the S&P 400 issuer set and run the frozen transfer test.
+- Deferred outside v1.0: reprocessing the SEC archives for the S&P 400 issuer set and running the
+  frozen transfer test.
 
-The final item requires a new SEC archive pass. It is deliberately separate from the completed
-public release and must not be represented as an existing result.
+The deferred transfer test requires a new SEC archive pass. It is retained as a preregistered
+proposal, separate from the completed public release, and is not represented as an existing result.
+
+## Closure
+
+The v1.0 research record closed on 2026-11-01. The published claims, code, synthetic demonstration,
+and supporting documentation are frozen. Any later study must use a new specification and version.
 

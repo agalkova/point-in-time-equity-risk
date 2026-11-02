@@ -10,7 +10,7 @@ def classification_metrics(target: pd.Series, score: np.ndarray) -> dict[str, fl
     prevalence = float(target.mean())
     average_precision = float(average_precision_score(target, score))
     return {
-        "observations": int(len(target)),
+        "observations": len(target),
         "positives": int(target.sum()),
         "prevalence": prevalence,
         "average_precision": average_precision,

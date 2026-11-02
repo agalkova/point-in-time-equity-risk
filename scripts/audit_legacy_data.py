@@ -6,7 +6,6 @@ from pathlib import Path
 from risk_managed_momentum.config import load_config
 from risk_managed_momentum.data.legacy import audit_legacy_wide, load_legacy_wide
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 

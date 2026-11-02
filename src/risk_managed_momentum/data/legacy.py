@@ -48,8 +48,8 @@ def audit_legacy_wide(price: pd.DataFrame, volume: pd.DataFrame) -> LegacyAudit:
     """Return compact data-contract checks without changing source values."""
     mismatched_missing = price.isna().ne(volume.isna())
     return LegacyAudit(
-        rows=int(len(price)),
-        securities=int(len(price.columns)),
+        rows=len(price),
+        securities=len(price.columns),
         start=str(price.index.min().date()),
         end=str(price.index.max().date()),
         price_missing_cells=int(price.isna().sum().sum()),

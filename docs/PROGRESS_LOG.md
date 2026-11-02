@@ -437,6 +437,22 @@ Release status:
 
 - `make verify` passes.
 - The public tree contains no vendor datasets or credential files.
-- The repository is ready for review or publication after the owner chooses the destination and
-  commits the current changes.
+- The repository was published as v1.0.0.
+
+## 2026-11-01 — v1.0 research closure
+
+Completed:
+
+- Closed the v1.0 research record without adding another model or reusing the evaluated samples.
+- Deferred the S&P 400 fundamental transfer proposal outside v1.0; it remains explicitly not run.
+- Archived the prospective alpha operating plan before any eligible post-freeze observation was
+  recorded.
+- Recorded the absence of a suitable public point-in-time GICS history rather than substituting
+  present-day sector labels.
+
+Final status:
+
+- The three claims in the README are the complete set of supported project claims.
+- Archived proposals are retained for research provenance and are not active commitments.
+- Any future empirical extension requires a new dated specification and project version.
 

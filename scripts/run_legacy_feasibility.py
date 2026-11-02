@@ -14,7 +14,6 @@ from risk_managed_momentum.evaluation.ranking import (
 from risk_managed_momentum.features.build import build_research_dataset, split_research_dataset
 from risk_managed_momentum.models.drawdown import select_logistic_model
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -47,7 +46,7 @@ def main() -> None:
     summary = {
         "specification_version": config["project"]["specification_version"],
         "selected_model": selected.name,
-        "split_observations": {name: int(len(frame)) for name, frame in splits.items()},
+        "split_observations": {name: len(frame) for name, frame in splits.items()},
         "test_metrics": metrics,
         "mean_daily_rank_ic": float(rank_ic.mean()),
         "mean_daily_rank_ic_95pct_block_interval": list(interval),

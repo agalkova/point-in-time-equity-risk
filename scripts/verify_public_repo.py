@@ -22,6 +22,7 @@ REQUIRED_FILES = {
     "Makefile",
     "README.md",
     "pyproject.toml",
+    "requirements-lock.txt",
     ".github/workflows/tests.yml",
     "docs/RESULTS.md",
     "docs/SP400_REPLICATION_RESULTS.md",
