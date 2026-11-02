@@ -177,11 +177,6 @@ This command rebuilds the filing-date-safe panel and runs the frozen price-only,
 fundamentals-only, and combined walk-forward comparison. Machine-readable results are written under
 `reports/tables/`.
 
-The next independent fundamental test is preregistered for the S&P 400 but has not been run. The
-compact SEC history currently contains only the S&P 500 issuer set, so the quarterly archives must
-be reprocessed for S&P 400 CIKs first. See the
-[S&P 400 fundamental transfer plan](docs/SP400_FUNDAMENTAL_TRANSFER_PLAN.md).
-
 ## Data and credentials
 
 Market data is retrieved from Alpaca with the SIP feed. Credentials belong in an untracked `.env`
@@ -204,7 +199,6 @@ source revisions and checksums. Their limitations are stated in the correspondin
 - [Data sources and provenance](docs/DATA_SOURCES.md)
 - [Decision log](docs/DECISIONS.md)
 - [Progress log](docs/PROGRESS_LOG.md)
-- [Prospective alpha operations](docs/PROSPECTIVE_OPERATIONS.md)
 - [Resume bullets](docs/RESUME_BULLETS.md)
 
 ## Scope of the claims
@@ -218,3 +212,6 @@ This repository supports three claims:
 
 It does not support claims of reliable bubble identification, market-neutral alpha, or production
 trading profitability.
+
+The v1.0 research record is closed. Preregistered follow-up ideas remain in the documentation as
+historical proposals, but they are outside the completed study and are not presented as results.

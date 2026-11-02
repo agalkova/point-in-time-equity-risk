@@ -1,9 +1,15 @@
-# Prospective alpha record operations
+# Archived prospective alpha plan
+
+## Status
+
+Archived on 2026-11-01 before the first eligible post-freeze observation. No prospective result is
+claimed. The code and protocol remain as a record of how the experiment would have been operated,
+but this repository does not maintain an active monthly track record.
 
 ## Purpose
 
-The v0.4 ridge top-50 candidate is the only strategy advancing to prospective observation. The
-record begins with the first month-end signal after the 2026-10-22 freeze date.
+The v0.4 ridge top-50 candidate was selected for a possible prospective observation period. The
+planned record would have begun with the first month-end signal after the 2026-10-22 freeze date.
 
 ## Creating a signal record
 
@@ -33,14 +39,14 @@ the ranked universe, holdings, and manifest to the original record.
 The manifest records the signal date, training cutoff, market-data cutoff, turnover, modeled cost,
 and whether realized performance is still pending. Missing months may not be backfilled silently.
 
-## Current state
+## State at archival
 
-The latest available market data ends on 2026-09-30. That signal predates the freeze and remains
-a shadow output excluded from prospective evidence. No eligible prospective observation exists
-yet. The first eligible record requires a month-end after 2026-10-22.
+The available operating data ended on 2026-09-30. That signal predates the freeze and remains a
+shadow output excluded from prospective evidence. No eligible prospective observation was added to
+the record before it was archived.
 
 ## Evaluation discipline
 
-Do not revise the model, features, ridge penalty, position count, weighting rule, or transaction
-cost while the prospective record is active. Report the first review after 12 eligible monthly
-observations, with SPY, the point-in-time equal-weight universe, and six-factor attribution.
+If this experiment is restarted, it requires a new dated specification. The model, features, ridge
+penalty, position count, weighting rule, transaction cost, and review schedule must be fixed before
+the first new observation is recorded.
