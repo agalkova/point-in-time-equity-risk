@@ -42,6 +42,8 @@ def build_point_in_time_panel(
     provider_volume = bars.pivot(index="date", columns="ticker", values="volume").reindex(
         index=trading_dates
     )
+    # Output columns keep the membership symbol. Provider symbols are only
+    # used to copy the correct dated price history into that stable column.
     price = pd.DataFrame(index=trading_dates, columns=tickers, dtype=float)
     volume = pd.DataFrame(index=trading_dates, columns=tickers, dtype=float)
     alias_rows = list(aliases)
@@ -57,6 +59,8 @@ def build_point_in_time_panel(
             and str(row["provider_ticker"]).upper() == ticker
             for row in ticker_aliases
         )
+        # A reused ticker cannot safely inherit the provider's entire current
+        # series. Only the explicitly dated alias interval is copied below.
         if ticker in provider_price and not reuse_protected:
             price[ticker] = provider_price[ticker]
             volume[ticker] = provider_volume[ticker]
@@ -67,9 +71,11 @@ def build_point_in_time_panel(
             start = pd.Timestamp(str(row["start"])).normalize()
             end = pd.Timestamp(str(row["end"])).normalize()
             if not row.get("download_asof") and price[ticker].notna().sum() == 0:
+                # Ordinary rename: one provider series represents the full history.
                 price[ticker] = provider_price[provider]
                 volume[ticker] = provider_volume[provider]
             else:
+                # Ticker reuse or a dated alias: copy only the reviewed interval.
                 mask = price.index.to_series().between(start, end).to_numpy()
                 price.loc[mask, ticker] = provider_price.loc[mask, provider]
                 volume.loc[mask, ticker] = provider_volume.loc[mask, provider]
@@ -80,6 +86,7 @@ def build_point_in_time_panel(
         .fillna(False)
         .astype(bool)
     )
+    # Prices may extend beyond membership; `member` alone controls eligibility.
     return price, volume, member
 
 
