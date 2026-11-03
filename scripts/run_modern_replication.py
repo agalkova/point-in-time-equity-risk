@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pandas as pd
 from sklearn.base import clone
+from sklearn.pipeline import Pipeline
 
 from risk_managed_momentum.config import load_config
 from risk_managed_momentum.data.legacy import load_legacy_wide
@@ -18,7 +19,7 @@ from risk_managed_momentum.evaluation.ranking import (
     moving_block_interval,
 )
 from risk_managed_momentum.features.build import build_research_dataset, split_research_dataset
-from risk_managed_momentum.models.drawdown import select_logistic_model
+from risk_managed_momentum.models.drawdown import SelectedModel, select_logistic_model
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -34,6 +35,7 @@ def load_aliases(path: Path) -> list[dict[str, object]]:
 
 
 def daily_event_spread(frame: pd.DataFrame, score_column: str) -> pd.Series:
+    """Return each date's highest-minus-lowest risk-decile event rate."""
     work = frame[["date", "target", score_column]].copy()
     work["risk_decile"] = add_daily_deciles(work, score_column)
     rates = work.dropna(subset=["risk_decile"]).groupby(["date", "risk_decile"])[
@@ -45,6 +47,7 @@ def daily_event_spread(frame: pd.DataFrame, score_column: str) -> pd.Series:
 
 
 def score_summary(frame: pd.DataFrame, score_column: str, config: dict) -> dict[str, object]:
+    """Summarize classification and cross-sectional ranking performance."""
     metrics = classification_metrics(frame["target"], frame[score_column].to_numpy())
     deciles = decile_table(frame, score_column)
     rank_ic = daily_rank_ic(frame, score_column)
@@ -75,9 +78,10 @@ def score_summary(frame: pd.DataFrame, score_column: str, config: dict) -> dict[
     }
 
 
-def main() -> None:
-    config = load_config(PROJECT_ROOT / "configs" / "research.toml")
-
+def fit_frozen_legacy_model(
+    config: dict,
+) -> tuple[SelectedModel, Pipeline, list[str], int]:
+    """Select on legacy validation data, then refit on all legacy development rows."""
     legacy_price, legacy_volume = load_legacy_wide(
         config["legacy_source"]["price_path"],
         config["legacy_source"]["volume_path"],
@@ -94,7 +98,20 @@ def main() -> None:
     final_model = clone(selected.model).fit(
         development[legacy_dataset.feature_columns], development["target"]
     )
+    return selected, final_model, legacy_dataset.feature_columns, len(development)
 
+
+def main() -> None:
+    config = load_config(PROJECT_ROOT / "configs" / "research.toml")
+
+    # Model selection is confined to the older legacy periods. The fitted
+    # design is frozen before any modern S&P 500 outcomes are evaluated.
+    selected, final_model, feature_columns, development_rows = fit_frozen_legacy_model(
+        config
+    )
+
+    # Membership determines which stocks may produce a signal on each date.
+    # Price histories remain available after removal so forward outcomes are complete.
     source = config["modern_source"]
     bars = pd.read_csv(project_path(source["bars_path"]))
     alias_bars = pd.read_csv(project_path(source["historical_alias_bars_path"]))
@@ -111,9 +128,10 @@ def main() -> None:
     ].copy()
     if modern.empty:
         raise RuntimeError("Modern holdout contains no eligible observations")
-    if modern_dataset.feature_columns != legacy_dataset.feature_columns:
+    if modern_dataset.feature_columns != feature_columns:
         raise RuntimeError("Legacy and modern feature schemas differ")
 
+    # This is the first point where the frozen model sees the modern feature rows.
     modern["risk_score"] = final_model.predict_proba(
         modern[modern_dataset.feature_columns]
     )[:, 1]
@@ -159,7 +177,7 @@ def main() -> None:
     summary = {
         "specification_version": config["project"]["specification_version"],
         "model_selected_on_legacy_validation": selected.name,
-        "final_model_training_observations": len(development),
+        "final_model_training_observations": development_rows,
         "modern_period_first_signal": str(modern["date"].min().date()),
         "modern_period_last_signal_with_full_target": str(modern["date"].max().date()),
         "membership_tickers": int(membership.shape[1]),

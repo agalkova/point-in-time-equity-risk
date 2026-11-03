@@ -25,6 +25,7 @@ def select_logistic_model(
     random_seed: int = 42,
     c_values: tuple[float, ...] = (0.01, 0.1, 1.0, 10.0),
 ) -> SelectedModel:
+    """Choose regularization on the legacy validation period only."""
     rows = []
     fitted: dict[str, Pipeline] = {}
     for c_value in c_values:

@@ -16,10 +16,12 @@ class ResearchDataset:
 
 
 def _rank(frame: pd.DataFrame) -> pd.DataFrame:
+    """Convert each date's stock values to cross-sectional percentile ranks."""
     return frame.rank(axis=1, method="average", pct=True)
 
 
 def _flatten(frame: pd.DataFrame, index: pd.MultiIndex) -> np.ndarray:
+    """Align a date-by-ticker matrix and flatten it to match the row index."""
     dates = index.levels[0]
     tickers = index.levels[1]
     aligned = frame.reindex(index=dates, columns=tickers)
@@ -34,7 +36,7 @@ def build_research_dataset(
     *,
     include_unlabeled: bool = False,
 ) -> ResearchDataset:
-    """Build the frozen v0.1 cross-sectional research table."""
+    """Build one past-only feature row and one forward outcome per stock-date."""
     price = price.sort_index().astype(float)
     volume = volume.reindex(index=price.index, columns=price.columns).astype(float)
     if membership is None:
@@ -47,6 +49,7 @@ def build_research_dataset(
         )
     returns = price.pct_change(fill_method=None)
 
+    # Every stock-level predictor below uses the signal date or earlier.
     ret5 = price.div(price.shift(5)).sub(1.0)
     ret20 = price.div(price.shift(20)).sub(1.0)
     ret60 = price.div(price.shift(60)).sub(1.0)
@@ -98,6 +101,7 @@ def build_research_dataset(
     ranked_features = {
         f"rank_{name}": _rank(value.where(membership)) for name, value in stock_features.items()
     }
+    # Market-state values are shared by every eligible stock on a date.
     regime_features = {
         "market_return_20": market_ret20,
         "market_return_60": market_ret60,
@@ -122,6 +126,7 @@ def build_research_dataset(
     full_index = pd.MultiIndex.from_product(
         [price.index, price.columns], names=["date", "ticker"]
     )
+    # Convert the wide matrices into a standard table with one stock-date per row.
     dataset = pd.DataFrame(index=full_index)
     for name, feature in ranked_features.items():
         dataset[name] = _flatten(feature, full_index)

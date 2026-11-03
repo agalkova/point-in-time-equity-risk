@@ -7,6 +7,7 @@ from sklearn.metrics import average_precision_score, brier_score_loss, roc_auc_s
 
 
 def classification_metrics(target: pd.Series, score: np.ndarray) -> dict[str, float | int]:
+    """Measure binary event discrimination; lift is relative to prevalence."""
     prevalence = float(target.mean())
     average_precision = float(average_precision_score(target, score))
     return {
@@ -21,6 +22,7 @@ def classification_metrics(target: pd.Series, score: np.ndarray) -> dict[str, fl
 
 
 def add_daily_deciles(frame: pd.DataFrame, score_column: str) -> pd.Series:
+    """Rank stocks within each date into ten equal-sized risk groups."""
     def one_day(values: pd.Series) -> pd.Series:
         if values.notna().sum() < 10:
             return pd.Series(np.nan, index=values.index)
@@ -31,6 +33,7 @@ def add_daily_deciles(frame: pd.DataFrame, score_column: str) -> pd.Series:
 
 
 def daily_rank_ic(frame: pd.DataFrame, score_column: str) -> pd.Series:
+    """Calculate each date's Spearman correlation with later loss severity."""
     values: dict[pd.Timestamp, float] = {}
     for date, group in frame.groupby("date"):
         valid = group[[score_column, "drawdown_severity"]].dropna()
@@ -48,6 +51,7 @@ def moving_block_interval(
     iterations: int,
     random_seed: int,
 ) -> tuple[float, float]:
+    """Bootstrap consecutive date blocks to preserve short-run dependence."""
     clean = values.dropna().to_numpy()
     if len(clean) == 0:
         return float("nan"), float("nan")
@@ -66,6 +70,7 @@ def moving_block_interval(
 
 
 def decile_table(frame: pd.DataFrame, score_column: str) -> pd.DataFrame:
+    """Pool realized outcomes by the daily risk groups created above."""
     work = frame.copy()
     work["risk_decile"] = add_daily_deciles(work, score_column)
     work = work.dropna(subset=["risk_decile"]).copy()
