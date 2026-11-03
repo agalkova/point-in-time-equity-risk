@@ -139,6 +139,8 @@ tests/                     Unit and end-to-end pipeline tests
 Vendor data, derived panels, credentials, and generated reports are excluded from version control.
 The public repository contains a deterministic synthetic dataset for schema and execution checks.
 
+The repository also contains later research extensions. The [code map](docs/CODE_MAP.md) identifies the short primary path behind the headline S&P 500 result and the unchanged S&P 400 transfer test, so those studies can be read without tracing every experimental script.
+
 ## Quick start
 
 Python 3.12 or newer is required. The lock file records the exact environment used for the public
@@ -196,6 +198,7 @@ source revisions and checksums. Their limitations are stated in the correspondin
 ## Selected documentation
 
 - [Documentation guide](docs/README.md)
+- [Code map](docs/CODE_MAP.md)
 - [Research specification](docs/RESEARCH_SPEC.md)
 - [Data dictionary](docs/DATA_DICTIONARY.md)
 - [Data sources and provenance](docs/DATA_SOURCES.md)
