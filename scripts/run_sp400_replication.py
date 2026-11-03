@@ -5,14 +5,11 @@ import tomllib
 from pathlib import Path
 
 import pandas as pd
-from run_modern_replication import score_summary
-from sklearn.base import clone
+from run_modern_replication import fit_frozen_legacy_model, score_summary
 
 from risk_managed_momentum.config import load_config
-from risk_managed_momentum.data.legacy import load_legacy_wide
 from risk_managed_momentum.data.panel import build_point_in_time_panel, coverage_summary
-from risk_managed_momentum.features.build import build_research_dataset, split_research_dataset
-from risk_managed_momentum.models.drawdown import select_logistic_model
+from risk_managed_momentum.features.build import build_research_dataset
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 TABLES = PROJECT_ROOT / "reports/tables"
@@ -23,22 +20,9 @@ def main() -> None:
     with (PROJECT_ROOT / "configs/research_v0_8_sp400.toml").open("rb") as handle:
         config = tomllib.load(handle)
 
-    legacy_price, legacy_volume = load_legacy_wide(
-        base_config["legacy_source"]["price_path"],
-        base_config["legacy_source"]["volume_path"],
-    )
-    legacy_dataset = build_research_dataset(legacy_price, legacy_volume, base_config)
-    legacy_splits = split_research_dataset(legacy_dataset, base_config)
-    selected = select_logistic_model(
-        legacy_splits["train"],
-        legacy_splits["validation"],
-        legacy_dataset.feature_columns,
-        random_seed=int(base_config["project"]["random_seed"]),
-    )
-    development = pd.concat(legacy_splits.values(), ignore_index=True)
-    model = clone(selected.model).fit(
-        development[legacy_dataset.feature_columns], development["target"]
-    )
+    # Rebuild the same legacy model used for the S&P 500 study. S&P 400
+    # outcomes never participate in model selection or fitting.
+    selected, model, feature_columns, _ = fit_frozen_legacy_model(base_config)
 
     bars = pd.read_csv(PROJECT_ROOT / config["data"]["bars_path"])
     gap_path = PROJECT_ROOT / config["data"]["historical_gap_bars_path"]
@@ -67,7 +51,7 @@ def main() -> None:
         raise RuntimeError(f"S&P 400 pre-evaluation quality gates failed: {quality_gates}")
 
     dataset = build_research_dataset(price, volume, base_config, membership=membership)
-    if dataset.feature_columns != legacy_dataset.feature_columns:
+    if dataset.feature_columns != feature_columns:
         raise RuntimeError("Legacy and S&P 400 feature schemas differ")
     universe = config["universe"]
     frame = dataset.frame[
