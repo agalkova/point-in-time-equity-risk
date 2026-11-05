@@ -4,12 +4,14 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
+from risk_managed_momentum.cli import parse_no_arguments
 from risk_managed_momentum.data.factors import FACTOR_URLS, download_french_factors
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> None:
+    parse_no_arguments("Download the Fama-French factor files.")
     output_dir = PROJECT_ROOT / "data" / "raw" / "fama_french"
     output_dir.mkdir(parents=True, exist_ok=True)
     factors = download_french_factors()

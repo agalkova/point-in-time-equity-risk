@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 import json
-import tomllib
 from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
 
+from risk_managed_momentum.alpha_research import load_alpha_config, load_modern_panel
+from risk_managed_momentum.cli import parse_no_arguments
 from risk_managed_momentum.config import load_config
-from risk_managed_momentum.data.panel import build_point_in_time_panel
 from risk_managed_momentum.features.alpha import build_alpha_dataset
 from risk_managed_momentum.models.alpha import alpha_model_factories
 from risk_managed_momentum.prospective import (
@@ -21,23 +21,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 FREEZE_DATE = pd.Timestamp("2026-10-22")
 
 
-def load_alpha_config() -> dict:
-    with (PROJECT_ROOT / "configs" / "research_v0_3_alpha.toml").open("rb") as handle:
-        return tomllib.load(handle)
-
-
-def load_modern_panel(config: dict) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    source = config["modern_source"]
-    bars = pd.read_csv(source["bars_path"])
-    aliases = pd.read_csv(source["historical_alias_bars_path"])
-    bars = pd.concat([bars, aliases[bars.columns]], ignore_index=True)
-    membership = pd.read_csv(source["membership_path"])
-    with Path(source["aliases_path"]).open("rb") as handle:
-        ticker_aliases = tomllib.load(handle)["alias"]
-    return build_point_in_time_panel(bars, membership, ticker_aliases)
-
-
 def main() -> None:
+    parse_no_arguments("Generate the frozen prospective alpha candidate record.")
     base_config = load_config(PROJECT_ROOT / "configs" / "research.toml")
     alpha_config = load_alpha_config()
     price, volume, membership = load_modern_panel(base_config)

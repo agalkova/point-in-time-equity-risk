@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from risk_managed_momentum.cli import parse_no_arguments
 from risk_managed_momentum.config import load_config
 from risk_managed_momentum.data.universes import load_sp500_panel
 from risk_managed_momentum.prospective import append_ledger_entry, write_immutable_frame
@@ -15,6 +16,7 @@ THRESHOLD = -0.15
 
 
 def main() -> None:
+    parse_no_arguments("Mature eligible prospective hazard outcomes.")
     root = PROJECT_ROOT / "reports/prospective/hazard"
     evidence_dirs = sorted(path for path in root.glob("????-??-??") if path.is_dir())
     pending = [path for path in evidence_dirs if not (path / "outcomes.csv").exists()]

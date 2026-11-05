@@ -116,7 +116,8 @@ The operational S&P 500 refresh uses the existing local Alpaca credentials and a
 overlap window. It reconstructs membership through the requested date, downloads delayed SIP bars
 through the latest completed day allowed by the free account, replaces the overlap, and validates
 duplicates, schema, freshness, and current-member coverage before publishing. Bars, membership,
-and membership reference tables are replaced as one rollback-capable transaction.
+and membership reference tables are staged together. Python-level failures during replacement are
+rolled back, but the multi-file swap is not a crash-safe transaction.
 
 ```bash
 python scripts/refresh_sp500_operations.py
