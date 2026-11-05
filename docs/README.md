@@ -16,7 +16,6 @@ research decisions, validation results, and engineering details behind that summ
 - [Data sources and provenance](DATA_SOURCES.md)
 - [Pilot universe](PILOT_UNIVERSE.md)
 - [Decision log](DECISIONS.md)
-- [Point-in-time design note TODO](POINT_IN_TIME_DESIGN_TODO.md)
 
 ## Operational design
 
@@ -31,5 +30,4 @@ immutable evidence but does not place trades or claim to be a live production se
 
 Superseded specifications, scripts, reports, and figures are retained in the
 [research archive](../archive/README.md). They document how the work changed, but they are not
-current entry points or additional headline claims. [Resume bullets](RESUME_BULLETS.md) contains
-concise descriptions for applications and interviews.
+current entry points or additional headline claims.
