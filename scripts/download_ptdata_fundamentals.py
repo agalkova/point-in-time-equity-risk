@@ -7,6 +7,7 @@ from pathlib import Path
 import pandas as pd
 from download_sec_fundamentals import pilot_companies
 
+from risk_managed_momentum.cli import parse_no_arguments
 from risk_managed_momentum.data.ptdata import (
     PTDATA_METRICS,
     download_ptdata_history,
@@ -17,6 +18,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> None:
+    parse_no_arguments("Download the pilot point-in-time fundamentals dataset.")
     components = pd.read_csv(
         PROJECT_ROOT / "data/interim/membership/sp500_current_components.csv"
     )

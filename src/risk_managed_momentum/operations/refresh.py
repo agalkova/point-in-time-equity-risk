@@ -91,7 +91,10 @@ def atomic_write_dataframes(
     *,
     csv_options: dict[Path, dict[str, Any]] | None = None,
 ) -> None:
-    """Serialize all replacements first, then swap them with rollback on failure."""
+    """Serialize replacements first and roll back Python-level swap failures.
+
+    This is not a crash-safe transaction: process or machine failure can interrupt the sequence.
+    """
     if not replacements:
         return
     csv_options = csv_options or {}

@@ -8,6 +8,7 @@ import pandas as pd
 from sklearn.base import clone
 from sklearn.pipeline import Pipeline
 
+from risk_managed_momentum.cli import parse_no_arguments
 from risk_managed_momentum.config import load_config
 from risk_managed_momentum.data.legacy import load_legacy_wide
 from risk_managed_momentum.data.panel import build_point_in_time_panel, coverage_summary
@@ -102,6 +103,7 @@ def fit_frozen_legacy_model(
 
 
 def main() -> None:
+    parse_no_arguments("Run the primary S&P 500 out-of-time replication.")
     config = load_config(PROJECT_ROOT / "configs" / "research.toml")
 
     # Model selection is confined to the older legacy periods. The fitted

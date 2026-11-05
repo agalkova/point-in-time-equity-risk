@@ -8,6 +8,7 @@ from pathlib import Path
 import pandas as pd
 from dotenv import load_dotenv
 
+from risk_managed_momentum.cli import parse_no_arguments
 from risk_managed_momentum.data.alpaca import AlpacaHistoricalClient
 from risk_managed_momentum.data.panel import build_point_in_time_panel, coverage_summary
 
@@ -15,6 +16,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> None:
+    parse_no_arguments("Download missing historical S&P 400 market data.")
     with (PROJECT_ROOT / "configs/research_v0_8_sp400.toml").open("rb") as handle:
         config = tomllib.load(handle)
     bars = pd.read_csv(PROJECT_ROOT / config["data"]["bars_path"])
