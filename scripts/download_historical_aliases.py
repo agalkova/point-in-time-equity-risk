@@ -8,12 +8,14 @@ from pathlib import Path
 import pandas as pd
 from dotenv import load_dotenv
 
+from risk_managed_momentum.cli import parse_no_arguments
 from risk_managed_momentum.data.alpaca import AlpacaHistoricalClient
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> None:
+    parse_no_arguments("Download market data for historical ticker aliases.")
     config_path = PROJECT_ROOT / "data" / "reference" / "modern_symbol_aliases.toml"
     with config_path.open("rb") as handle:
         aliases = tomllib.load(handle)["alias"]

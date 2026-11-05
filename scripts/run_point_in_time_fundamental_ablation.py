@@ -10,9 +10,10 @@ from build_point_in_time_fundamental_panel import (
     build_panel,
     load_config_v14,
 )
-from run_alpha_research import annual_returns, load_modern_panel
 from sklearn.base import clone
 
+from risk_managed_momentum.alpha_research import annual_returns, load_modern_panel
+from risk_managed_momentum.cli import parse_no_arguments
 from risk_managed_momentum.config import load_config
 from risk_managed_momentum.data.factors import load_french_factors
 from risk_managed_momentum.evaluation.alpha import alpha_score_summary, monthly_rank_ic
@@ -45,6 +46,7 @@ def pooled_summary(frame: pd.DataFrame, score: str, config: dict) -> dict:
 
 
 def main() -> None:
+    parse_no_arguments("Run the point-in-time SEC fundamental ablation.")
     config = load_config_v14()
     base = load_config(PROJECT_ROOT / "configs/research.toml")
     if PANEL_PATH.exists() and AUDIT_PATH.exists():
