@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from risk_managed_momentum.cli import parse_no_arguments
 from risk_managed_momentum.data.sec_fsds import FUNDAMENTAL_SCHEMAS
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -20,6 +21,7 @@ def quarterly_periods(first_year: int, last_year: int, last_quarter: int) -> lis
 
 
 def main() -> None:
+    parse_no_arguments("Audit the normalized SEC filing history.")
     history_dir = PROJECT_ROOT / "data/interim/sec_fsds_history"
     history = pd.read_csv(history_dir / "annual_fundamentals.csv.gz")
     for column in ["period", "filed", "prior_assets_date", "prior_revenue_date"]:

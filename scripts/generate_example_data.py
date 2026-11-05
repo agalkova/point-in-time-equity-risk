@@ -5,10 +5,13 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from risk_managed_momentum.cli import parse_no_arguments
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> None:
+    parse_no_arguments("Regenerate the deterministic synthetic example data.")
     rng = np.random.default_rng(42)
     dates = pd.bdate_range("2023-01-03", periods=360)
     rows = []

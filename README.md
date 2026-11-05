@@ -13,6 +13,25 @@ risk, where a drawdown is a decline from the price observed when the prediction 
 Identifying that risk before a decline could help investors review vulnerable positions, size
 exposure more carefully, and decide when additional risk controls may be warranted.
 
+## Start here: primary end-to-end path
+
+The primary study has one configuration, one entry point, and one result report:
+
+1. [`configs/research.toml`](configs/research.toml) freezes the sample dates, features, target, and
+   validation rules.
+2. [`scripts/run_modern_replication.py`](scripts/run_modern_replication.py) builds the point-in-time
+   panel, fits the frozen model, and evaluates the later S&P 500 holdout.
+3. [`docs/RESULTS.md`](docs/RESULTS.md) reports the resulting tests and limitations.
+
+With the local source data described in the data guide, run:
+
+```bash
+python scripts/run_modern_replication.py
+```
+
+The S&P 400 and SEC studies are supporting transfer and data-engineering checks. They do not change
+the primary model or replace its result.
+
 ## What the project does
 
 1. Reconstructs which companies belonged to each index at each point in history.
@@ -84,7 +103,7 @@ Full results:
 
 - [S&P 500 replication](docs/RESULTS.md)
 - [S&P 400 independent replication](docs/SP400_REPLICATION_RESULTS.md)
-- [Exuberance hazard model](docs/EXUBERANCE_HAZARD_RESULTS.md)
+- [Exuberance hazard model (archived generation)](archive/research-generations/v0.9-hazard/EXUBERANCE_HAZARD_RESULTS.md)
 - [SEC fundamental analysis](docs/POINT_IN_TIME_FUNDAMENTAL_RESULTS.md)
 - [Operational pipeline](docs/PRODUCTION_RISK_PIPELINE.md)
 
@@ -128,6 +147,7 @@ The test suite currently contains 84 tests. The SEC panel has 98.33% point-in-ti
 
 ```text
 configs/                   Frozen research, data, and release specifications
+archive/                   Superseded research generations retained for history
 data/example/              Redistribution-safe synthetic OHLCV data
 docs/                      Methods, results, limitations, and operating notes
 reports/                   Generated local tables and figures; excluded from Git
@@ -139,7 +159,9 @@ tests/                     Unit and end-to-end pipeline tests
 Vendor data, derived panels, credentials, and generated reports are excluded from version control.
 The public repository contains a deterministic synthetic dataset for schema and execution checks.
 
-The repository also contains later research extensions. The [code map](docs/CODE_MAP.md) identifies the short primary path behind the headline S&P 500 result and the unchanged S&P 400 transfer test, so those studies can be read without tracing every experimental script.
+The [code map](docs/CODE_MAP.md) identifies the short primary path behind the headline S&P 500
+result and the unchanged S&P 400 transfer test. Superseded experiments are catalogued separately in
+the [research archive](archive/README.md).
 
 ## Quick start
 
@@ -203,7 +225,8 @@ source revisions and checksums. Their limitations are stated in the correspondin
 - [Data dictionary](docs/DATA_DICTIONARY.md)
 - [Data sources and provenance](docs/DATA_SOURCES.md)
 - [Decision log](docs/DECISIONS.md)
-- [Progress log](docs/PROGRESS_LOG.md)
+- [Research archive](archive/README.md)
+- [Point-in-time design note TODO](docs/POINT_IN_TIME_DESIGN_TODO.md)
 - [Resume bullets](docs/RESUME_BULLETS.md)
 
 ## Scope of the claims
