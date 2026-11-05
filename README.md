@@ -226,8 +226,6 @@ source revisions and checksums. Their limitations are stated in the correspondin
 - [Data sources and provenance](docs/DATA_SOURCES.md)
 - [Decision log](docs/DECISIONS.md)
 - [Research archive](archive/README.md)
-- [Point-in-time design note TODO](docs/POINT_IN_TIME_DESIGN_TODO.md)
-- [Resume bullets](docs/RESUME_BULLETS.md)
 
 ## Scope of the claims
 

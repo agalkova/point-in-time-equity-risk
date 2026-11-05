@@ -29,7 +29,6 @@ REQUIRED_FILES = {
     "docs/RESULTS.md",
     "docs/SP400_REPLICATION_RESULTS.md",
     "docs/POINT_IN_TIME_FUNDAMENTAL_RESULTS.md",
-    "docs/RESUME_BULLETS.md",
     "data/example/synthetic_bars.csv",
 }
 MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
