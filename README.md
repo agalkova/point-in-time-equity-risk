@@ -5,7 +5,7 @@
 This project asks a practical question: **after a stock rises quickly, can we identify which stocks
 are most likely to suffer a large decline next?**
 
-I built a research pipeline that uses price, trading volume, index membership, and SEC financial
+This repository contains a research pipeline that uses price, trading volume, index membership, and SEC financial
 statements to estimate the risk of a stock losing at least 15% during the next 40 trading days. The
 model does not try to predict an exact future price. It ranks stocks from lower to higher drawdown
 risk, where a drawdown is a decline from the price observed when the prediction is made.
