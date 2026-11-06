@@ -58,10 +58,10 @@ I started this project as a student-designed study supported by the James Rocco 
 Research Scholarship. My original question was whether price and volume patterns could help
 identify speculative equity bubbles.
 
-Since then, I have taken the project well beyond the original study. I replaced hindsight-defined
-bubble labels with forward drawdown targets, expanded the market history and investment universes,
-incorporated filing-date-safe SEC fundamentals, and added leakage-controlled validation, portfolio
-diagnostics, and operational monitoring.
+I later extended the project with AI coding tools. The extension replaced hindsight-defined bubble
+labels with forward drawdown targets, expanded the market history and investment universes, added
+filing-date-safe SEC fundamentals, and added leakage-controlled validation, portfolio diagnostics,
+and operational monitoring.
 
 ## Research question
 
