@@ -241,3 +241,7 @@ trading profitability.
 
 The v1.0 research record is closed. Preregistered follow-up ideas remain in the documentation as
 historical proposals, but they are outside the completed study and are not presented as results.
+
+## Development note
+
+AI coding tools were used during implementation. The repository includes the frozen research protocol, point-in-time checks, automated tests, and saved results.
