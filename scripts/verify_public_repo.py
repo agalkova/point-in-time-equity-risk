@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from risk_managed_momentum.cli import parse_no_arguments
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 ALLOWED_DATA_FILES = {
     "data/example/README.md",
@@ -27,7 +29,6 @@ REQUIRED_FILES = {
     "docs/RESULTS.md",
     "docs/SP400_REPLICATION_RESULTS.md",
     "docs/POINT_IN_TIME_FUNDAMENTAL_RESULTS.md",
-    "docs/RESUME_BULLETS.md",
     "data/example/synthetic_bars.csv",
 }
 MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
@@ -46,6 +47,7 @@ def public_files() -> set[str]:
 
 
 def main() -> None:
+    parse_no_arguments("Audit the tracked public repository contents.")
     tracked = public_files()
     failures: list[str] = []
     missing = sorted(REQUIRED_FILES.difference(tracked))

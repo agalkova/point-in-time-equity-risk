@@ -7,6 +7,7 @@ from pathlib import Path
 import pandas as pd
 from run_modern_replication import fit_frozen_legacy_model, score_summary
 
+from risk_managed_momentum.cli import parse_no_arguments
 from risk_managed_momentum.config import load_config
 from risk_managed_momentum.data.panel import build_point_in_time_panel, coverage_summary
 from risk_managed_momentum.features.build import build_research_dataset
@@ -16,6 +17,7 @@ TABLES = PROJECT_ROOT / "reports/tables"
 
 
 def main() -> None:
+    parse_no_arguments("Run the unchanged-model S&P 400 replication.")
     base_config = load_config(PROJECT_ROOT / "configs/research.toml")
     with (PROJECT_ROOT / "configs/research_v0_8_sp400.toml").open("rb") as handle:
         config = tomllib.load(handle)

@@ -5,8 +5,9 @@ import tomllib
 from pathlib import Path
 
 import pandas as pd
-from run_alpha_research import load_alpha_config, load_modern_panel
 
+from risk_managed_momentum.alpha_research import load_alpha_config, load_modern_panel
+from risk_managed_momentum.cli import parse_no_arguments
 from risk_managed_momentum.config import load_config
 from risk_managed_momentum.features.alpha import build_alpha_dataset
 from risk_managed_momentum.features.sec_fundamentals import (
@@ -121,6 +122,7 @@ def build_panel() -> tuple[pd.DataFrame, dict]:
 
 
 def main() -> None:
+    parse_no_arguments("Build the filing-date-safe fundamental research panel.")
     panel, audit = build_panel()
     PANEL_PATH.parent.mkdir(parents=True, exist_ok=True)
     AUDIT_PATH.parent.mkdir(parents=True, exist_ok=True)

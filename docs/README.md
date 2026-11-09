@@ -7,10 +7,7 @@ research decisions, validation results, and engineering details behind that summ
 
 - [S&P 500 out-of-time replication](RESULTS.md)
 - [S&P 400 independent replication](SP400_REPLICATION_RESULTS.md)
-- [Exuberance hazard model](EXUBERANCE_HAZARD_RESULTS.md)
 - [Point-in-time SEC fundamental analysis](POINT_IN_TIME_FUNDAMENTAL_RESULTS.md)
-- [Calibrated risk overlay](CALIBRATED_OVERLAY_RESULTS.md)
-- [Portfolio engineering](PORTFOLIO_ENGINEERING_RESULTS.md)
 
 ## Methodology and data
 
@@ -24,44 +21,13 @@ research decisions, validation results, and engineering details behind that summ
 
 - [Operational drawdown-risk pipeline](PRODUCTION_RISK_PIPELINE.md)
 - [Prospective hazard record](PROSPECTIVE_HAZARD_SPEC.md)
+- [Archived prospective alpha protocol](PROSPECTIVE_OPERATIONS.md)
 
 The operational pipeline is a local research batch system. It produces monitored signals and
 immutable evidence but does not place trades or claim to be a live production service.
 
-## Supporting experiments
-
-- [Advanced model comparison](ADVANCED_RESULTS.md)
-- [Expected-return research](ALPHA_RESULTS.md)
-- [Fundamental pilot](FUNDAMENTAL_RESULTS.md)
-- [SEC archive pilot](SEC_FSDS_PILOT_RESULTS.md)
-- [Data-integrity expansion](INTEGRITY_EXPANSION_RESULTS.md)
-- [Nasdaq-100 replication status](NDX_REPLICATION_STATUS.md)
-- [Hazard challenger](HAZARD_CHALLENGER_RESULTS.md)
-- [Fundamental readiness status](FUNDAMENTALS_PILOT_STATUS.md)
-- [S&P 400 fundamental transfer plan](SP400_FUNDAMENTAL_TRANSFER_PLAN.md)
-- [Archived prospective alpha plan](PROSPECTIVE_OPERATIONS.md)
-
 ## Research history
 
-The versioned specifications show how the project changed without rewriting earlier decisions:
-
-- [Initial specification](RESEARCH_SPEC.md)
-- [Exposure-matched portfolio test](RESEARCH_SPEC_V0_2.md)
-- [Alpha study](RESEARCH_SPEC_V0_3_ALPHA.md)
-- [Prospective specification](PROSPECTIVE_SPEC_V0_4.md)
-- [Fundamental pilot](RESEARCH_SPEC_V0_5_FUNDAMENTALS.md)
-- [Portfolio engineering](RESEARCH_SPEC_V0_6_PORTFOLIO.md)
-- [Nasdaq-100 transfer](RESEARCH_SPEC_V0_7_NDX.md)
-- [S&P 400 transfer](RESEARCH_SPEC_V0_8_SP400.md)
-- [Exuberance hazard model](RESEARCH_SPEC_V0_9_EXUBERANCE_HAZARD.md)
-- [Calibrated overlay](RESEARCH_SPEC_V1_0_CALIBRATED_OVERLAY.md)
-- [Hazard challenger](RESEARCH_SPEC_V1_1_HAZARD_CHALLENGER.md)
-- [Integrity expansion](RESEARCH_SPEC_V1_2_INTEGRITY_EXPANSION.md)
-- [Sector-fundamental extension](RESEARCH_SPEC_V1_3_SECTOR_FUNDAMENTALS.md)
-
-The [project plan](PROJECT_PLAN.md) and [progress log](PROGRESS_LOG.md) retain the chronological work
-record. [Resume bullets](RESUME_BULLETS.md) contains concise descriptions for applications and
-interviews.
-
-The v1.0 research record is closed. Archived plans document ideas that were specified but not run;
-they are not active commitments or project results.
+Superseded specifications, scripts, reports, and figures are retained in the
+[research archive](../archive/README.md). They document how the work changed, but they are not
+current entry points or additional headline claims.
