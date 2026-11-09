@@ -8,6 +8,7 @@ from pathlib import Path
 import pandas as pd
 import requests
 
+from risk_managed_momentum.cli import parse_no_arguments
 from risk_managed_momentum.data.ndx import expand_monthly_membership, verify_sha256
 from risk_managed_momentum.data.sp400 import build_event_sourced_snapshots, roster_jaccard
 
@@ -16,6 +17,7 @@ SOURCE_EXCLUSIONS = {"INDUSTRIALS", "TEMPLATE:INVESTORS EXCHANGE LINK"}
 
 
 def main() -> None:
+    parse_no_arguments("Build the dated S&P 400 membership panel.")
     with (PROJECT_ROOT / "configs/research_v0_8_sp400.toml").open("rb") as handle:
         config = tomllib.load(handle)
     source = config["public_membership"]

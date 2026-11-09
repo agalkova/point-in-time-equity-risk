@@ -1,15 +1,18 @@
 from __future__ import annotations
 
 import json
-import tomllib
 from pathlib import Path
 
 import pandas as pd
 from sklearn.base import clone
 
+from risk_managed_momentum.alpha_research import (
+    annual_returns,
+    load_alpha_config,
+    load_modern_panel,
+)
 from risk_managed_momentum.config import load_config
 from risk_managed_momentum.data.factors import load_french_factors
-from risk_managed_momentum.data.panel import build_point_in_time_panel
 from risk_managed_momentum.evaluation.alpha import alpha_score_summary, monthly_rank_ic
 from risk_managed_momentum.evaluation.alpha_portfolio import simulate_alpha_portfolio
 from risk_managed_momentum.evaluation.attribution import factor_regression
@@ -23,36 +26,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 TABLES = PROJECT_ROOT / "reports" / "tables"
 
 
-def load_alpha_config() -> dict:
-    with (PROJECT_ROOT / "configs" / "research_v0_3_alpha.toml").open("rb") as handle:
-        return tomllib.load(handle)
-
-
-def load_modern_panel(config: dict) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    source = config["modern_source"]
-    bars = pd.read_csv(source["bars_path"])
-    aliases = pd.read_csv(source["historical_alias_bars_path"])
-    bars = pd.concat([bars, aliases[bars.columns]], ignore_index=True)
-    membership = pd.read_csv(source["membership_path"])
-    with Path(source["aliases_path"]).open("rb") as handle:
-        ticker_aliases = tomllib.load(handle)["alias"]
-    return build_point_in_time_panel(bars, membership, ticker_aliases)
-
-
 def add_same_date_rank(frame: pd.DataFrame, source: str, destination: str) -> None:
     frame[destination] = frame.groupby("date")[source].rank(method="average", pct=True)
-
-
-def annual_returns(daily: pd.DataFrame) -> list[dict[str, float | int]]:
-    work = daily.copy()
-    work["year"] = pd.to_datetime(work["date"]).dt.year
-    return [
-        {
-            "year": int(year),
-            "return": float((1.0 + group["net_return"]).prod() - 1.0),
-        }
-        for year, group in work.groupby("year")
-    ]
 
 
 def main() -> None:

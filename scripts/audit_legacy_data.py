@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from risk_managed_momentum.cli import parse_no_arguments
 from risk_managed_momentum.config import load_config
 from risk_managed_momentum.data.legacy import audit_legacy_wide, load_legacy_wide
 
@@ -10,6 +11,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> None:
+    parse_no_arguments("Audit the legacy price and volume inputs.")
     config = load_config(PROJECT_ROOT / "configs" / "research.toml")
     price, volume = load_legacy_wide(
         config["legacy_source"]["price_path"],
