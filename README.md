@@ -99,6 +99,9 @@ its strength varies with the market environment.
 
 ![Annual mean daily rank IC in the S&P 500 and S&P 400](docs/figures/readme_annual_transfer.png)
 
+`scripts/make_figures.py` redraws these two figures as SVG from the result tables and saves the
+summary data behind them in `docs/figures/data/`.
+
 Full results:
 
 - [S&P 500 replication](docs/RESULTS.md)
