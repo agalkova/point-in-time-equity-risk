@@ -107,13 +107,12 @@ def decile_figure(deciles: pd.DataFrame, narrow: bool, out: Path = OUT) -> None:
         axis.text(
             10.75, rates[-1], f"{rates[-1]:.1f}%", va="center", fontsize=size - 0.5, color=fs.INK
         )
-        below = universe == "S&P 500"
         axis.annotate(
             f"{rates[0]:.1f}%",
             (1, rates[0]),
-            xytext=(8, -11) if below else (-2, 12),
+            xytext=(-8, 0),
             textcoords="offset points",
-            ha="left" if below else "right",
+            ha="right",
             va="center",
             fontsize=size - 0.5,
             color=fs.INK,
@@ -127,7 +126,7 @@ def decile_figure(deciles: pd.DataFrame, narrow: bool, out: Path = OUT) -> None:
                 fontsize=size - 1.5,
                 color=fs.MUTED,
             )
-    axis.set_xlim(0.5, 10.6)
+    axis.set_xlim(-0.6 if narrow else -0.1, 10.6)
     axis.set_xticks(range(1, 11))
     axis.tick_params(axis="x", length=0)
     axis.set_ylim(0, 35)
