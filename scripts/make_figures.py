@@ -140,7 +140,7 @@ def decile_figure(deciles: pd.DataFrame, narrow: bool, out: Path = OUT) -> None:
         fig,
         1,
         "Drawdown rate by predicted-risk decile" if not narrow else "Drawdown rate by risk decile",
-        "Share of stocks that fell 15%+ within 40 trading days, Jan 2020 – Aug 2026"
+        "Share of stocks that fell 15%+ within 40 trading days, Jan 2020 - Aug 2026"
         if not narrow
         else "Fell 15%+ within 40 days · dashed: average",
         narrow,
