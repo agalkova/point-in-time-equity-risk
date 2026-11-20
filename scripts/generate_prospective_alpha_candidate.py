@@ -37,9 +37,7 @@ def main() -> None:
     frame = dataset.frame.copy()
     frame["date"] = pd.to_datetime(frame["date"]).dt.normalize()
     signal_date = pd.Timestamp(frame["date"].max())
-    train = frame[
-        frame["future_residual_return_21"].notna() & frame["date"].lt(signal_date)
-    ].copy()
+    train = frame[frame["future_residual_return_21"].notna() & frame["date"].lt(signal_date)].copy()
     signal = frame[frame["date"].eq(signal_date)].copy()
     if train.empty or signal.empty:
         raise RuntimeError("Insufficient labeled history or no latest signal cross-section")
@@ -47,9 +45,7 @@ def main() -> None:
     ridge = alpha_model_factories(alpha_config)["ridge"]
     ridge.fit(train[dataset.feature_columns], train["future_residual_return_21"])
     signal["predicted_residual_return"] = ridge.predict(signal[dataset.feature_columns])
-    signal["alpha_rank"] = signal["predicted_residual_return"].rank(
-        method="average", pct=True
-    )
+    signal["alpha_rank"] = signal["predicted_residual_return"].rank(method="average", pct=True)
     top_n = int(alpha_config["portfolio"]["top_n"])
     ranked = signal.sort_values(["alpha_rank", "ticker"], ascending=[False, True]).copy()
     selected = ranked.head(top_n).copy()
@@ -86,8 +82,8 @@ def main() -> None:
     )
 
     if signal_date > FREEZE_DATE:
-        evidence_dir = PROJECT_ROOT / "reports" / "prospective" / "signals" / str(
-            signal_date.date()
+        evidence_dir = (
+            PROJECT_ROOT / "reports" / "prospective" / "signals" / str(signal_date.date())
         )
         ranked_output = ranked[
             [
@@ -98,22 +94,16 @@ def main() -> None:
                 "risk_composite",
             ]
         ]
-        ranked_digest = write_immutable_frame(
-            evidence_dir / "ranked_universe.csv", ranked_output
-        )
+        ranked_digest = write_immutable_frame(evidence_dir / "ranked_universe.csv", ranked_output)
         holdings_digest = write_immutable_frame(evidence_dir / "holdings.csv", selected)
         prior_files = sorted(
-            (PROJECT_ROOT / "reports" / "prospective" / "signals").glob(
-                "*/holdings.csv"
-            )
+            (PROJECT_ROOT / "reports" / "prospective" / "signals").glob("*/holdings.csv")
         )
         prior_files = [path for path in prior_files if path.parent != evidence_dir]
         if prior_files:
             prior = pd.read_csv(prior_files[-1]).set_index("ticker")["target_weight"]
             current = selected.set_index("ticker")["target_weight"]
-            turnover = float(
-                current.sub(prior, fill_value=0.0).abs().sum()
-            )
+            turnover = float(current.sub(prior, fill_value=0.0).abs().sum())
         else:
             turnover = 1.0
         modeled_cost = turnover * float(alpha_config["portfolio"]["one_way_cost_bps"]) / 10_000.0
@@ -126,9 +116,7 @@ def main() -> None:
             "modeled_transaction_cost": modeled_cost,
             "realized_status": "pending",
         }
-        manifest_digest = write_immutable_json(
-            evidence_dir / "manifest.json", evidence_manifest
-        )
+        manifest_digest = write_immutable_json(evidence_dir / "manifest.json", evidence_manifest)
         append_ledger_entry(
             PROJECT_ROOT / "reports" / "prospective" / "ledger.csv",
             {

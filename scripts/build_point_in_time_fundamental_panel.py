@@ -65,9 +65,7 @@ def build_panel() -> tuple[pd.DataFrame, dict]:
     quality_coverage = float(joined["fundamental_quality_score"].notna().mean())
     timing_violations = int((joined["filed"] > joined["date"]).fillna(False).sum())
     by_schema = {}
-    for schema, group in joined.dropna(subset=["fundamental_schema"]).groupby(
-        "fundamental_schema"
-    ):
+    for schema, group in joined.dropna(subset=["fundamental_schema"]).groupby("fundamental_schema"):
         by_schema[str(schema)] = {
             "observations": len(group),
             "issuers": int(group["cik"].nunique()),

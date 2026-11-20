@@ -99,8 +99,7 @@ def main() -> None:
                 test[prediction] = model.predict(test[columns])
                 add_rank(test, prediction, score)
             test[f"score_{feature_set}_ensemble"] = (
-                float(config["ensemble"]["ridge_weight"])
-                * test[f"score_{feature_set}_ridge"]
+                float(config["ensemble"]["ridge_weight"]) * test[f"score_{feature_set}_ridge"]
                 + float(config["ensemble"]["hist_gradient_boosting_weight"])
                 * test[f"score_{feature_set}_hist_gradient_boosting"]
             )
@@ -139,9 +138,7 @@ def main() -> None:
         for year, values in paired_delta.groupby(paired_delta.index.year)
     }
     by_schema = {}
-    for schema, group in oof.dropna(subset=["fundamental_schema"]).groupby(
-        "fundamental_schema"
-    ):
+    for schema, group in oof.dropna(subset=["fundamental_schema"]).groupby("fundamental_schema"):
         base_ic = monthly_rank_ic(group, "score_price_ensemble")
         enhanced_ic = monthly_rank_ic(group, "score_combined_ensemble")
         common = enhanced_ic.sub(base_ic).dropna()

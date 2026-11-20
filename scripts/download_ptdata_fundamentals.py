@@ -19,9 +19,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 def main() -> None:
     parse_no_arguments("Download the pilot point-in-time fundamentals dataset.")
-    components = pd.read_csv(
-        PROJECT_ROOT / "data/interim/membership/sp500_current_components.csv"
-    )
+    components = pd.read_csv(PROJECT_ROOT / "data/interim/membership/sp500_current_components.csv")
     companies = pilot_companies(components)
     paths = download_ptdata_history(
         companies["ticker"].tolist(),
