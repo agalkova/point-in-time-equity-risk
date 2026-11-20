@@ -10,6 +10,7 @@ as SVG in docs/figures/ (a wide and a narrow version of each).
 
 from __future__ import annotations
 
+import argparse
 import sys
 from pathlib import Path
 
@@ -189,7 +190,7 @@ def annual_figure(
     axis.tick_params(axis="x", length=0)
     axis.set_ylim(0, 0.32)
     axis.set_ylabel("Mean daily rank IC")
-    axis.legend(loc="upper left", ncol=2, bbox_to_anchor=(0, 1.04))
+    axis.legend(loc="lower left", ncol=2, bbox_to_anchor=(-0.01, 0.99))
     fs.header(
         fig,
         2,
@@ -211,10 +212,22 @@ def annual_figure(
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument(
+        "--plain",
+        type=Path,
+        metavar="DIR",
+        help="write versions without the figure label, title and source line to DIR",
+    )
+    args = parser.parse_args()
+    out = OUT
+    if args.plain:
+        fs.PLAIN = True
+        out = args.plain
     deciles, annual = build_tables()
     for narrow in (False, True):
-        decile_figure(deciles, narrow)
-        annual_figure(annual, narrow)
+        decile_figure(deciles, narrow, out)
+        annual_figure(annual, narrow, out)
 
 
 if __name__ == "__main__":

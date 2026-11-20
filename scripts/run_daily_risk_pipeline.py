@@ -82,11 +82,7 @@ def source_paths(universe: str, base_config: dict) -> list[Path]:
 
 
 def health_reasons(health: dict) -> list[str]:
-    reasons = [
-        f"gate:{name}"
-        for name, value in health["gates"].items()
-        if not value["passed"]
-    ]
+    reasons = [f"gate:{name}" for name, value in health["gates"].items() if not value["passed"]]
     drift = health["drift"]
     if drift["score_psi"] is not None and drift["score_psi"] > drift["failure_threshold"]:
         reasons.append("drift:score_psi_failure")
@@ -126,9 +122,7 @@ def main() -> None:
     if model_metadata["model_specification"] != operations["pipeline"]["model_specification"]:
         raise RuntimeError("Active model specification differs from operations configuration")
     paths = source_paths(args.universe, base_config)
-    sources = {
-        str(path.relative_to(PROJECT_ROOT)): file_sha256(path) for path in paths
-    }
+    sources = {str(path.relative_to(PROJECT_ROOT)): file_sha256(path) for path in paths}
     data_fingerprint = content_digest(canonical_json_bytes(sources))
     loaders = {
         "sp500": lambda: load_sp500_panel(PROJECT_ROOT, base_config),
@@ -137,9 +131,7 @@ def main() -> None:
     }
     price, volume, membership = loaders[args.universe]()
     requested_as_of = (
-        pd.Timestamp(args.as_of).normalize()
-        if args.as_of
-        else pd.Timestamp.today().normalize()
+        pd.Timestamp(args.as_of).normalize() if args.as_of else pd.Timestamp.today().normalize()
     )
     available_dates = price.index[price.index <= requested_as_of]
     if available_dates.empty:
@@ -174,10 +166,7 @@ def main() -> None:
         shadow_signals = shadow_scored[shadow_scored["date"].eq(market_data_date)][
             ["date", "ticker", "risk_10", "risk_20", "risk_40", "risk_60"]
         ].rename(
-            columns={
-                f"risk_{horizon}": f"shadow_risk_{horizon}"
-                for horizon in [10, 20, 40, 60]
-            }
+            columns={f"risk_{horizon}": f"shadow_risk_{horizon}" for horizon in [10, 20, 40, 60]}
         )
         shadow_signals = shadow_signals.sort_values(
             ["shadow_risk_40", "ticker"], ascending=[False, True]
@@ -262,4 +251,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

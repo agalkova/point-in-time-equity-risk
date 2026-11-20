@@ -9,7 +9,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Render a macOS launchd schedule for daily inference")
+    parser = argparse.ArgumentParser(
+        description="Render a macOS launchd schedule for daily inference"
+    )
     parser.add_argument("--hour", type=int, default=18)
     parser.add_argument("--minute", type=int, default=15)
     parser.add_argument(

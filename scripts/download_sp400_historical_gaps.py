@@ -56,7 +56,9 @@ def main() -> None:
             }
         )
 
-    combined = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=bars.columns)
+    combined = (
+        pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=bars.columns)
+    )
     output_path = PROJECT_ROOT / config["data"]["historical_gap_bars_path"]
     output_path.parent.mkdir(parents=True, exist_ok=True)
     combined.to_csv(output_path, index=False, compression="gzip")

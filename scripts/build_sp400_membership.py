@@ -34,9 +34,7 @@ def main() -> None:
 
     universe = config["universe"]
     clean_seed = frames["seed"][~frames["seed"]["ticker"].isin(SOURCE_EXCLUSIONS)].copy()
-    clean_changes = frames["changes"][
-        ~frames["changes"]["ticker"].isin(SOURCE_EXCLUSIONS)
-    ].copy()
+    clean_changes = frames["changes"][~frames["changes"]["ticker"].isin(SOURCE_EXCLUSIONS)].copy()
     snapshots = build_event_sourced_snapshots(
         clean_seed,
         clean_changes,

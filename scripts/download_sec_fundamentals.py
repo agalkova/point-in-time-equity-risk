@@ -22,9 +22,11 @@ def pilot_companies(components: pd.DataFrame) -> pd.DataFrame:
     frame["Date added"] = pd.to_datetime(frame["Date added"], errors="coerce")
     frame = frame[frame["Date added"].le(pd.Timestamp("2018-12-31"))]
     frame = frame.sort_values(["sector", "ticker"]).drop_duplicates(["sector", "cik"])
-    return frame.groupby("sector", group_keys=False).head(2)[
-        ["ticker", "security", "sector", "cik", "Date added"]
-    ].reset_index(drop=True)
+    return (
+        frame.groupby("sector", group_keys=False)
+        .head(2)[["ticker", "security", "sector", "cik", "Date added"]]
+        .reset_index(drop=True)
+    )
 
 
 def main() -> None:
