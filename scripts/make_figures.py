@@ -3,7 +3,7 @@
 Reads the prediction and annual tables written by run_modern_replication.py and
 run_sp400_replication.py (reports/tables/, not committed), writes the small
 summary tables behind each figure to docs/figures/data/, and saves the figures
-as SVG in docs/figures/ (a wide and a narrow version of each).
+as SVG in docs/figures/ (a wide and a narrow version, drawn at the pixel width they are shown at).
 
     python scripts/make_figures.py
 """
@@ -80,9 +80,7 @@ def build_tables() -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def decile_figure(deciles: pd.DataFrame, narrow: bool, out: Path = OUT) -> None:
-    fs.apply(narrow)
-    width = fs.NARROW if narrow else fs.WIDE
-    fig = plt.figure(figsize=(width, 5.6 if narrow else 4.6))
+    fig = fs.new_figure(4.6, 5.6)
     axis = fig.add_axes(
         [0.14 if narrow else 0.075, 0.13, 0.7 if narrow else 0.76, 0.6 if narrow else 0.62]
     )
@@ -107,16 +105,17 @@ def decile_figure(deciles: pd.DataFrame, narrow: bool, out: Path = OUT) -> None:
         axis.text(
             10.75, rates[-1], f"{rates[-1]:.1f}%", va="center", fontsize=size - 0.5, color=fs.INK
         )
-        axis.annotate(
-            f"{rates[0]:.1f}%",
-            (1, rates[0]),
-            xytext=(-8, 0),
-            textcoords="offset points",
-            ha="right",
-            va="center",
-            fontsize=size - 0.5,
-            color=fs.INK,
-        )
+        if not narrow:
+            axis.annotate(
+                f"{rates[0]:.1f}%",
+                (1, rates[0]),
+                xytext=(0, -14) if universe == "S&P 500" else (0, 12),
+                textcoords="offset points",
+                ha="center",
+                va="center",
+                fontsize=size - 0.5,
+                color=fs.INK,
+            )
         if not narrow:
             axis.text(
                 10.75,
@@ -126,7 +125,7 @@ def decile_figure(deciles: pd.DataFrame, narrow: bool, out: Path = OUT) -> None:
                 fontsize=size - 1.5,
                 color=fs.MUTED,
             )
-    axis.set_xlim(-0.6 if narrow else -0.1, 10.6)
+    axis.set_xlim(0.5, 10.6)
     axis.set_xticks(range(1, 11))
     axis.tick_params(axis="x", length=0)
     axis.set_ylim(0, 35)
@@ -145,7 +144,7 @@ def decile_figure(deciles: pd.DataFrame, narrow: bool, out: Path = OUT) -> None:
         narrow,
     )
     fs.source(fig, "docs/figures/data/decile_event_rates.csv", narrow)
-    name = "decile-event-rates" + ("-narrow" if narrow else "")
+    name = "decile-event-rates" + fs.suffix()
     fs.save(
         fig,
         out / f"{name}.svg",
@@ -158,9 +157,7 @@ def decile_figure(deciles: pd.DataFrame, narrow: bool, out: Path = OUT) -> None:
 def annual_figure(
     annual: pd.DataFrame, narrow: bool, out: Path = OUT, last_date: str = "Aug 4"
 ) -> None:
-    fs.apply(narrow)
-    width = fs.NARROW if narrow else fs.WIDE
-    fig = plt.figure(figsize=(width, 4.8 if narrow else 4.0))
+    fig = fs.new_figure(4.0, 4.8)
     axis = fig.add_axes(
         [
             0.15 if narrow else 0.075,
@@ -200,7 +197,7 @@ def annual_figure(
         narrow,
     )
     fs.source(fig, "docs/figures/data/annual_rank_ic.csv", narrow)
-    name = "annual-rank-ic" + ("-narrow" if narrow else "")
+    name = "annual-rank-ic" + fs.suffix()
     fs.save(
         fig,
         out / f"{name}.svg",
@@ -224,7 +221,10 @@ def main() -> None:
         fs.PLAIN = True
         out = args.plain
     deciles, annual = build_tables()
-    for narrow in (False, True):
+    variants = ("wide", "mid", "narrow") if args.plain else ("wide", "narrow")
+    for variant in variants:
+        fs.VARIANT = variant
+        narrow = variant != "wide"
         decile_figure(deciles, narrow, out)
         annual_figure(annual, narrow, out)
 
