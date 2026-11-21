@@ -49,9 +49,7 @@ def main() -> None:
     combined = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
     output_dir = PROJECT_ROOT / "data" / "raw" / "alpaca"
     output_dir.mkdir(parents=True, exist_ok=True)
-    combined.to_csv(
-        output_dir / "bars_historical_aliases_all.csv.gz", index=False, compression="gzip"
-    )
+    combined.to_csv(output_dir / "bars_historical_aliases_all.csv.gz", index=False, compression="gzip")
     manifest = {
         "retrieved_at_utc": datetime.now(UTC).isoformat(),
         "adjustment": "all",

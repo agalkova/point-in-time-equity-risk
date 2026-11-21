@@ -1,9 +1,9 @@
 """Draw the headline figures for the S&P 500 test and the S&P 400 transfer.
 
-Reads the prediction and annual tables written by run_modern_replication.py and
-run_sp400_replication.py (reports/tables/, not committed), writes the small
-summary tables behind each figure to docs/figures/data/, and saves the figures
-as SVG in docs/figures/ (a wide and a narrow version, drawn at the pixel width they are shown at).
+Uses the tracked summary tables in docs/figures/data/ and saves the figures as
+SVG in docs/figures/ (a wide and a narrow version, drawn at the pixel width
+where it is shown). When the untracked replication outputs are available, it
+rebuilds the summaries from those files first.
 
     python scripts/make_figures.py
 """
@@ -43,6 +43,17 @@ UNIVERSES = {
 
 def build_tables() -> tuple[pd.DataFrame, pd.DataFrame]:
     """Decile event rates, overall event rate and annual rank IC for each universe."""
+    data = OUT / "data"
+    decile_path = data / "decile_event_rates.csv"
+    annual_path = data / "annual_rank_ic.csv"
+    source_paths = [
+        TABLES / spec[key]
+        for spec in UNIVERSES.values()
+        for key in ("predictions", "annual")
+    ]
+    if not all(path.exists() for path in source_paths):
+        return pd.read_csv(decile_path), pd.read_csv(annual_path)
+
     sys.path.insert(0, str(ROOT / "src"))
     from risk_managed_momentum.evaluation.ranking import decile_table
 
@@ -72,10 +83,9 @@ def build_tables() -> tuple[pd.DataFrame, pd.DataFrame]:
             )
         )
     deciles_frame, annual_frame = pd.concat(deciles), pd.concat(annual)
-    data = OUT / "data"
     data.mkdir(parents=True, exist_ok=True)
-    deciles_frame.to_csv(data / "decile_event_rates.csv", index=False)
-    annual_frame.to_csv(data / "annual_rank_ic.csv", index=False)
+    deciles_frame.to_csv(decile_path, index=False)
+    annual_frame.to_csv(annual_path, index=False)
     return deciles_frame, annual_frame
 
 

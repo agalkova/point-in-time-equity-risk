@@ -43,11 +43,9 @@ def main() -> None:
     volume_path = PROJECT_ROOT / base_config["legacy_source"]["volume_path"]
     price, volume = load_legacy_wide(price_path, volume_path)
     dataset = build_exuberance_episode_dataset(price, volume, base_config, hazard_config)
-    training = dataset.frame[
-        dataset.frame["date"].between(
-            hazard_config["training"]["start"], hazard_config["training"]["end"]
-        )
-    ].copy()
+    training = dataset.frame[dataset.frame["date"].between(
+        hazard_config["training"]["start"], hazard_config["training"]["end"]
+    )].copy()
     fitted = fit_hazard_model(
         training,
         dataset.feature_columns,
@@ -110,3 +108,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

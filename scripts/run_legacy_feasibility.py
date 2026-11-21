@@ -52,12 +52,8 @@ def main() -> None:
         "test_metrics": metrics,
         "mean_daily_rank_ic": float(rank_ic.mean()),
         "mean_daily_rank_ic_95pct_block_interval": list(interval),
-        "top_decile_event_rate": float(
-            deciles.loc[deciles["risk_decile"] == 10, "event_rate"].iloc[0]
-        ),
-        "bottom_decile_event_rate": float(
-            deciles.loc[deciles["risk_decile"] == 1, "event_rate"].iloc[0]
-        ),
+        "top_decile_event_rate": float(deciles.loc[deciles["risk_decile"] == 10, "event_rate"].iloc[0]),
+        "bottom_decile_event_rate": float(deciles.loc[deciles["risk_decile"] == 1, "event_rate"].iloc[0]),
     }
     summary["top_to_bottom_risk_ratio"] = (
         summary["top_decile_event_rate"] / summary["bottom_decile_event_rate"]
@@ -78,3 +74,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

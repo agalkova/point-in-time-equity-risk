@@ -29,7 +29,8 @@ def read_mapping(path: Path) -> dict[str, str]:
     with path.open("rb") as handle:
         payload = tomllib.load(handle)
     return {
-        row["provider_ticker"].upper(): row["legacy_ticker"].upper() for row in payload["security"]
+        row["provider_ticker"].upper(): row["legacy_ticker"].upper()
+        for row in payload["security"]
     }
 
 
@@ -58,3 +59,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

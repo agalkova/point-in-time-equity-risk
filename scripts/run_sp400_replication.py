@@ -34,7 +34,9 @@ def main() -> None:
     membership_long = pd.read_csv(PROJECT_ROOT / config["data"]["membership_path"])
     with (PROJECT_ROOT / "data/reference/sp400_symbol_aliases.toml").open("rb") as handle:
         aliases = tomllib.load(handle)["alias"]
-    price, volume, membership = build_point_in_time_panel(bars, membership_long, aliases=aliases)
+    price, volume, membership = build_point_in_time_panel(
+        bars, membership_long, aliases=aliases
+    )
     coverage = coverage_summary(price, membership)
     minimum_coverage = float(config["quality_gates"]["minimum_median_price_coverage"])
     median_coverage = float(coverage["coverage_rate"].median())
@@ -42,7 +44,9 @@ def main() -> None:
         (PROJECT_ROOT / "data/interim/sp400/manifest.json").read_text()
     )
     quality_gates = {
-        "current_roster_jaccard_at_least_minimum": bool(membership_manifest["quality_gate_passed"]),
+        "current_roster_jaccard_at_least_minimum": bool(
+            membership_manifest["quality_gate_passed"]
+        ),
         "median_price_coverage_at_least_minimum": median_coverage >= minimum_coverage,
     }
     if not all(quality_gates.values()):
@@ -65,7 +69,9 @@ def main() -> None:
     overlap = membership_long.copy()
     overlap["date"] = pd.to_datetime(overlap["date"]).dt.normalize()
     overlap["ticker"] = overlap["ticker"].astype(str).str.upper()
-    overlap = overlap.merge(sp500.assign(also_sp500_member=True), on=["date", "ticker"], how="left")
+    overlap = overlap.merge(
+        sp500.assign(also_sp500_member=True), on=["date", "ticker"], how="left"
+    )
     overlap["also_sp500_member"] = overlap["also_sp500_member"].fillna(False)
     daily_overlap = overlap.groupby("date").agg(
         sp400_members=("ticker", "nunique"),
@@ -98,8 +104,11 @@ def main() -> None:
         >= float(rules["minimum_average_precision_lift"]),
         "top_to_bottom_risk_ratio_at_least_2": primary["top_to_bottom_risk_ratio"]
         >= float(rules["minimum_top_bottom_risk_ratio"]),
-        "rank_ic_positive_interval": primary["mean_daily_rank_ic_95pct_block_interval"][0] > 0.0,
-        "positive_rank_ic_at_least_six_years": int(annual["mean_daily_rank_ic"].gt(0).sum())
+        "rank_ic_positive_interval": primary["mean_daily_rank_ic_95pct_block_interval"][0]
+        > 0.0,
+        "positive_rank_ic_at_least_six_years": int(
+            annual["mean_daily_rank_ic"].gt(0).sum()
+        )
         >= int(rules["minimum_positive_rank_ic_years"]),
     }
     summary = {

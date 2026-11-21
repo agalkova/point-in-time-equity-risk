@@ -39,17 +39,12 @@ def daily_event_spread(frame: pd.DataFrame, score_column: str) -> pd.Series:
     """Return each date's highest-minus-lowest risk-decile event rate."""
     work = frame[["date", "target", score_column]].copy()
     work["risk_decile"] = add_daily_deciles(work, score_column)
-    rates = (
-        work.dropna(subset=["risk_decile"])
-        .groupby(["date", "risk_decile"])["target"]
-        .mean()
-        .unstack()
-    )
-    return (
-        rates.get(10.0, pd.Series(index=rates.index, dtype=float))
-        .sub(rates.get(1.0, pd.Series(index=rates.index, dtype=float)))
-        .dropna()
-    )
+    rates = work.dropna(subset=["risk_decile"]).groupby(["date", "risk_decile"])[
+        "target"
+    ].mean().unstack()
+    return rates.get(10.0, pd.Series(index=rates.index, dtype=float)).sub(
+        rates.get(1.0, pd.Series(index=rates.index, dtype=float))
+    ).dropna()
 
 
 def score_summary(frame: pd.DataFrame, score_column: str, config: dict) -> dict[str, object]:
@@ -113,7 +108,9 @@ def main() -> None:
 
     # Model selection is confined to the older legacy periods. The fitted
     # design is frozen before any modern S&P 500 outcomes are evaluated.
-    selected, final_model, feature_columns, development_rows = fit_frozen_legacy_model(config)
+    selected, final_model, feature_columns, development_rows = fit_frozen_legacy_model(
+        config
+    )
 
     # Membership determines which stocks may produce a signal on each date.
     # Price histories remain available after removal so forward outcomes are complete.
@@ -137,7 +134,9 @@ def main() -> None:
         raise RuntimeError("Legacy and modern feature schemas differ")
 
     # This is the first point where the frozen model sees the modern feature rows.
-    modern["risk_score"] = final_model.predict_proba(modern[modern_dataset.feature_columns])[:, 1]
+    modern["risk_score"] = final_model.predict_proba(
+        modern[modern_dataset.feature_columns]
+    )[:, 1]
     baseline_columns = {
         "model": "risk_score",
         "return_60": "rank_ret_60",
@@ -155,7 +154,8 @@ def main() -> None:
     ].mean(axis=1)
     baseline_columns["fixed_rank_composite"] = "fixed_rank_composite"
     comparisons = {
-        name: score_summary(modern, column, config) for name, column in baseline_columns.items()
+        name: score_summary(modern, column, config)
+        for name, column in baseline_columns.items()
     }
 
     annual_rows = []
