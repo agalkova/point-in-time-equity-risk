@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg role="img" aria-label="Mean daily rank IC by year. The risk ranking's mean daily rank IC is above zero in every test year from 2020 to 2026 in both indexes, ranging from about 0.09 to 0.30." xmlns:xlink="http://www.w3.org/1999/xlink" width="255pt" height="291.428571pt" viewBox="0 0 255 291.428571" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <title>Mean daily rank IC by year</title>
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title>Mean daily rank IC by year</dc:title>
+    <dc:description>The risk ranking's mean daily rank IC is above zero in every test year from 2020 to 2026 in both indexes, ranging from about 0.09 to 0.30.</dc:description>
+    <dc:format>image/svg+xml</dc:format>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 291.428571 
+L 255 291.428571 
+L 255 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 38.25 250.628571 
+L 244.8 250.628571 
+L 244.8 75.771429 
+L 38.25 75.771429 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1"/>
+     <g id="text_1">
+      <text style="font-size: 9.5px; font-family: Tahoma, Verdana, 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #6b7b87" x="58.070455" y="261.346345" transform="rotate(-0 58.070455 261.346345)">'20</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_2"/>
+     <g id="text_2">
+      <text style="font-size: 9.5px; font-family: Tahoma, Verdana, 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #6b7b87" x="85.888636" y="261.346345" transform="rotate(-0 85.888636 261.346345)">'21</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_3"/>
+     <g id="text_3">
+      <text style="font-size: 9.5px; font-family: Tahoma, Verdana, 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #6b7b87" x="113.706818" y="261.346345" transform="rotate(-0 113.706818 261.346345)">'22</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_4"/>
+     <g id="text_4">
+      <text style="font-size: 9.5px; font-family: Tahoma, Verdana, 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #6b7b87" x="141.525" y="261.346345" transform="rotate(-0 141.525 261.346345)">'23</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_5"/>
+     <g id="text_5">
+      <text style="font-size: 9.5px; font-family: Tahoma, Verdana, 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #6b7b87" x="169.343182" y="261.346345" transform="rotate(-0 169.343182 261.346345)">'24</text>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_6"/>
+     <g id="text_6">
+      <text style="font-size: 9.5px; font-family: Tahoma, Verdana, 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #6b7b87" x="197.161364" y="261.346345" transform="rotate(-0 197.161364 261.346345)">'25</text>
+     </g>
+    </g>
+    <g id="xtick_7">
+     <g id="line2d_7"/>
+     <g id="text_7">
+      <text style="font-size: 9.5px; font-family: Tahoma, Verdana, 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #6b7b87" x="224.979545" y="261.346345" transform="rotate(-0 224.979545 261.346345)">'26*</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_8">
+      <path d="M 38.25 250.628571 
+L 244.8 250.628571 
+" clip-path="url(#pa09334da1f)" style="fill: none; stroke-dasharray: 0.8,1.6; stroke-dashoffset: 0; stroke: #dcd8cc; stroke-width: 0.8"/>
+     </g>
+     <g id="line2d_9"/>
+     <g id="text_8">
+      <text style="font-size: 9.5px; font-family: Tahoma, Verdana, 'DejaVu Sans', sans-serif; text-anchor: end; fill: #6b7b87" x="34.75" y="254.237458" transform="rotate(-0 34.75 254.237458)">0.00</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_10">
+      <path d="M 38.25 223.307143 
+L 244.8 223.307143 
+" clip-path="url(#pa09334da1f)" style="fill: none; stroke-dasharray: 0.8,1.6; stroke-dashoffset: 0; stroke: #dcd8cc; stroke-width: 0.8"/>
+     </g>
+     <g id="line2d_11"/>
+     <g id="text_9">
+      <text style="font-size: 9.5px; font-family: Tahoma, Verdana, 'DejaVu Sans', sans-serif; text-anchor: end; fill: #6b7b87" x="34.75" y="226.91603" transform="rotate(-0 34.75 226.91603)">0.05</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_12">
+      <path d="M 38.25 195.985714 
+L 244.8 195.985714 
+" clip-path="url(#pa09334da1f)" style="fill: none; stroke-dasharray: 0.8,1.6; stroke-dashoffset: 0; stroke: #dcd8cc; stroke-width: 0.8"/>
+     </g>
+     <g id="line2d_13"/>
+     <g id="text_10">
+      <text style="font-size: 9.5px; font-family: Tahoma, Verdana, 'DejaVu Sans', sans-serif; text-anchor: end; fill: #6b7b87" x="34.75" y="199.594601" transform="rotate(-0 34.75 199.594601)">0.10</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_14">
+      <path d="M 38.25 168.664286 
+L 244.8 168.664286 
+" clip-path="url(#pa09334da1f)" style="fill: none; stroke-dasharray: 0.8,1.6; stroke-dashoffset: 0; stroke: #dcd8cc; stroke-width: 0.8"/>
+     </g>
+     <g id="line2d_15"/>
+     <g id="text_11">
+      <text style="font-size: 9.5px; font-family: Tahoma, Verdana, 'DejaVu Sans', sans-serif; text-anchor: end; fill: #6b7b87" x="34.75" y="172.273172" transform="rotate(-0 34.75 172.273172)">0.15</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_16">
+      <path d="M 38.25 141.342857 
+L 244.8 141.342857 
+" clip-path="url(#pa09334da1f)" style="fill: none; stroke-dasharray: 0.8,1.6; stroke-dashoffset: 0; stroke: #dcd8cc; stroke-width: 0.8"/>
+     </g>
+     <g id="line2d_17"/>
+     <g id="text_12">
+      <text style="font-size: 9.5px; font-family: Tahoma, Verdana, 'DejaVu Sans', sans-serif; text-anchor: end; fill: #6b7b87" x="34.75" y="144.951744" transform="rotate(-0 34.75 144.951744)">0.20</text>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_18">
+      <path d="M 38.25 114.021429 
+L 244.8 114.021429 
+" clip-path="url(#pa09334da1f)" style="fill: none; stroke-dasharray: 0.8,1.6; stroke-dashoffset: 0; stroke: #dcd8cc; stroke-width: 0.8"/>
+     </g>
+     <g id="line2d_19"/>
+     <g id="text_13">
+      <text style="font-size: 9.5px; font-family: Tahoma, Verdana, 'DejaVu Sans', sans-serif; text-anchor: end; fill: #6b7b87" x="34.75" y="117.630315" transform="rotate(-0 34.75 117.630315)">0.25</text>
+     </g>
+    </g>
+    <g id="ytick_7">
+     <g id="line2d_20">
+      <path d="M 38.25 86.7 
+L 244.8 86.7 
+" clip-path="url(#pa09334da1f)" style="fill: none; stroke-dasharray: 0.8,1.6; stroke-dashoffset: 0; stroke: #dcd8cc; stroke-width: 0.8"/>
+     </g>
+     <g id="line2d_21"/>
+     <g id="text_14">
+      <text style="font-size: 9.5px; font-family: Tahoma, Verdana, 'DejaVu Sans', sans-serif; text-anchor: end; fill: #6b7b87" x="34.75" y="90.308887" transform="rotate(-0 34.75 90.308887)">0.30</text>
+     </g>
+    </g>
+    <g id="text_15">
+     <text style="font-size: 10.5px; font-family: Tahoma, Verdana, 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #43586a" x="7.075195" y="163.2" transform="rotate(-90 7.075195 163.2)">Mean daily rank IC</text>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 47.638636 250.628571 
+L 57.653182 250.628571 
+L 57.653182 181.778571 
+L 47.638636 181.778571 
+z
+" clip-path="url(#pa09334da1f)" style="fill: #0b5dc4"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 75.456818 250.628571 
+L 85.471364 250.628571 
+L 85.471364 181.232143 
+L 75.456818 181.232143 
+z
+" clip-path="url(#pa09334da1f)" style="fill: #0b5dc4"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 103.275 250.628571 
+L 113.289545 250.628571 
+L 113.289545 88.885714 
+L 103.275 88.885714 
+z
+" clip-path="url(#pa09334da1f)" style="fill: #0b5dc4"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 131.093182 250.628571 
+L 141.107727 250.628571 
+L 141.107727 141.342857 
+L 131.093182 141.342857 
+z
+" clip-path="url(#pa09334da1f)" style="fill: #0b5dc4"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 158.911364 250.628571 
+L 168.925909 250.628571 
+L 168.925909 140.25 
+L 158.911364 140.25 
+z
+" clip-path="url(#pa09334da1f)" style="fill: #0b5dc4"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 186.729545 250.628571 
+L 196.744091 250.628571 
+L 196.744091 164.292857 
+L 186.729545 164.292857 
+z
+" clip-path="url(#pa09334da1f)" style="fill: #0b5dc4"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 214.547727 250.628571 
+L 224.562273 250.628571 
+L 224.562273 173.035714 
+L 214.547727 173.035714 
+z
+" clip-path="url(#pa09334da1f)" style="fill: #0b5dc4"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 58.487727 250.628571 
+L 68.502273 250.628571 
+L 68.502273 183.964286 
+L 58.487727 183.964286 
+z
+" clip-path="url(#pa09334da1f)" style="fill: #d9631e"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 86.305909 250.628571 
+L 96.320455 250.628571 
+L 96.320455 146.260714 
+L 86.305909 146.260714 
+z
+" clip-path="url(#pa09334da1f)" style="fill: #d9631e"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 114.124091 250.628571 
+L 124.138636 250.628571 
+L 124.138636 108.010714 
+L 114.124091 108.010714 
+z
+" clip-path="url(#pa09334da1f)" style="fill: #d9631e"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 141.942273 250.628571 
+L 151.956818 250.628571 
+L 151.956818 171.396429 
+L 141.942273 171.396429 
+z
+" clip-path="url(#pa09334da1f)" style="fill: #d9631e"/>
+   </g>
+   <g id="patch_14">
+    <path d="M 169.760455 250.628571 
+L 179.775 250.628571 
+L 179.775 130.414286 
+L 169.760455 130.414286 
+z
+" clip-path="url(#pa09334da1f)" style="fill: #d9631e"/>
+   </g>
+   <g id="patch_15">
+    <path d="M 197.578636 250.628571 
+L 207.593182 250.628571 
+L 207.593182 200.357143 
+L 197.578636 200.357143 
+z
+" clip-path="url(#pa09334da1f)" style="fill: #d9631e"/>
+   </g>
+   <g id="patch_16">
+    <path d="M 225.396818 250.628571 
+L 235.411364 250.628571 
+L 235.411364 109.65 
+L 225.396818 109.65 
+z
+" clip-path="url(#pa09334da1f)" style="fill: #d9631e"/>
+   </g>
+   <g id="line2d_22">
+    <path d="M 38.25 250.628571 
+L 244.8 250.628571 
+" clip-path="url(#pa09334da1f)" style="fill: none; stroke: #8f9aa3; stroke-width: 0.8; stroke-linecap: round"/>
+   </g>
+   <g id="patch_17">
+    <path d="M 38.25 250.628571 
+L 38.25 75.771429 
+" style="fill: none; stroke: #8f9aa3; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_18">
+    <path d="M 38.25 250.628571 
+L 244.8 250.628571 
+" style="fill: none; stroke: #8f9aa3; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="legend_1">
+    <g id="patch_19">
+     <path d="M 45.1845 66.117656 
+L 63.1845 66.117656 
+L 63.1845 59.117656 
+L 45.1845 59.117656 
+z
+" style="fill: #0b5dc4"/>
+    </g>
+    <g id="text_16">
+     <text style="font-size: 10px; font-family: Tahoma, Verdana, 'DejaVu Sans', sans-serif; text-anchor: start" x="71.1845" y="66.117656" transform="rotate(-0 71.1845 66.117656)">S&amp;P 500</text>
+    </g>
+    <g id="patch_20">
+     <path d="M 133.626688 66.117656 
+L 151.626688 66.117656 
+L 151.626688 59.117656 
+L 133.626688 59.117656 
+z
+" style="fill: #d9631e"/>
+    </g>
+    <g id="text_17">
+     <text style="font-size: 10px; font-family: Tahoma, Verdana, 'DejaVu Sans', sans-serif; text-anchor: start" x="159.626688" y="66.117656" transform="rotate(-0 159.626688 66.117656)">S&amp;P 400</text>
+    </g>
+   </g>
+  </g>
+  <g id="text_18">
+   <text style="font-weight: 700; font-size: 10px; font-family: Tahoma, Verdana, 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b5dc4" x="12.75" y="19.598437" transform="rotate(-0 12.75 19.598437)">Fig. 2</text>
+  </g>
+  <g id="text_19">
+   <text style="font-weight: 700; font-size: 12.5px; font-family: Tahoma, Verdana, 'DejaVu Sans', sans-serif; text-anchor: start; fill: #1d2b36" x="12.75" y="37.998047" transform="rotate(-0 12.75 37.998047)">Ranking quality by year</text>
+  </g>
+  <g id="text_20">
+   <text style="font-size: 8.5px; font-family: Consolas, Menlo, 'DejaVu Sans Mono', monospace; text-anchor: start; fill: #6b7b87" x="12.75" y="285.889436" transform="rotate(-0 12.75 285.889436)">docs/figures/data/annual_rank_ic.csv</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pa09334da1f">
+   <rect x="38.25" y="75.771429" width="206.55" height="174.857143"/>
+  </clipPath>
+ </defs>
+</svg>
